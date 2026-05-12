@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pokémon Collection Tracker</title>
+  <link rel="stylesheet" href="../assets/styles/sets.css">
+</head>
+<body>
+<div class="container">
+    <nav>
+        <a href="/index.html">Pack Simulator</a>
+        <a href="/sets.html">Collection Tracker</a>
+    </nav>
+    </div>
+<div class="page-shell">
+  <header class="hero">
+    <p class="eyebrow">Pokémon TCG</p>
+    <h1>Selected Set Browser</h1>
+    <p class="hero-text">Browse the exact Pokémon TCG sets from your spreadsheet in a clean and focused layout.</p>
+  </header>
+
+  <section class="sets-panel">
+    <div class="panel-heading">
+      <h2>Chosen Sets</h2>
+      <p>Click a set to open a dedicated cards page with every card from that set.</p>
+    </div>
+
+    <div id="eraFilters" class="filter-bar"></div>
+    <div id="setsGrid" class="sets-grid"></div>
+
+    <section class="set-cards-panel">
+      <div class="panel-heading">
+        <div>
+          <h2 id="selectedSetTitle">Click a set to browse cards</h2>
+          <p id="selectedSetInfo">Card results will appear here when you select a set.</p>
+        </div>
+      </div>
+      <div id="cardsGrid" class="cards-grid"></div>
+    </section>
+  </section>
+</div>
+
+<script type="module" src="../assets/scripts/sets.js"></script>
+
+</body>
+</html>

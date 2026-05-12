@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Pack</title>
+    <link rel="stylesheet" href="../../assets/styles/packs.css" />
+</head>
+<body>
+
+    <!-- ── TOP BAR ───────────────────────────────────────── -->
+    <div class="topbar">
+        <button class="topbar-btn" id="backBtn" aria-label="Back to sets">
+            &#8592; Back
+        </button>
+        <h1 class="topbar-title" id="setNameTitle">Loading…</h1>
+        <div class="topbar-spacer"></div>
+    </div>
+
+    <!-- ── LOADING STATE ─────────────────────────────────── -->
+    <div class="pack-loading" id="packLoading">
+        <div class="spinner"></div>
+        <span>Fetching cards…</span>
+    </div>
+
+    <!-- ── ERROR STATE ───────────────────────────────────── -->
+    <div class="pack-error" id="packError" style="display:none;"></div>
+
+    <!-- ── HINT ──────────────────────────────────────────── -->
+    <p class="click-hint" id="clickHint">Click the pack to open it!</p>
+
+    <!-- ── SCENE: PACK ANIMATION ─────────────────────────── -->
+    <div class="scene">
+        <div class="card" id="card"></div>
+        <div class="pack" id="pack" style="display:none;" title="Click to open!">
+
+            <!-- SET LOGO overlaid on pack -->
+            <img src="" alt="" id="packLogoImg" class="pack-logo-overlay" style="display:none;" />
+
+            <!-- TOP FLAP -->
+            <div class="top-flap">
+                <img src="Pictures/bottom_pack.png" alt="Pokémon Pack" id="packImage" />
+                <img src="Pictures/top_pack.png"    alt="Tear"         id="peelImage" class="peelImage" />
+            </div>
+
+            <!-- BOTTOM / FOIL -->
+            <div class="bottom" id="bottomPart">
+                <div class="foil">
+                    <div class="light"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CARDS CONTAINER ───────────────────────────────── -->
+    <div class="cards-container" id="cardsContainer">
+        <!-- 10 card slots -->
+        <div class="pokemon-card" data-card="1"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="2"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="3"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="4"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="5"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="6"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="7"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="8"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="9"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="10" style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+    </div>
+
+    <!-- ── OPEN ANOTHER BUTTON (shown after all cards revealed) ── -->
+    <button class="open-another-btn" id="openAnotherBtn" style="display:none;" aria-label="Open another pack">
+        🎴 Open Another Pack
+    </button>
+
+    <!-- ── CARD TOOLTIP ───────────────────────────────────── -->
+    <div class="card-tooltip" id="cardTooltip"></div>
+
+    <script type="module" src="../../assets/scripts/pack-opener.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="../assets/styles/index.css" />
+    <!-- Fontawesome Kit (free edition icons) -->
+    <script src="https://kit.fontawesome.com/26f6db76db.js" crossorigin="anonymous">
+    </script>
+    
+</head>
+<body>
+
+    <header class="gradient-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <i class="fa-solid fa-crown logo-icon"></i>
+                <span class="logo-text">POKÉ<span style="font-weight: 900;">VAULT</span></span>
+            </div>
+            <div class="nav-links">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" aria-label="Packs">
+                            <i class="fa-solid fa-box"></i>
+                            <span>Packs</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" aria-label="Market">
+                            <i class="fa-solid fa-store"></i>
+                            <span>Market</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pages/sets.html" class="nav-link" aria-label="Collection">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>Collection</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="user-tools">
+                <div class="coin-badge">
+                    <img class="coin-img"
+                    src="assets/images/pokecoin.png"
+                    alt="PokéCoin"
+                    width="34"
+                    height="34">
+                    <span class="coin-amount">99232,21</span>
+                </div>
+                <div class="login-icon" aria-label="Login" role="button" tabindex="0">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Template for carousel slides -->
+    <template id="carousel-slide-template">
+        <div class="carousel-slide">
+            <div class="pack-card">
+                <div class="pack-image-container">
+                    <img class="pack-image" src="" alt="" loading="lazy">
+                </div>
+                <div class="pack-text">
+                    <span class="pack-name"></span>
+                    <div class="pack-price">
+                        <img class="pack-price-icon" src="assets/images/pokecoin.png" alt="PokéCoin">
+                        <span class="pack-price-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Carousel section -->
+    <section class="carousel-section" aria-label="Pokémon Pack Carousel">
+        <p class="carousel-label">✦ Featured Packs ✦</p>
+        <div class="carousel-outer">
+            <div class="carousel-wrapper" id="carouselWrapper">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Slides dynamically inserted from template -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PROMO ROW: Market + Free Pack ==================== -->
+    <section class="promo-row-section" aria-label="Promotional actions">
+        <div class="promo-row-container">
+
+            <!-- Big Market Button (redirects to # for now) -->
+            <a href="#" class="market-big-btn" id="marketBigBtn" aria-label="Go to Market">
+                <div class="market-btn-glow"></div>
+                <div class="market-btn-inner">
+                    <i class="fa-solid fa-store" id="market_icon_btn"></i>
+                    <div class="market-btn-text">
+                        <span class="market-btn-title">MARKET</span>
+                        <span class="market-btn-sub">Browse &amp; Trade</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-right market-arrow"></i>
+                </div>
+            </a>
+
+            <!-- Free Pack Box (click → claim → start cooldown countdown) -->
+            <div class="free-pack-box" id="freePackBox" role="button" tabindex="0" aria-label="Claim a free pack">
+                <!-- Timer overlay – visible during cooldown -->
+                <div class="free-pack-timer-overlay" id="freePackTimerOverlay">
+                    <span class="free-pack-timer-number" id="freePackTimerNumber">900</span>
+                </div>
+                <!-- Normal content -->
+                <div class="free-pack-inner">
+                    <i class="fa-solid fa-gift" id="free_pack_icon"></i>
+                    <span class="free-pack-title">FREE PACK</span>
+                    <span class="free-pack-sub" id="freePackSubText">Click to claim!</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="assets/scripts/index.js"></script>
+</body>
+</html>
