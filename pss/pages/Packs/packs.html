@@ -31,22 +31,19 @@
 
     <!-- ── SCENE: PACK ANIMATION ─────────────────────────── -->
     <div class="scene">
-        <div class="card" id="card"></div>
         <div class="pack" id="pack" style="display:none;" title="Click to open!">
 
-            <!-- SET LOGO overlaid on pack -->
             <img src="" alt="" id="packLogoImg" class="pack-logo-overlay" style="display:none;" />
 
-            <!-- TOP FLAP -->
-            <div class="top-flap">
-                <img src="Pictures/bottom_pack.png" alt="Pokémon Pack" id="packImage" />
-                <img src="Pictures/top_pack.png"    alt="Tear"         id="peelImage" class="peelImage" />
+            <!-- 1) Tear strip (top_pack.png): rips upward first -->
+            <div class="pack-rip" id="packRip" aria-hidden="true">
+                <img src="../../assets/images/top_pack.png" alt="" class="pack-rip-img" width="260" height="auto" />
             </div>
 
-            <!-- BOTTOM / FOIL -->
-            <div class="bottom" id="bottomPart">
-                <div class="foil">
-                    <div class="light"></div>
+            <!-- 2) Body art + foil: drops after the rip -->
+            <div class="pack-lower" id="packLower">
+                <div class="pack-body-stack">
+                    <img src="../../assets/images/bottom_pack.png" alt="" class="pack-body-img" id="packBodyImg" width="260" height="auto" />
                 </div>
             </div>
         </div>
@@ -55,16 +52,16 @@
     <!-- ── CARDS CONTAINER ───────────────────────────────── -->
     <div class="cards-container" id="cardsContainer">
         <!-- 10 card slots -->
-        <div class="pokemon-card" data-card="1"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="2"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="3"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="4"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="5"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="6"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="7"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="8"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="9"  style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
-        <div class="pokemon-card" data-card="10" style="--card-image: url('Pictures/back.jpg');"><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="1"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="2"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="3"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="4"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="5"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="6"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="7"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="8"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="9"  style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
+        <div class="pokemon-card" data-card="10" style="--card-image: "><div class="pokemon-card-inner"><div class="pokemon-card-back"></div><div class="pokemon-card-front"></div></div></div>
     </div>
 
     <!-- ── OPEN ANOTHER BUTTON (shown after all cards revealed) ── -->
@@ -75,7 +72,10 @@
     <!-- ── CARD TOOLTIP ───────────────────────────────────── -->
     <div class="card-tooltip" id="cardTooltip"></div>
 
-    <script type="module" src="../../assets/scripts/pack-opener.js"></script>
+    <!-- ── FETCH DEBUG: add ?debug=1 to the URL ───────────── -->
+    <pre id="packFetchDebug" class="pack-fetch-debug" hidden></pre>
+
+    <script type="module" src="../../assets/scripts/pack.js"></script>
 
     
 </body>

@@ -9,8 +9,6 @@ const boosterContainer = document.getElementById('boosterContainer');
 
 const tcgdex = new TCGdex('en');
 
-console.log('🚀 SDK ready — booster pack support enabled');
-
 function setLoading(state) {
     openBtn.disabled = state;
     loadingIndicator.style.display = state ? 'flex' : 'none';
@@ -426,5 +424,3 @@ openBtn.addEventListener('click', openPack);
 
 // AUTO LOAD
 openPack();
-
-console.log('✅ Ready — booster pack artwork enabled');

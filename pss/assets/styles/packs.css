@@ -94,6 +94,12 @@ html, body {
     letter-spacing: .05em;
 }
 
+.pack-loading.is-hidden {
+    display: none !important;
+    pointer-events: none;
+    visibility: hidden;
+}
+
 .spinner {
     width: 48px;
     height: 48px;
@@ -127,22 +133,14 @@ html, body {
     width: 260px;
     height: 420px;
     z-index: 5;
+    perspective: 1100px;
+    perspective-origin: 50% 28%;
 }
 
-.card {
-    position: absolute;
-    inset: 12px;
-    border-radius: 18px;
-    background: black;
-    opacity: 0;
-    transform: translateY(35px) scale(.96);
-    box-shadow: 0 20px 45px rgba(0,0,0,.45), 0 0 35px rgba(255,170,0,.35);
-}
-.card.show {
-    animation: cardReveal 1.6s forwards;
-}
-@keyframes cardReveal {
-    to { opacity: 1; transform: none; }
+/* After opening, scene must not sit above the card stack (was blocking clicks) */
+.scene.scene-pack-open {
+    pointer-events: none;
+    z-index: 1;
 }
 
 .pack {
@@ -154,6 +152,8 @@ html, body {
     display: flex;
     flex-direction: column;
     width: 260px;
+    overflow: visible;
+    transform-style: preserve-3d;
 }
 .pack:hover .foil::before {
     opacity: .45;
@@ -173,10 +173,57 @@ html, body {
     filter: drop-shadow(0 2px 6px rgba(0,0,0,.7));
 }
 
+/* ── PACK LAYERS (top_pack = rip, bottom_pack = body + foil) ── */
+.pack-rip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 260px;
+    z-index: 16;
+    pointer-events: none;
+    transform-origin: 50% 100%;
+}
+
+.pack-rip-img {
+    display: block;
+    width: 260px;
+    height: auto;
+    border-radius: 22px 22px 0 0;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,.45));
+}
+
+.pack-lower {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 4;
+    padding-top: 52px;
+}
+
+.pack-body-stack {
+    position: relative;
+    width: 260px;
+    flex-shrink: 0;
+}
+
+.pack-body-img {
+    display: block;
+    width: 260px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,.4));
+}
+
 /* BOTTOM / FOIL */
 .bottom {
     position: relative;
-    inset: 0;
+    width: 100%;
+    flex: 1;
+    min-height: 120px;
+    margin-top: -4px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -224,58 +271,42 @@ html, body {
     to { transform: translateX(200%) rotate(12deg); }
 }
 
-/* TOP FLAP */
-.top-flap {
-    position: relative;
-    z-index: 12;
-    width: 260px;
-    height: 100%;
+/* ── PACK ANIMATIONS (rip top → drop body) ───────────────── */
+@keyframes packRipOffUp {
+    0% {
+        transform: translateY(0) rotateX(0deg) scale(1);
+        opacity: 1;
+    }
+    55% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-115vh) rotateX(22deg) scale(0.98);
+        opacity: 0;
+    }
 }
 
-#packImage {
-    position: absolute;
-    top: 57px;
-    left: 0;
-    width: 260px;
-    height: auto;
-    object-fit: contain;
-    z-index: 11;
+.pack-rip.pack-anim-rip {
+    animation: packRipOffUp 0.78s cubic-bezier(0.33, 0.82, 0.36, 1) forwards;
+    pointer-events: none;
+    will-change: transform, opacity;
 }
 
-.peelImage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 260px;
-    height: auto;
-    border-radius: 22px 22px 0 0;
-    transform-origin: top;
-    z-index: 12;
+@keyframes packBodyDrop {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(115vh);
+        opacity: 0;
+    }
 }
 
-/* ── PACK ANIMATIONS ───────────────────────────────────── */
-@keyframes omhoogEnVerdwijn {
-    0%   { transform: translateY(0);      opacity: 1; }
-    100% { transform: translateY(-100vh); opacity: 0; }
+.pack-lower.pack-anim-drop {
+    animation: packBodyDrop 1.2s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+    will-change: transform, opacity;
 }
-@keyframes omlaagEnVerdwijn {
-    0%   { transform: translateY(0);     opacity: 1; }
-    100% { transform: translateY(100vh); opacity: 0; }
-}
-@keyframes omlaagEnVerdwijnFoto {
-    0%   { transform: translateY(0);     opacity: 1; }
-    100% { transform: translateY(100vh); opacity: 0; }
-}
-@keyframes peelImageMove {
-    0%   { transform: translateY(0)    rotateX(0deg);  opacity: 1; }
-    50%  { transform: translateY(-20px) rotateX(25deg); opacity: .9; }
-    100% { transform: translateY(-80px) rotateX(60deg); opacity: 0; }
-}
-
-.zakkenEnVerdwijn        { animation: omhoogEnVerdwijn       2s forwards; }
-.zakkenEnVerdwijnOnder   { animation: omlaagEnVerdwijn       2s forwards; }
-.zakkenEnVerdwijnFoto    { animation: omlaagEnVerdwijnFoto   2s forwards; }
-.peel-image-animate      { animation: peelImageMove          2s forwards; }
 
 /* ── CARDS CONTAINER ───────────────────────────────────── */
 .cards-container {
@@ -289,10 +320,22 @@ html, body {
     pointer-events: none;
     transition: opacity .8s ease-in;
     padding-top: 60px; /* clear topbar */
+    perspective: 1400px;
+    perspective-origin: 50% 42%;
 }
 .cards-container.show {
     opacity: 1;
     pointer-events: auto;
+    /* Above .scene (5) so centered stack receives clicks */
+    z-index: 80;
+}
+
+.cards-container.review-mode {
+    pointer-events: auto;
+}
+
+.cards-container.review-mode .pokemon-card.flipped .pokemon-card-inner {
+    transform: rotateY(180deg);
 }
 
 /* ── INDIVIDUAL CARD SLOT ──────────────────────────────── */
@@ -300,9 +343,10 @@ html, body {
     width: 180px;
     height: 252px;
     position: absolute;
-    cursor: default;
+    cursor: pointer;
     transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
+    transform-origin: center center;
+    transition: transform 0.6s cubic-bezier(.4,.2,.2,1), opacity 0.6s ease;
 }
 
 /* In review mode each card is hoverable / clickable */
@@ -333,7 +377,7 @@ html, body {
     backface-visibility: hidden;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    background-image: url('Pictures/back.jpg');
+    background-image: url('../../assets/images/back.jpg');
     background-size: cover;
     background-position: center;
     border: 3px solid #ffcc00;
@@ -361,6 +405,48 @@ html, body {
     object-fit: cover;
     border-radius: 10px;
     display: block;
+}
+
+/* Set name under card (hover) */
+.pokemon-card-meta {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 10px);
+    transform: translateX(-50%) translateY(4px);
+    text-align: center;
+    max-width: min(260px, 92vw);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    background: rgba(10, 18, 35, 0.92);
+    border: 1px solid rgba(143, 175, 255, 0.22);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    z-index: 5;
+}
+.pokemon-card-price {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #ffd966;
+}
+
+.pokemon-card-rarity {
+    display: block;
+    margin-top: 0.18rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #ffb7de;
+}
+
+/* After flip, keep set name + market hint visible (same data as sets/collection page). */
+.pokemon-card.flipped .pokemon-card-meta {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* ── RARE GLOW ─────────────────────────────────────────── */
@@ -423,120 +509,22 @@ html, body {
     opacity: 1;
 }
 
-/* In review mode each card is hoverable / clickable */
-.pokemon-card.hoverable {
-    cursor: pointer;
-}
-.pokemon-card.hoverable:hover {
-    transform: scale(1.08) translateY(-8px) !important;
-    z-index: 100;
-}
-
-.pokemon-card.flipped .pokemon-card-inner {
-    transform: rotateY(180deg);
-}
-
-.pokemon-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
-}
-
-/* BACK */
-.pokemon-card-back {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    background-image: url('Pictures/back.jpg');
-    background-size: cover;
-    background-position: center;
-    border: 3px solid #ffcc00;
-}
-
-/* FRONT */
-.pokemon-card-front {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    transform: rotateY(180deg);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    overflow: hidden;
-    background: #1a1a2e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Real card image fills the front face */
-.real-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    display: block;
-}
-
-/* ── RARE GLOW ─────────────────────────────────────────── */
-.pokemon-card.is-rare .pokemon-card-front {
-    box-shadow:
-        0 0 18px 4px rgba(255,215,0,.55),
-        0 10px 30px rgba(0,0,0,.5);
-}
-.pokemon-card.is-rare.flipped .pokemon-card-inner {
-    /* add a subtle rainbow shimmer after flip */
-    filter: drop-shadow(0 0 8px rgba(255,180,0,.5));
-}
-
-/* ── OPEN ANOTHER BUTTON ───────────────────────────────── */
-.open-another-btn {
+/* ── FETCH DEBUG (?debug=1) ─────────────────────────────── */
+.pack-fetch-debug {
     position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 300;
-    display: none;       /* shown via JS */
-    align-items: center;
-    gap: .6rem;
-    padding: .85rem 2.2rem;
-    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
-    color: #111;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: .04em;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 22px rgba(255,180,0,.45);
-    transition: transform .2s, box-shadow .2s;
-}
-.open-another-btn:hover {
-    transform: translateX(-50%) scale(1.05);
-    box-shadow: 0 6px 30px rgba(255,180,0,.65);
-}
-
-/* ── CARD TOOLTIP ──────────────────────────────────────── */
-.card-tooltip {
-    position: fixed;
-    bottom: 6rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(10,18,35,.92);
-    border: 1px solid rgba(255,255,255,.12);
-    color: #eef2ff;
-    padding: .45rem 1.1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .2s;
-    white-space: nowrap;
-    z-index: 400;
-}
-.card-tooltip.visible {
-    opacity: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 40vh;
+    overflow: auto;
+    margin: 0;
+    padding: 12px 16px 16px;
+    background: rgba(6, 10, 20, 0.96);
+    border-top: 1px solid rgba(143, 175, 255, 0.28);
+    color: #b8c9ff;
+    font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    z-index: 500;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.45);
 }

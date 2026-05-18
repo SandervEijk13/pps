@@ -1,0 +1,115 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0d1117;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    padding: 30px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.coins-box {
+    background: rgba(255,255,255,0.08);
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-size: 18px;
+}
+
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.market-pack {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 20px;
+    transition: 0.25s;
+    backdrop-filter: blur(8px);
+}
+
+.market-pack:hover {
+    transform: translateY(-6px);
+}
+
+.market-pack img {
+    width: 100%;
+    height: 340px;
+    object-fit: contain;
+    margin-bottom: 16px;
+}
+
+.market-pack h3 {
+    margin-bottom: 8px;
+}
+
+.market-pack p {
+    opacity: 0.8;
+    margin-bottom: 16px;
+}
+
+.market-pack button {
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.amount-selector {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    gap: 8px;
+}
+
+.amount-selector .amount-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.amount-selector .amount-buy {
+    grid-column: 1 / -1;
+}
+
+.purchase-toast {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translate(-50%, -16px);
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0;
+    padding: 14px 22px;
+    border-radius: 14px;
+    background: rgba(16, 185, 129, 0.95);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.purchase-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}

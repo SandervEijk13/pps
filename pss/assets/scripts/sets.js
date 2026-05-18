@@ -4,48 +4,12 @@ import MemoryCache from '@cachex/memory';
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
 
-// ----------------------
-// DEBUG: FETCH ALL SETS
-// ----------------------
-
-(async () => {
-    try {
-        const allFetchedSets = await tcgdex.set.list();
-
-        console.log('All available TCGdex sets:');
-
-        console.table(
-            allFetchedSets.map(set => ({
-                id: set.id,
-                name: set.name,
-                code: set.code,
-                cardCount: set.cardCount?.official || 0,
-                logo: set.logo
-            }))
-        );
-
-        console.log('Total fetched sets:', allFetchedSets.length);
-
-        console.debug(
-            'Fetched set IDs:',
-            allFetchedSets.map(set => set.id)
-        );
-
-    } catch (err) {
-        console.error('Failed to fetch all sets:', err);
-    }
-})();
-
-// ----------------------
-// DOM ELEMENTS
-// ----------------------
+const API = window.location.port === '5173'
+    ? 'http://localhost/pss/api'
+    : `${window.location.origin}/pss/api`;
 
 const setsGrid = document.getElementById('setsGrid');
 const eraFilters = document.getElementById('eraFilters');
-
-// ----------------------
-// ALLOWED SET IDS
-// ----------------------
 
 const allowedSetIds = [
     'base1', 'base2', 'base3', 'base4', 'base5',
@@ -70,10 +34,6 @@ const allowedSetIdsMap = new Map(
     allowedSetIds.map((id, index) => [id, index])
 );
 
-// ----------------------
-// ERA LOOKUP
-// ----------------------
-
 const eraLookup = {
     base: 'Base',
     gym: 'Gym',
@@ -81,18 +41,14 @@ const eraLookup = {
     lc: 'Legendary Collection',
     ecard: 'E-Card',
     ex: 'EX',
-    e2: 'Diamond & Pearl',
-    e3: 'Diamond & Pearl',
     dp: 'Diamond & Pearl',
     pl: 'Platinum',
     hgss: 'HeartGold & SoulSilver',
     col: 'Call of Legends',
     bw: 'Black & White',
     xy: 'XY',
-    g1: 'XY',
     sm: 'Sun & Moon',
     swsh: 'Sword & Shield',
-    pgo: 'Sword & Shield',
     sv: 'Scarlet & Violet',
     me: 'Mega Evolution'
 };
@@ -117,57 +73,69 @@ const eraOrder = [
     { key: 'me', label: 'Mega Evolution' }
 ];
 
-// ----------------------
-// STATE
-// ----------------------
-
 let currentEra = 'all';
 let allSets = [];
+let userCollectionProgress = {};
 
-// ----------------------
-// HELPERS
-// ----------------------
+// ---------------------- ERA ----------------------
 
 function getEraKey(setId) {
     for (const key of Object.keys(eraLookup)) {
-        if (setId.startsWith(key)) {
-            return key;
-        }
+        if (setId.startsWith(key)) return key;
     }
-
     return 'all';
 }
 
-function buildLogoUrl(set) {
-    console.debug('Building logo URL for:', set.id);
+// ---------------------- COLLECTION (FIXED) ----------------------
 
-    if (set.id === 'sv05') {
-        console.debug('Using custom logo for sv05');
+async function loadUserCollectionProgress() {
+    const res = await fetch(`${API}/get_cards.php`, {
+        credentials: 'include'
+    });
 
-        return '/assets/img/Temporal-Forces.webp';
+    const data = res.ok ? await res.json() : [];
+
+    // expand duplicates like cards page
+    const ownedCards = data.flatMap(c =>
+        Array(Number(c.card_amount)).fill(c.card_id)
+    );
+
+    userCollectionProgress = {};
+
+    for (const cardId of ownedCards) {
+        try {
+            const card = await tcgdex.card.get(cardId);
+            const setId = card?.set?.id;
+
+            if (!setId) continue;
+
+            userCollectionProgress[setId] =
+                (userCollectionProgress[setId] || 0) + 1;
+
+        } catch (e) {
+            // ignore missing cards
+        }
     }
-
-    const logoUrl = set.logo
-        ? `${set.logo}.png`
-        : `https://assets.tcgdex.net/en/${set.code}/${set.id}/logo.png`;
-
-    console.debug('Generated logo URL:', logoUrl);
-
-    return logoUrl;
 }
 
-// ----------------------
-// RENDER ERA FILTERS
-// ----------------------
+// ---------------------- LOGO ----------------------
+
+function buildLogoUrl(set) {
+    if (set.id === 'sv05') {
+        return '../assets/images/Temporal-Forces.webp';
+    }
+
+    return set.logo
+        ? `${set.logo}.png`
+        : `https://assets.tcgdex.net/en/${set.code}/${set.id}/logo.png`;
+}
+
+// ---------------------- FILTERS ----------------------
 
 function renderEraFilters() {
-    console.debug('Rendering era filters');
-
     eraFilters.innerHTML = '';
 
     eraOrder.forEach(({ key, label }) => {
-        console.debug('Creating era filter button:', key);
-
         const button = document.createElement('button');
 
         button.type = 'button';
@@ -175,10 +143,7 @@ function renderEraFilters() {
         button.textContent = label;
 
         button.addEventListener('click', () => {
-            console.debug('Era filter selected:', key);
-
             currentEra = key;
-
             renderEraFilters();
             renderSets();
         });
@@ -187,117 +152,59 @@ function renderEraFilters() {
     });
 }
 
-// ----------------------
-// RENDER SETS
-// ----------------------
+// ---------------------- SETS ----------------------
 
 function renderSets() {
     const displayedSets = currentEra === 'all'
         ? allSets
         : allSets.filter(set => set.eraKey === currentEra);
 
-    console.debug('Rendering sets', {
-        selectedEra: currentEra,
-        displayedCount: displayedSets.length,
-        displayedSets
-    });
-
     setsGrid.innerHTML = '';
 
     if (!displayedSets.length) {
-        console.warn('No sets found for era:', currentEra);
-
-        setsGrid.innerHTML =
-            '<div class="no-sets">No sets found for this era.</div>';
-
+        setsGrid.innerHTML = '<div class="no-sets">No sets found for this era.</div>';
         return;
     }
 
     displayedSets.forEach(set => {
-        console.debug('Rendering set:', {
-            id: set.id,
-            name: set.name,
-            eraKey: set.eraKey
-        });
-
         const setEl = document.createElement('div');
-
         setEl.className = 'set-item';
+
+        const ownedCards = userCollectionProgress[set.id] || 0;
+        const totalCards = set.cardCount?.official || 0;
+
+        const percentage = totalCards > 0
+            ? Math.round((ownedCards / totalCards) * 100)
+            : 0;
 
         setEl.innerHTML = `
             <img src="${buildLogoUrl(set)}" alt="${set.name}">
             <div class="set-name">${set.name}</div>
+            <div class="set-progress">${ownedCards}/${totalCards}</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:${percentage}%"></div>
+            </div>
         `;
 
         setEl.addEventListener('click', () => {
-            console.debug('Clicked set:', set.id);
-
             window.location.href =
                 `cards.html?set=${encodeURIComponent(set.id)}`;
         });
 
         setsGrid.appendChild(setEl);
     });
-
-    console.debug('Finished rendering sets');
 }
 
-// ----------------------
-// LOAD SETS
-// ----------------------
+// ---------------------- LOAD SETS ----------------------
 
 async function loadSets() {
     try {
-        console.debug('Fetching allowed sets from TCGdex...');
-
         const sets = await tcgdex.set.list();
 
-        // RAW RESPONSE
-        console.debug('RAW tcgdex.set.list() response:', sets);
-
-        // COUNT
-        console.debug('Fetched sets count:', sets.length);
-
-        // IDS
-        console.debug(
-            'Fetched set IDs:',
-            sets.map(set => set.id)
-        );
-
-        // TABLE
-        console.table(
-            sets.map(set => ({
-                id: set.id,
-                name: set.name,
-                code: set.code,
-                logo: set.logo,
-                cardCount: set.cardCount?.official || 0
-            }))
-        );
-
-        // FILTER
         const filteredSets = sets.filter(set =>
             allowedSetIdsMap.has(set.id)
         );
 
-        console.debug('Filtered allowed sets:', filteredSets);
-
-        console.debug(
-            'Filtered allowed set IDs:',
-            filteredSets.map(set => set.id)
-        );
-
-        // MISSING IDS
-        const missingAllowed = allowedSetIds.filter(
-            id => !filteredSets.some(set => set.id === id)
-        );
-
-        console.warn(
-            'Allowed set IDs NOT returned by API:',
-            missingAllowed
-        );
-
-        // FINAL PROCESSING
         allSets = filteredSets
             .map(set => ({
                 ...set,
@@ -309,32 +216,20 @@ async function loadSets() {
                     allowedSetIdsMap.get(b.id)
             );
 
-        console.debug('Final processed allSets:', allSets);
-
-        console.table(
-            allSets.map(set => ({
-                id: set.id,
-                name: set.name,
-                eraKey: set.eraKey,
-                code: set.code
-            }))
-        );
-
         renderEraFilters();
         renderSets();
 
     } catch (err) {
-        console.error('Failed to load allowed sets:', err);
-
-        setsGrid.innerHTML =
-            '<div>❌ Failed to load sets</div>';
+        console.error(err);
+        setsGrid.innerHTML = '<div>❌ Failed to load sets</div>';
     }
 }
 
-// ----------------------
-// AUTO LOAD
-// ----------------------
+// ---------------------- INIT ----------------------
 
-console.debug('Starting app...');
+async function init() {
+    await loadUserCollectionProgress();
+    await loadSets();
+}
 
-loadSets();
+init();

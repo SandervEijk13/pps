@@ -16,12 +16,12 @@
 (function carouselSetup() {
     const TOTAL_SLIDES = 6;
     const packData = [
-        { name: 'Sun and moon Rising Shadow', image: '../assets/images/packs/pankie1.png', price: '1200' },
-        { name: 'White Flare', image: '../assets/images/packs/pankie2.png', price: '300' },
-        { name: 'Base Set 1', image: '../assets/images/packs/pankie3.png', price: '2000' },
-        { name: 'Evolving skies', image: '../assets/images/packs/pankie4.png', price: '3000' },
-        { name: 'XY Breakpoint', image: '../assets/images/packs/pankie5.png', price: '650' },
-        { name: 'Darkness Ablaze', image: '../assets/images/packs/pankie6.png', price: '700 ' }
+        { name: 'Sun and moon Rising Shadow', image: 'assets/images/packs/sm3.png', price: '1200' },
+        { name: 'White Flare', image: 'assets/images/packs/sv10.5w.png', price: '300' },
+        { name: 'Base Set 1', image: 'assets/images/packs/base1.png', price: '2000' },
+        { name: 'Evolving skies', image: 'assets/images/packs/swsh7.png', price: '3000' },
+        { name: '151', image: 'assets/images/packs/sv3.5.png', price: '650' },
+        { name: 'Darkness Ablaze', image: 'assets/images/packs/swsh3.png', price: '700 ' }
     ];
 
     const track = document.getElementById('carouselTrack');
@@ -177,7 +177,6 @@
 
 // ==================== PROMO ROW: PERSISTENT FREE PACK COOLDOWN ====================
 (function promoRowSetup() {
-    const STORAGE_KEY = 'freePackCooldownEnd';
     const COUNTDOWN_SECONDS = 900; // 15 minutes
 
     const marketBtn = document.getElementById('marketBigBtn');
@@ -187,17 +186,6 @@
 
     let countdownInterval = null;
     let isCounting = false;
-
-    function getStoredEndTime() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return null;
-        const endTime = parseInt(stored, 10);
-        return isNaN(endTime) ? null : endTime;
-    }
-
-    function clearStoredCooldown() {
-        localStorage.removeItem(STORAGE_KEY);
-    }
 
     function startCooldown(overrideEndTime = null) {
         if (countdownInterval) {
@@ -209,7 +197,6 @@
             endTime = overrideEndTime;
         } else {
             endTime = Date.now() + COUNTDOWN_SECONDS * 1000;
-            localStorage.setItem(STORAGE_KEY, endTime);
         }
         isCounting = true;
         freePackBox.classList.add('counting');
@@ -238,24 +225,12 @@
         isCounting = false;
         subText.textContent = 'Click to claim!';
         timerNumber.textContent = COUNTDOWN_SECONDS;
-        clearStoredCooldown();
     }
 
     function claimFreePack() {
         if (isCounting) return;
         alert('🎁 You received a free pack!');
         startCooldown();
-    }
-
-    function initCooldownState() {
-        const endTime = getStoredEndTime();
-        if (!endTime) return;
-        const now = Date.now();
-        if (endTime <= now) {
-            clearStoredCooldown();
-            return;
-        }
-        startCooldown(endTime);
     }
 
     if (marketBtn) {
@@ -274,5 +249,37 @@
         });
     }
 
-    initCooldownState();
+
+    const loginIcon = document.getElementById("loginIcon");
+
+    function loggedIn() {
+        return localStorage.getItem("isLogged") === "true";
+    }
+
+    function showLoginIcon() {
+        if (!loginIcon) return;
+        loginIcon.innerHTML = loggedIn()
+            ? `<i class="fa-solid fa-right-from-bracket"></i>`
+            : `<i class="fa-solid fa-user"></i>`;
+    }
+
+    async function handleLoginClick() {
+        if (!loggedIn()) {
+            window.location.href = "pages/login.html";
+            return;
+        }
+
+        if (!confirm("Logout?")) return;
+
+        try {
+            await fetch(`api/logout.php`, { method: "POST", credentials: "include" });
+        } catch {}
+
+        localStorage.removeItem("isLogged");
+        localStorage.removeItem("userId");
+        showLoginIcon();
+    }
+
+    showLoginIcon();
+    loginIcon?.addEventListener("click", handleLoginClick);
 })();

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Market</title>
+
+    <link rel="stylesheet" href="../assets/styles/market.css">
+</head>
+<body>
+
+     <header class="gradient-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <i class="fa-solid fa-crown logo-icon"></i>
+                <span class="logo-text">POKÉ<span style="font-weight: 900;">VAULT</span></span>
+            </div>
+            <div class="nav-links">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="Packs/packs.html" class="nav-link" aria-label="Packs">
+                            <i class="fa-solid fa-box"></i>
+                            <span>Packs</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="market.html" class="nav-link" aria-label="Market">
+                            <i class="fa-solid fa-store"></i>
+                            <span>Market</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="sets.html" class="nav-link" aria-label="Collection">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>Collection</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="user-tools">
+                <div class="coin-badge">
+                    <img class="coin-img"
+                    src="assets/images/pokecoin.png "
+                    alt="PokéCoin"
+                    width="34"
+                    height="34">
+                    <span class="coin-amount" id="user-coins">0</span>
+                </div>
+                <div class="login-icon" id="loginIcon" aria-label="Login" role="button" tabindex="0">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <main>
+
+        <div id="marketGrid" class="market-grid"></div>
+
+    </main>
+
+    <script type="module" src="../assets/scripts/market.js"></script>
+    <script src="../assets/scripts/login.js" defer></script>
+</body>
+</html>

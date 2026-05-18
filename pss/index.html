@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Homepage - Pokémon Vault</title>
-    <link rel="stylesheet" href="../assets/styles/index.css" />
+    <link rel="stylesheet" href="assets/styles/index.css" />
     <!-- Fontawesome Kit (free edition icons) -->
     <script src="https://kit.fontawesome.com/26f6db76db.js" crossorigin="anonymous"></script>
 </head>
@@ -25,7 +25,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link" aria-label="Market">
+                        <a href="pages/market.html" class="nav-link" aria-label="Market">
                             <i class="fa-solid fa-store"></i>
                             <span>Market</span>
                         </a>
@@ -41,14 +41,14 @@
             <div class="user-tools">
                 <div class="coin-badge">
                     <img class="coin-img"
-                    src="assets/images/pokecoin.png"
+                    src="assets/images/pokecoin.png "
                     alt="PokéCoin"
                     width="34"
                     height="34">
-                    <span class="coin-amount">99232,21</span>
+                    <span class="coin-amount" id="user-coins">0</span>
                 </div>
-                <div class="login-icon" aria-label="Login" role="button" tabindex="0">
-                    <i class="fa-solid fa-right-to-bracket"></i>
+                <div class="login-icon" id="loginIcon" aria-label="Login" role="button" tabindex="0">
+                    <i class="fa-solid fa-user"></i>
                 </div>
             </div>
         </div>
@@ -129,6 +129,7 @@
         <img src="assets/images/charizard-right.png" alt="Charizard" class="charizard-img">
     </div>
 
-    <script src="assets/scripts/index.js"></script>
+    <script src="assets/scripts/login.js" defer></script>
+    <script src="assets/scripts/index.js" defer></script>
 </body>
 </html>
