@@ -1,0 +1,153 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0f172a;
+    color: white;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.shop-page {
+    width: 100%;
+    max-width: 1400px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.shop-header h1 {
+    font-size: 42px;
+}
+
+.coins-display {
+    background: #1e293b;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    border: 2px solid #334155;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.shop-pack {
+    background: #1e293b;
+    border-radius: 18px;
+    padding: 20px;
+    transition: 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.shop-pack:hover {
+    transform: translateY(-5px);
+    border-color: #3b82f6;
+}
+
+
+.pack-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.pack-price {
+    color: #facc15;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+.buy-btn {
+    width: 100%;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.buy-btn:hover {
+    background: #2563eb;
+}
+
+.buy-btn:active {
+    transform: scale(0.98);
+}
+.shop-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.price-filter {
+    background: #1e293b;
+    border: 2px solid #334155;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+}
+
+.shop-pack {
+    background: #1e293b;
+    border-radius: 18px;
+    padding: 20px;
+    transition: 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.shop-pack:hover {
+    transform: translateY(-5px);
+    border-color: #3b82f6;
+}
+
+.pack-image {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+    margin-bottom: 18px;
+}
+
+
+
+.pack-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.pack-price {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #facc15;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+.coin-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+}

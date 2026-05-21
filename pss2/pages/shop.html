@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Shop</title>
+
+    <link rel="stylesheet" href="/styles/shop.css">
+</head>
+<body>
+
+    <div class="shop-page">
+
+        <div class="shop-header">
+
+    <h1>Pokémon Pack Shop</h1>
+
+    <div class="shop-controls">
+
+        <select id="priceFilter" class="price-filter">
+            <option value="default">Default</option>
+            <option value="low-high">Price: Low → High</option>
+            <option value="high-low">Price: High → Low</option>
+        </select>
+
+        <div class="coins-display">
+            <span id="coinsAmount">0</span> Coins
+        </div>
+
+    </div>
+
+</div>
+
+        <div id="shopGrid" class="shop-grid"></div>
+
+    </div>
+
+    <script type="module" src="/scripts/shop.js"></script>
+
+</body>
+</html>

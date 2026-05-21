@@ -6,7 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
-require "db.php";
+require_once "db.php";
 
 $action = $_GET['action'] ?? '';
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Set Cards</title>
+  <link rel="stylesheet" href="/styles/cards_collection.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <p class="eyebrow">Pokémon TCG</p>
+      <h1>Set Card Browser</h1>
+      <p class="hero-text">Click any set from the sets page to open a dedicated card browser. If a card image is missing, the card still appears with a fallback placeholder.</p>
+    </header>
+
+    <section class="cards-panel">
+      <div class="panel-heading">
+        <div>
+          <h2 id="setTitle">Loading set...</h2>
+          <p id="setInfo">Please wait while the set cards load.</p>
+        </div>
+        <div class="nav-links">
+          <a href="sets.html">← Back to sets</a>
+        </div>
+      </div>
+
+      <div id="cardsGrid" class="cards-grid"></div>
+    </section>
+  </div>
+
+  <script type="module" src="/scripts/cards.js"></script>
+  <script src="/scripts/login.js" defer></script>
+</body>
+</html>
