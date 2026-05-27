@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Marketplace</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 320px;
+        }
+
+        .card {
+            background: #2b2b2b;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .card img {
+            width: 120px;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #00aaff;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #0088cc;
+        }
+
+        .balance {
+            font-size: 22px;
+            color: #00ff88;
+        }
+
+        .missing-card {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Card Marketplace</h1>
+
+    <div class="section">
+        <h2 id="setTitle">Loading...</h2>
+        <div id="setInfo"></div>
+    </div>
+
+    <div class="container">
+
+        <!-- INVENTORY -->
+        <div class="section">
+            <h2>Your Inventory</h2>
+            <div id="inventory"></div>
+        </div>
+
+        <!-- MARKETPLACE -->
+        <div class="section">
+            <h2>Marketplace</h2>
+            <div id="marketplace"></div>
+        </div>
+
+    </div>
+
+    <script type="module" src="/scripts/market.js"></script>
+
+</body>
+
+</html>

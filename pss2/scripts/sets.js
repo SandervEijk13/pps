@@ -10,6 +10,7 @@ const API = window.location.port === '5173'
 
 const setsGrid = document.getElementById('setsGrid');
 const eraFilters = document.getElementById('eraFilters');
+const setSearch = document.getElementById('setSearch');
 
 const allowedSetIds = [
     'base1', 'base2', 'base3', 'base4', 'base5',
@@ -19,7 +20,7 @@ const allowedSetIds = [
     'ecard1',
     'ex1', 'ex2', 'ex3', 'ex4', 'ex5', 'ex6', 'ex7', 'ex8', 'ex9', 'ex10', 'ex11', 'ex12', 'ex13', 'ex14', 'ex15', 'ex16',
     'dp1', 'dp2', 'dp3', 'dp5', 'dp6', 'dp7',
-    'pl3', 'pl4',
+    'pl1','pl3', 'pl4',
     'hgss1', 'hgss2', 'hgss3', 'hgss4',
     'col1',
     'bw1', 'bw2', 'bw3', 'bw4', 'bw5', 'bw6', 'bw7', 'bw8', 'bw9', 'bw10', 'bw11',
@@ -74,8 +75,10 @@ const eraOrder = [
 ];
 
 let currentEra = 'all';
+let currentSearch = '';
 let allSets = [];
 let userCollectionProgress = {};
+const setElements = new Map();
 
 // ---------------------- ERA ----------------------
 
@@ -122,7 +125,7 @@ async function loadUserCollectionProgress() {
 
 function buildLogoUrl(set) {
     if (set.id === 'sv05') {
-        return '../assets/images/Temporal-Forces.webp';
+        return '/images/Temporal-Forces.webp';
     }
 
     return set.logo
@@ -155,50 +158,69 @@ function renderEraFilters() {
 // ---------------------- SETS ----------------------
 
 function renderSets() {
-    const displayedSets = currentEra === 'all'
+
+    let displayedSets = currentEra === 'all'
         ? allSets
         : allSets.filter(set => set.eraKey === currentEra);
 
-    setsGrid.innerHTML = '';
+    if (currentSearch.trim()) {
 
-    if (!displayedSets.length) {
-        setsGrid.innerHTML = '<div class="no-sets">No sets found for this era.</div>';
-        return;
+        const search = currentSearch.toLowerCase();
+
+        displayedSets = displayedSets.filter(set =>
+            set.name.toLowerCase().includes(search)
+        );
     }
 
-    displayedSets.forEach(set => {
-        const setEl = document.createElement('div');
-        setEl.className = 'set-item';
+    const visibleIds = new Set(
+        displayedSets.map(set => set.id)
+    );
 
-        const ownedCards = userCollectionProgress[set.id] || 0;
-        const totalCards = set.cardCount?.official || 0;
+    let visibleCount = 0;
 
-        const percentage = totalCards > 0
-            ? Math.round((ownedCards / totalCards) * 100)
-            : 0;
+    setElements.forEach((element, setId) => {
 
-        setEl.innerHTML = `
-            <img src="${buildLogoUrl(set)}" alt="${set.name}">
-            <div class="set-name">${set.name}</div>
-            <div class="set-progress">${ownedCards}/${totalCards}</div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width:${percentage}%"></div>
-            </div>
-        `;
+        if (visibleIds.has(setId)) {
 
-        setEl.addEventListener('click', () => {
-            window.location.href =
-                `cards.html?set=${encodeURIComponent(set.id)}`;
-        });
+            element.style.display = '';
 
-        setsGrid.appendChild(setEl);
+            visibleCount++;
+
+        } else {
+
+            element.style.display = 'none';
+        }
     });
+
+    // EMPTY STATE
+    let emptyState = document.querySelector('.no-sets');
+
+    if (visibleCount === 0) {
+
+        if (!emptyState) {
+
+            emptyState = document.createElement('div');
+
+            emptyState.className = 'no-sets';
+
+            emptyState.textContent =
+                'No matching sets found.';
+
+            setsGrid.appendChild(emptyState);
+        }
+
+    } else if (emptyState) {
+
+        emptyState.remove();
+    }
 }
 
 // ---------------------- LOAD SETS ----------------------
 
 async function loadSets() {
+
     try {
+
         const sets = await tcgdex.set.list();
 
         const filteredSets = sets.filter(set =>
@@ -217,11 +239,66 @@ async function loadSets() {
             );
 
         renderEraFilters();
+
+        setsGrid.innerHTML = '';
+
+        allSets.forEach(set => {
+
+            const setEl = document.createElement('div');
+
+            setEl.className = 'set-item';
+
+            const ownedCards =
+                userCollectionProgress[set.id] || 0;
+
+            const totalCards =
+                set.cardCount?.official || 0;
+
+            const percentage = totalCards > 0
+                ? Math.round((ownedCards / totalCards) * 100)
+                : 0;
+
+            setEl.innerHTML = `
+                <img
+                    src="${buildLogoUrl(set)}"
+                    alt="${set.name}"
+                    loading="lazy"
+                    decoding="async"
+                >
+
+                <div class="set-name">${set.name}</div>
+
+                <div class="set-progress">
+                    ${ownedCards}/${totalCards}
+                </div>
+
+                <div class="progress-bar">
+                    <div
+                        class="progress-fill"
+                        style="width:${percentage}%"
+                    ></div>
+                </div>
+            `;
+
+            setEl.addEventListener('click', () => {
+
+                window.location.href =
+                    `cards.html?set=${encodeURIComponent(set.id)}`;
+            });
+
+            setsGrid.appendChild(setEl);
+
+            setElements.set(set.id, setEl);
+        });
+
         renderSets();
 
     } catch (err) {
+
         console.error(err);
-        setsGrid.innerHTML = '<div>❌ Failed to load sets</div>';
+
+        setsGrid.innerHTML =
+            '<div>❌ Failed to load sets</div>';
     }
 }
 
@@ -229,6 +306,12 @@ async function loadSets() {
 
 async function init() {
     await loadUserCollectionProgress();
+
+    setSearch.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        renderSets();
+    });
+
     await loadSets();
 }
 

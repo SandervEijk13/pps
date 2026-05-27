@@ -12,39 +12,30 @@ const cardsGrid = document.getElementById('cardsGrid');
 const setTitle = document.getElementById('setTitle');
 const setInfo = document.getElementById('setInfo');
 
-let ownedCards = [];       // expanded list (duplicates allowed)
-let currentSetCode = '';
+let ownedCards = [];
 let currentCards = [];
+let currentSetCode = '';
 
-// -------------------- LOAD OWNED CARDS --------------------
+// ---------------- LOAD OWNED ----------------
+
 async function loadOwnedCards() {
+
     const res = await fetch(`${API}/get_cards.php`, {
         credentials: 'include'
     });
 
     const data = res.ok ? await res.json() : [];
 
-    // expand card_amount into duplicates
     ownedCards = data.flatMap(c =>
         Array(Number(c.card_amount)).fill(c.card_id)
     );
 }
 
-// -------------------- SELL (REMOVE ONE COPY) --------------------
-async function sellCard(cardId) {
-    const res = await fetch(`${API}/sell_card.php`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cardId })
-    });
+// ---------------- IMAGE ----------------
 
-    return await res.json();
-}
-
-// -------------------- IMAGE --------------------
 function imageUrl(card) {
-    if (typeof card.getImageURL === 'function') {
+
+    if (card.getImageURL) {
         return card.getImageURL('high', 'webp');
     }
 
@@ -57,120 +48,180 @@ function imageUrl(card) {
     const setCode = card.set?.code || currentSetCode;
     const cardId = card.localId || card.number;
 
-    return setCode && cardId
-        ? `https://assets.tcgdex.net/en/${setCode}/${cardId}/high.webp`
-        : '';
+    return `https://assets.tcgdex.net/en/${setCode}/${cardId}/high.webp`;
 }
 
-// -------------------- PRICE --------------------
-function priceText(card) {
-    const prices = card.pricing?.cardmarket;
-    if (!prices) return 'No pricing';
+// ---------------- PRICE ----------------
 
-    const values = [
-        prices.low,
-        prices.trend,
-        prices.avg1,
-        prices.avg7,
-        prices.avg30
-    ].filter(v => typeof v === 'number' && v > 0);
+function isRare(card) {
+    return /rare|holo|v|vmax|vstar|gx|ex|secret|gold/i
+        .test((card.rarity || '').toLowerCase());
+}
+
+function priceText(card) {
+
+    const p = card.pricing?.cardmarket;
+    if (!p) return 'No pricing';
+
+    const values = [p.low, p.trend, p.avg1, p.avg7, p.avg30]
+        .filter(v => typeof v === 'number' && v > 0);
 
     if (!values.length) return 'No pricing';
 
-    const isRareCard = isRare(card);
-
-    const price = isRareCard
-        ? Math.max(...values)   // rare → highest value
-        : Math.min(...values);  // normal → lowest value
+    const price = isRare(card)
+        ? Math.max(...values)
+        : Math.min(...values);
 
     return `€${price.toFixed(2)}`;
 }
 
-function isRare(card) {
-    const r = (card.rarity || '').toLowerCase();
-    return /rare|holo|v|vmax|vstar|gx|ex|shiny|illustration|ultra|secret|gold|rainbow|hyper/i.test(r);
+// ---------------- OWNED COUNT ----------------
+
+function getOwnedCount(id) {
+    return ownedCards.filter(x => x === id).length;
 }
 
-// -------------------- OWNED COUNT --------------------
-function getOwnedCount(cardId) {
-    return ownedCards.filter(id => id === cardId).length;
+// ---------------- SELL ----------------
+
+async function sellCard(cardId) {
+
+    const res = await fetch(`${API}/sell_card.php`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardId })
+    });
+
+    return await res.json();
 }
 
-// -------------------- RENDER CARD --------------------
+// ---------------- SEND TO MARKET ----------------
+
+window.sendToMarket = async function(cardId) {
+
+    const res = await fetch(`${API}/send_to_market.php`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardId })
+    });
+
+    const data = await res.json();
+
+    console.log("SEND TO MARKET RESPONSE:", data);
+
+    if (!data.success) {
+        alert(data.message || "Failed");
+        return;
+    }
+
+    // 🔥 DO NOT manually trust local state
+    await loadOwnedCards();   // reload from DB
+
+    rerender();
+};
+
+// ---------------- RENDER CARD ----------------
+
 function renderCard(card) {
+
     const ownedCount = getOwnedCount(card.id);
 
     const el = document.createElement('article');
-    el.className = `card-item ${ownedCount > 0 ? '' : 'missing-card'}`;
+
+    el.className = `card-item ${ownedCount ? '' : 'missing-card'}`;
 
     el.innerHTML = `
-        <div class="card-thumb">
-            <img src="${imageUrl(card)}" alt="${card.name || 'card'}">
+        <div>
+            <img src="${imageUrl(card)}" width="120">
         </div>
 
-        <div class="card-info">
-            <div class="card-name">${card.name || 'Unknown card'}</div>
-            <div class="card-rarity">${card.rarity || 'No rarity'}</div>
+        <h3>${card.name}</h3>
 
-            <div class="owned-count">
-                Owned: <strong>${ownedCount}</strong>
-            </div>
-        </div>
+        <p>${priceText(card)}</p>
 
-        <div class="card-pricing">${priceText(card)}</div>
+        <p class="rarity">
+            ${card.rarity ? `Rarity: ${card.rarity}` : 'Rarity: Unknown'}
+        </p>
+
+
+        <p>Owned: ${ownedCount}</p>
+
+        <button ${ownedCount === 0 ? 'disabled' : ''} class="sell">
+            Sell 1
+        </button>
+
+        <button ${ownedCount === 0 ? 'disabled' : ''} class="market">
+            Send to Market
+        </button>
     `;
+
+    // SELL
+    el.querySelector('.sell').onclick = async () => {
+
+        const res = await sellCard(card.id);
+
+        if (res.success) {
+            const i = ownedCards.indexOf(card.id);
+            if (i !== -1) ownedCards.splice(i, 1);
+            rerender();
+        }
+    };
+
+    // MARKET
+    el.querySelector('.market').onclick = () =>
+        sendToMarket(card.id);
 
     cardsGrid.appendChild(el);
 }
 
-// -------------------- RERENDER --------------------
+// ---------------- RERENDER ----------------
+
 function rerender() {
     cardsGrid.innerHTML = '';
     currentCards.forEach(renderCard);
     updateSetInfo();
 }
 
-// -------------------- SET INFO --------------------
-function updateSetInfo() {
-    const ownedSet = new Set(ownedCards);
-    const ownedCount = currentCards.filter(c => ownedSet.has(c.id)).length;
+// ---------------- SET INFO ----------------
 
-    setInfo.textContent = `${ownedCount}/${currentCards.length} cards collected`;
+function updateSetInfo() {
+
+    const ownedSet = new Set(ownedCards);
+
+    const ownedCount = currentCards.filter(c =>
+        ownedSet.has(c.id)
+    ).length;
+
+    setInfo.textContent =
+        `${ownedCount}/${currentCards.length} collected`;
 }
 
-// -------------------- LOAD SET --------------------
+// ---------------- LOAD SET ----------------
+
 async function loadSet() {
+
     const setId = new URLSearchParams(window.location.search).get('set');
 
-    if (!setId) {
-        setTitle.textContent = 'No set selected';
-        return;
-    }
+    if (!setId) return;
 
-    setTitle.textContent = `Loading ${setId}...`;
-    cardsGrid.innerHTML = '<div class="loading">Loading cards...</div>';
+    setTitle.textContent = 'Loading...';
 
-    try {
-        await loadOwnedCards();
+    await loadOwnedCards();
 
-        const set = await tcgdex.fetch('sets', setId);
-        currentSetCode = set.code || set.id;
+    const set = await tcgdex.fetch('sets', setId);
 
-        currentCards = await Promise.all(
-            set.cards.map(c =>
-                c.getCard ? c.getCard() : tcgdex.card.get(c.id)
-            )
-        );
+    currentSetCode = set.code || set.id;
 
-        setTitle.textContent = set.name || setId;
+    currentCards = await Promise.all(
+        set.cards.map(c =>
+            c.getCard ? c.getCard() : tcgdex.card.get(c.id)
+        )
+    );
 
-        rerender();
+    setTitle.textContent = set.name;
 
-    } catch (err) {
-        console.error(err);
-        setTitle.textContent = 'Unable to load cards';
-        cardsGrid.innerHTML = '<div class="no-sets">Failed loading cards.</div>';
-    }
+    rerender();
 }
 
 loadSet();

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCG Pack Opener</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #pack {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: #222;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎴 TCG Pack Opener</h1>
+
+  <input id="setInput" type="text" placeholder="Enter set code (e.g. sv1)" />
+  <button id="openBtn">Open Pack</button>
+
+  <div id="pack"></div>
+
+  <script type="module" src="/scripts/card_logic.js"></script>
+
+  <script type="module">
+    import { openPack } from '/scripts/card_logic.js';
+
+    const input = document.getElementById('setInput');
+    const button = document.getElementById('openBtn');
+    const packDiv = document.getElementById('pack');
+
+    function renderPack(cards) {
+      packDiv.innerHTML = '';
+
+      cards.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'card';
+
+        div.innerHTML = `
+          <img src="${card.image}" alt="${card.name}" />
+          <h3>${card.name}</h3>
+          <p>${card.rarity}</p>
+        `;
+
+        packDiv.appendChild(div);
+      });
+    }
+
+    button.addEventListener('click', async () => {
+      const setCode = input.value.trim();
+
+      if (!setCode) {
+        alert('Please enter a set code');
+        return;
+      }
+
+      try {
+        console.log('Opening pack for set:', setCode);
+
+        const pack = await openPack(setCode);
+
+        console.log('Pack opened:', pack);
+
+        renderPack(pack);
+      } catch (err) {
+        console.error('Error opening pack:', err);
+        alert('Failed to open pack. Check console for details.');
+      }
+    });
+  </script>
+
+</body>
+</html>
