@@ -12,7 +12,10 @@ const API = window.location.port === '5173'
 
 let marketCards = [];
 let currentUserId = null;
+let ownedCards = [];
+
 const cardCache = new Map();
+const setCache = new Map();
 
 // ---------------- DEBUG ----------------
 
@@ -35,6 +38,21 @@ async function loadUser() {
     currentUserId = data.user_id;
 }
 
+// ---------------- OWNED CARDS ----------------
+
+async function loadOwnedCards() {
+
+    const res = await fetch(`${API}/get_collection.php`, {
+        credentials: 'include'
+    });
+
+    const data = await res.json();
+
+    log("OWNED CARDS:", data);
+
+    ownedCards = data.data || data || [];
+}
+
 // ---------------- MARKET DATA ----------------
 
 async function loadMarket() {
@@ -47,7 +65,7 @@ async function loadMarket() {
 
     log("RAW MARKET:", data);
 
-    marketCards = data.data || data;
+    marketCards = data.data || data || [];
 
     log("PARSED MARKET:", marketCards);
 
@@ -63,6 +81,7 @@ async function getCard(cardId) {
     }
 
     try {
+
         const card = await tcgdex.card.get(cardId);
 
         cardCache.set(cardId, card);
@@ -77,24 +96,97 @@ async function getCard(cardId) {
     }
 }
 
+// ---------------- SET CACHE ----------------
+
+async function getSetData(setId) {
+
+    if (setCache.has(setId)) {
+        return setCache.get(setId);
+    }
+
+    try {
+
+        const data = await tcgdex.set.get(setId);
+
+        setCache.set(setId, data);
+
+        return data;
+
+    } catch (err) {
+
+        console.error("❌ SET FETCH FAIL:", setId, err);
+
+        return null;
+    }
+}
+
 // ---------------- IMAGE ----------------
 
 function imageUrl(card) {
-    console.log("CARD FOR IMAGE:", card);
+
     if (!card) return '';
 
     if (card.image) {
+
         return card.image.startsWith('http')
             ? card.image
-            : `https://assets.tcgdex.net/en/${setCode}/${cardId}/high.webp`;
+            : card.image;
     }
 
     return '';
 }
 
-// ---------------- PRICE (SAME AS YOUR CARD PAGE) ----------------
+// ---------------- OWNERSHIP ----------------
+
+function ownsCard(cardId) {
+
+    return ownedCards.some(c => c.card_id === cardId);
+}
+
+// ---------------- SET PROGRESS ----------------
+
+async function getSetProgress(card) {
+
+    if (!card?.set?.id) {
+        return null;
+    }
+
+    try {
+
+        const setData = await getSetData(card.set.id);
+
+        if (!setData) {
+            return null;
+        }
+
+        const totalCards = setData.cardCount?.total || 0;
+
+        const ownedInSet = ownedCards.filter(c =>
+            c.card_id.startsWith(card.set.id)
+        ).length;
+
+        const percentage = totalCards > 0
+            ? Math.round((ownedInSet / totalCards) * 100)
+            : 0;
+
+        return {
+            total: totalCards,
+            owned: ownedInSet,
+            percentage
+        };
+
+    } catch (err) {
+
+        console.error("❌ SET PROGRESS ERROR:", err);
+
+        return null;
+    }
+}
+
+// ---------------- PRICE ----------------
 
 function isRare(card) {
+
     return /rare|holo|v|vmax|vstar|gx|ex|secret|gold/i
         .test((card.rarity || '').toLowerCase());
 }
@@ -134,12 +226,15 @@ function formatPrice(card) {
 async function renderMarketplace() {
 
     const el = document.getElementById('marketplace');
+
     el.innerHTML = '';
 
     log("RENDER START");
 
     if (!marketCards.length) {
+
         el.innerHTML = '<p>No cards in market</p>';
+
         return;
     }
 
@@ -150,49 +245,109 @@ async function renderMarketplace() {
         const card = await getCard(item.card_id);
 
         if (!card) {
+
             log("SKIP MISSING CARD:", item.card_id);
+
             continue;
         }
 
         const isOwner = item.user_id == currentUserId;
 
+        const alreadyOwned = ownsCard(item.card_id);
+
+        const setProgress = await getSetProgress(card);
+
         const div = document.createElement('div');
-        div.className = 'card';
+
+        div.className = isOwner
+            ? 'card own-card'
+            : 'card';
 
         div.innerHTML = `
-            <img src="${imageUrl(card)}/high.webp" width="120" style="border-radius:8px;">
+            <img 
+                src="${imageUrl(card)}/high.webp" 
+                width="120" 
+                style="border-radius:8px;"
+            >
+
             <h3>${card.name || 'Unknown'}</h3>
 
-            <p>${formatPrice(card)}</p>
+            <p class="seller">
+                Listed by: ${item.username || 'Unknown'}
+            </p>
+
+            <p class="price">
+                ${formatPrice(card)}
+            </p>
+
+            <p class="owned-status">
+                ${alreadyOwned
+                    ? '✅ Already owned'
+                    : '❌ Missing'}
+            </p>
+
+            <p class="set-name">
+                Set: ${card.set?.name || 'Unknown'}
+            </p>
+
+            <p class="set-progress">
+                ${
+                    setProgress
+                        ? `Set Progress: ${setProgress.owned}/${setProgress.total} (${setProgress.percentage}%)`
+                        : 'Set Progress: Unknown'
+                }
+            </p>
 
             <button ${isOwner ? 'disabled' : ''}>
                 ${isOwner ? 'Your listing' : 'Buy'}
             </button>
         `;
 
-        div.querySelector('button').onclick = async () => {
+        const button = div.querySelector('button');
+
+        button.onclick = async () => {
 
             if (isOwner) {
+
                 log("BLOCKED OWN BUY");
+
                 return;
             }
 
-            const res = await fetch(`${API}/buy_from_market.php`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    cardId: item.card_id,
-                    sellerId: item.user_id
-                })
-            });
+            try {
 
-            const data = await res.json();
+                const res = await fetch(`${API}/buy_from_market.php`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        marketId: item.id,
+                        cardId: item.card_id,
+                        sellerId: item.user_id
+                    })
+                });
 
-            log("BUY RESULT:", data);
+                const data = await res.json();
 
-            if (data.success) {
-                loadMarket();
+                log("BUY RESULT:", data);
+
+                if (data.success) {
+
+                    await loadOwnedCards();
+                    await loadMarket();
+
+                } else {
+
+                    alert(data.error || 'Purchase failed');
+                }
+
+            } catch (err) {
+
+                console.error("❌ BUY ERROR:", err);
+
+                alert('Server error');
             }
         };
 
@@ -209,11 +364,15 @@ async function renderMarketplace() {
         log("START");
 
         await loadUser();
+
+        await loadOwnedCards();
+
         await loadMarket();
 
         log("READY");
 
     } catch (err) {
+
         console.error("❌ MARKET ERROR:", err);
     }
 

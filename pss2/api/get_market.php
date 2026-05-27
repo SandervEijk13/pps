@@ -7,7 +7,17 @@ header("Access-Control-Allow-Credentials: true");
 require 'db.php';
 
 $stmt = $pdo->query("
-    SELECT * FROM marketplace
+    SELECT 
+        marketplace.*,
+        users.username
+    FROM marketplace
+    JOIN users 
+        ON users.id = marketplace.user_id
 ");
 
-echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+echo json_encode([
+    "success" => true,
+    "data" => $data
+]);

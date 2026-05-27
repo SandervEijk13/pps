@@ -1,11 +1,19 @@
 <?php
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin === 'http://localhost:5173' || strpos($origin, 'http://localhost') === 0) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
+session_start();
 require "db.php";
 
 $action = $_GET['action'] ?? '';
@@ -18,7 +26,12 @@ switch ($action) {
     case 'removeCoins':
         removeCoins($pdo);
         break;
-    // more cases for more actions!
+    case 'addCoins':
+        addCoins($pdo);
+        break;
+    case 'instaSell':
+        instaSell($pdo);
+        break;
 
     default:
         echo json_encode([
@@ -46,7 +59,7 @@ function getCoins($pdo)
 
         echo json_encode([
             "success" => true,
-            "coins" => $result['user_coins']
+            "coins" => round((float) $result['user_coins'], 2)
         ]);
 
     } else {
@@ -61,10 +74,71 @@ function getCoins($pdo)
 
 function removeCoins($pdo)
 {
-    $input = json_decode(file_get_contents("php://input"), true);
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Not logged in"
+        ]);
+        return;
+    }
 
-    $id = $input['id'] ?? 0;
-    $amount = $input['amount'] ?? 0;
+    $input = json_decode(file_get_contents("php://input"), true) ?: [];
+    $amount = round((float) ($input['amount'] ?? 0), 2);
+    $userId = (int) $_SESSION['user_id'];
+
+    if ($amount <= 0) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid data"
+        ]);
+        return;
+    }
+
+    $stmt = $pdo->prepare("SELECT user_coins FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $row = $stmt->fetch();
+
+    if (!$row) {
+        echo json_encode([
+            "success" => false,
+            "message" => "User not found"
+        ]);
+        return;
+    }
+
+    $balance = (float) $row['user_coins'];
+    if ($balance < $amount) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Not enough coins",
+            "coins" => round($balance, 2)
+        ]);
+        return;
+    }
+
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET user_coins = user_coins - ?
+        WHERE id = ?
+    ");
+    $stmt->execute([$amount, $userId]);
+
+    $stmt = $pdo->prepare("SELECT user_coins FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $result = $stmt->fetch();
+
+    echo json_encode([
+        "success" => true,
+        "coins" => round((float) ($result['user_coins'] ?? 0), 2)
+    ]);
+}
+
+function addCoins($pdo)
+{
+    $input = json_decode(file_get_contents("php://input"), true) ?: [];
+
+    $id = (int) ($input['id'] ?? ($_SESSION['user_id'] ?? 0));
+    $amount = (int) ($input['amount'] ?? 0);
 
     if (!$id || $amount <= 0) {
         echo json_encode([
@@ -74,27 +148,74 @@ function removeCoins($pdo)
         return;
     }
 
-    // subtract directly in SQL (BEST way)
     $stmt = $pdo->prepare("
         UPDATE users
-        SET user_coins = user_coins - ?
+        SET user_coins = user_coins + ?
         WHERE id = ?
     ");
-
     $stmt->execute([$amount, $id]);
 
-    // fetch updated value
-    $stmt = $pdo->prepare("
-        SELECT user_coins
-        FROM users
-        WHERE id = ?
-    ");
-
+    $stmt = $pdo->prepare("SELECT user_coins FROM users WHERE id = ?");
     $stmt->execute([$id]);
     $result = $stmt->fetch();
 
     echo json_encode([
         "success" => true,
-        "coins" => $result['user_coins']
+        "coinsAdded" => $amount,
+        "coins" => $result['user_coins'] ?? 0
+    ]);
+}
+
+/**
+ * Direct verkopen na pack pull: kaartwaarde - 20% (= 80%) als coins.
+ */
+function instaSell($pdo)
+{
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Not logged in"
+        ]);
+        return;
+    }
+
+    $input = json_decode(file_get_contents("php://input"), true) ?: [];
+    $cardValue = (float) ($input['cardValue'] ?? 0);
+
+    if ($cardValue <= 0) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid card value"
+        ]);
+        return;
+    }
+
+    $userId = (int) $_SESSION['user_id'];
+    $coinsAdded = round($cardValue * 0.8, 2);
+
+    if ($coinsAdded <= 0) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Sell value too low"
+        ]);
+        return;
+    }
+
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET user_coins = user_coins + ?
+        WHERE id = ?
+    ");
+    $stmt->execute([$coinsAdded, $userId]);
+
+    $stmt = $pdo->prepare("SELECT user_coins FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $result = $stmt->fetch();
+
+    echo json_encode([
+        "success" => true,
+        "coinsAdded" => $coinsAdded,
+        "coins" => round((float) ($result['user_coins'] ?? 0), 2),
+        "message" => "Card sold instantly"
     ]);
 }

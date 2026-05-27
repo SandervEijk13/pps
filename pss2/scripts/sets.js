@@ -92,22 +92,31 @@ function getEraKey(setId) {
 // ---------------------- COLLECTION (FIXED) ----------------------
 
 async function loadUserCollectionProgress() {
+
     const res = await fetch(`${API}/get_cards.php`, {
         credentials: 'include'
     });
 
     const data = res.ok ? await res.json() : [];
 
-    // expand duplicates like cards page
-    const ownedCards = data.flatMap(c =>
-        Array(Number(c.card_amount)).fill(c.card_id)
-    );
-
     userCollectionProgress = {};
 
-    for (const cardId of ownedCards) {
+    // track unique card ids globally
+    const uniqueCardIds = new Set();
+
+    for (const cardEntry of data) {
+
+        // skip duplicates
+        if (uniqueCardIds.has(cardEntry.card_id)) {
+            continue;
+        }
+
+        uniqueCardIds.add(cardEntry.card_id);
+
         try {
-            const card = await tcgdex.card.get(cardId);
+
+            const card = await tcgdex.card.get(cardEntry.card_id);
+
             const setId = card?.set?.id;
 
             if (!setId) continue;
@@ -116,6 +125,7 @@ async function loadUserCollectionProgress() {
                 (userCollectionProgress[setId] || 0) + 1;
 
         } catch (e) {
+
             // ignore missing cards
         }
     }

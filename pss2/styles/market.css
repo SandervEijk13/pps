@@ -1,0 +1,113 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.section {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 1;
+    min-width: 320px;
+}
+
+.card {
+    background: #2b2b2b;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.card img {
+    width: 120px;
+    border-radius: 8px;
+}
+
+button {
+    background: #00aaff;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background: #0088cc;
+}
+
+.balance {
+    font-size: 22px;
+    color: #00ff88;
+}
+
+.missing-card {
+    opacity: 0.5;
+}
+
+.card {
+    background: #1f1f1f;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.card.own-card {
+    background: linear-gradient(180deg, #1d4d28, #17351d);
+    border: 2px solid #57ff57;
+    box-shadow: 0 0 12px rgba(87, 255, 87, 0.35);
+}
+
+.card img {
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    margin: 8px 0;
+    color: white;
+}
+
+.seller {
+    color: #bdbdbd;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.price {
+    color: #ffd54f;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.card button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.card button:disabled {
+    background: #666;
+    cursor: not-allowed;
+}

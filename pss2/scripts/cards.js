@@ -58,19 +58,32 @@ function isRare(card) {
         .test((card.rarity || '').toLowerCase());
 }
 
-function priceText(card) {
+function getCardPrice(card) {
 
     const p = card.pricing?.cardmarket;
-    if (!p) return 'No pricing';
 
-    const values = [p.low, p.trend, p.avg1, p.avg7, p.avg30]
-        .filter(v => typeof v === 'number' && v > 0);
+    if (!p) return 0;
 
-    if (!values.length) return 'No pricing';
+    const values = [
+        p.low,
+        p.trend,
+        p.avg1,
+        p.avg7,
+        p.avg30
+    ].filter(v => typeof v === 'number' && v > 0);
 
-    const price = isRare(card)
+    if (!values.length) return 0;
+
+    return isRare(card)
         ? Math.max(...values)
         : Math.min(...values);
+}
+
+function priceText(card) {
+
+    const price = getCardPrice(card);
+
+    if (!price) return 'No pricing';
 
     return `€${price.toFixed(2)}`;
 }
@@ -97,13 +110,21 @@ async function sellCard(cardId) {
 
 // ---------------- SEND TO MARKET ----------------
 
-window.sendToMarket = async function(cardId) {
+window.sendToMarket = async function(card) {
+
+    const cardPrice = getCardPrice(card);
 
     const res = await fetch(`${API}/send_to_market.php`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cardId })
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+            cardId: card.id,
+            cardprice: cardPrice
+        })
     });
 
     const data = await res.json();
@@ -115,8 +136,8 @@ window.sendToMarket = async function(cardId) {
         return;
     }
 
-    // 🔥 DO NOT manually trust local state
-    await loadOwnedCards();   // reload from DB
+    // Reload inventory from DB
+    await loadOwnedCards();
 
     rerender();
 };
@@ -144,7 +165,6 @@ function renderCard(card) {
             ${card.rarity ? `Rarity: ${card.rarity}` : 'Rarity: Unknown'}
         </p>
 
-
         <p>Owned: ${ownedCount}</p>
 
         <button ${ownedCount === 0 ? 'disabled' : ''} class="sell">
@@ -163,14 +183,18 @@ function renderCard(card) {
 
         if (res.success) {
             const i = ownedCards.indexOf(card.id);
-            if (i !== -1) ownedCards.splice(i, 1);
+
+            if (i !== -1) {
+                ownedCards.splice(i, 1);
+            }
+
             rerender();
         }
     };
 
     // MARKET
     el.querySelector('.market').onclick = () =>
-        sendToMarket(card.id);
+        sendToMarket(card);
 
     cardsGrid.appendChild(el);
 }
@@ -178,8 +202,11 @@ function renderCard(card) {
 // ---------------- RERENDER ----------------
 
 function rerender() {
+
     cardsGrid.innerHTML = '';
+
     currentCards.forEach(renderCard);
+
     updateSetInfo();
 }
 
@@ -215,7 +242,9 @@ async function loadSet() {
 
     currentCards = await Promise.all(
         set.cards.map(c =>
-            c.getCard ? c.getCard() : tcgdex.card.get(c.id)
+            c.getCard
+                ? c.getCard()
+                : tcgdex.card.get(c.id)
         )
     );
 

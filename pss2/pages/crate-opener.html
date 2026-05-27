@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crate Opener | PokeVault</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="../styles/index.css" />
+  <style>
+    /* ===== Basis / donkere gaming UI ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a12;
+      --panel: #12121f;
+      --border: rgba(139, 92, 246, 0.25);
+      --text: #e8e8f0;
+      --muted: #8888a8;
+      --accent: #8b5cf6;
+      --accent2: #3b82f6;
+      --card-w: 200px;
+      --card-gap: 16px;
+      --reel-img: 140px;
+      --card-step: calc(var(--card-w) + var(--card-gap));
+      /* Rarity kleuren */
+      --common: #9ca3af;
+      --rare: #3b82f6;
+      --epic: #a855f7;
+      --legendary: #f59e0b;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      overflow-x: hidden;
+      background: var(--bg);
+      padding-top: 0;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.2), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(59, 130, 246, 0.12), transparent);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    .page-content {
+      padding: 24px 16px 48px;
+    }
+
+    .wrap { max-width: 1200px; margin: 0 auto; }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #c4b5fd, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* ===== Crate lijst ===== */
+    .crate-list {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .crate-list h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+
+    .crate-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 6px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .crate-btn:hover { background: rgba(139, 92, 246, 0.1); }
+    .crate-btn.active {
+      border-color: var(--accent);
+      background: rgba(139, 92, 246, 0.15);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .crate-btn img {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .crate-btn .info { flex: 1; min-width: 0; }
+    .crate-btn .name { font-weight: 600; font-size: 0.9rem; }
+    .crate-btn .price { font-size: 0.75rem; color: var(--muted); }
+
+    /* ===== Hoofd paneel ===== */
+    .main-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .crate-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .crate-header h2 { font-size: 1.25rem; }
+
+  .open-btn {
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 4px 24px rgba(139, 92, 246, 0.35);
+      transition: transform 0.15s, opacity 0.2s;
+    }
+
+    .open-btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .open-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Verborgen tot je opent */
+    .crate-list.is-hidden {
+      display: none;
+    }
+
+    .reel-wrap.is-hidden {
+      display: none;
+    }
+
+    /* ===== Reel viewport — groot tijdens openen ===== */
+    .reel-wrap {
+      position: relative;
+      margin: 0 -12px 24px;
+      padding: 36px 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.5), rgba(20,20,40,0.75));
+      min-height: 320px;
+      border: 1px solid var(--border);
+      box-shadow: inset 0 0 60px rgba(139, 92, 246, 0.08);
+    }
+
+    /* Vignette links/rechts */
+    .reel-wrap::before,
+    .reel-wrap::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .reel-wrap::before {
+      left: 0;
+      background: linear-gradient(90deg, var(--panel), transparent);
+    }
+    .reel-wrap::after {
+      right: 0;
+      background: linear-gradient(-90deg, var(--panel), transparent);
+    }
+
+    /* Midden indicator — alleen zichtbaar tijdens/na openen */
+    .center-marker {
+      position: absolute;
+      left: 50%;
+      top: 12px;
+      bottom: 12px;
+      width: 4px;
+      transform: translateX(-50%);
+      z-index: 3;
+      background: linear-gradient(180deg, transparent, #fff, transparent);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .center-marker.is-visible {
+      opacity: 1;
+    }
+
+    .center-marker::before,
+    .center-marker::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 10px solid transparent;
+    }
+    .center-marker::before {
+      top: 0;
+      border-bottom-color: rgba(255, 255, 255, 0.85);
+    }
+    .center-marker::after {
+      bottom: 0;
+      border-top-color: rgba(255, 255, 255, 0.85);
+    }
+
+    .reel-viewport {
+      overflow: hidden;
+      width: 100%;
+      max-width: 100%;
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+    }
+
+    .reel-track {
+      display: flex;
+      gap: var(--card-gap);
+      padding: 12px 0;
+      will-change: transform;
+      align-items: stretch;
+    }
+
+    /* Spacers i.p.v. padding — voorkomt dat eerste kaart groter lijkt */
+    .reel-spacer {
+      flex: 0 0 calc(50% - var(--card-w) / 2);
+      width: calc(50% - var(--card-w) / 2);
+      min-width: calc(50% - var(--card-w) / 2);
+      max-width: calc(50% - var(--card-w) / 2);
+      height: 1px;
+      pointer-events: none;
+    }
+
+    /* Geen transition = startpositie; .spinning krijgt lange ease-out */
+    .reel-track.spinning {
+      transition: transform 5.5s cubic-bezier(0.12, 0.75, 0.18, 1);
+    }
+
+    /* ===== Item cards (CS:GO stijl) ===== */
+    .item-card {
+      flex: 0 0 var(--card-w);
+      flex-shrink: 0;
+      width: var(--card-w);
+      min-width: var(--card-w);
+      height: 260px;
+      border-radius: 10px;
+      border-width: 3px;
+      background: linear-gradient(145deg, #1a1a28, #0f0f18);
+      border: 2px solid var(--rarity-color, var(--common));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, var(--rarity-glow, transparent), transparent 70%);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .item-card img {
+      width: var(--reel-img);
+      height: var(--reel-img);
+      max-width: var(--reel-img);
+      max-height: var(--reel-img);
+      object-fit: contain;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+      pointer-events: none;
+    }
+
+    .item-card .iname {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.2;
+      max-height: 2.4em;
+      overflow: hidden;
+    }
+
+    .item-card .irarity {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+      color: var(--rarity-color, var(--common));
+    }
+
+    .item-card.rarity-common { --rarity-color: var(--common); --rarity-glow: rgba(156,163,175,0.3); }
+    .item-card.rarity-rare { --rarity-color: var(--rare); --rarity-glow: rgba(59,130,246,0.4); }
+    .item-card.rarity-epic { --rarity-color: var(--epic); --rarity-glow: rgba(168,85,247,0.45); }
+    .item-card.rarity-legendary {
+      --rarity-color: var(--legendary);
+      --rarity-glow: rgba(245,158,11,0.5);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+    }
+
+    /* Winnaar highlight na stop */
+    .item-card.is-winner {
+      animation: winner-pulse 1.2s ease-in-out 2;
+    }
+
+    @keyframes winner-pulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+      50% { box-shadow: 0 0 24px var(--rarity-color); }
+    }
+
+    /* ===== Grote wheel tijdens openen (fullscreen breedte) ===== */
+    body.reel-active {
+      overflow-x: hidden;
+    }
+
+    body.reel-active .layout {
+      display: block;
+    }
+
+    body.reel-active .crate-list,
+    body.reel-active .pack-preview,
+    body.reel-active .pick-hint,
+    body.reel-active .crate-header {
+      display: none !important;
+    }
+
+    body.reel-active .wrap {
+      max-width: none;
+      width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    body.reel-active .main-panel {
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+
+    body.reel-active .reel-wrap {
+      display: block !important;
+      width: 100vw;
+      max-width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      min-height: 420px;
+      padding: 48px 0;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+
+    body.reel-active .reel-viewport {
+      min-height: 360px;
+    }
+
+    body.reel-active .reel-track {
+      gap: 20px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    body.reel-active .reel-spacer {
+      flex: 0 0 calc(50vw - 120px) !important;
+      width: calc(50vw - 120px) !important;
+      min-width: calc(50vw - 120px) !important;
+      max-width: calc(50vw - 120px) !important;
+    }
+
+    body.reel-active .reel-track .item-card {
+      width: 240px !important;
+      min-width: 240px !important;
+      max-width: 240px !important;
+      height: 330px !important;
+      flex: 0 0 240px !important;
+      padding: 14px;
+    }
+
+    body.reel-active .reel-track .item-card img {
+      width: 200px !important;
+      height: 200px !important;
+      max-width: 200px !important;
+      max-height: 200px !important;
+    }
+
+    body.reel-active .reel-track .item-card .iname {
+      font-size: 0.85rem;
+    }
+
+    body.reel-active .center-marker {
+      opacity: 1;
+      width: 5px;
+    }
+
+    /* ===== Resultaat ===== */
+    .result {
+      display: none;
+      text-align: center;
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    .result.visible { display: block; }
+
+    .result h3 { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+
+    .result-card-img {
+      width: 120px;
+      height: auto;
+      max-height: 168px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .result .win-name { font-size: 1.35rem; font-weight: 700; }
+    .result .win-set {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .result .win-rarity {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .result .win-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #86efac;
+      margin-top: 10px;
+    }
+
+    .status { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; margin-top: 8px; }
+
+    .pick-hint {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .pick-hint.is-hidden { display: none; }
+
+    /* Preview: alle packbare kaarten, 5 per rij */
+    .pack-preview {
+      margin-bottom: 20px;
+    }
+
+    .pack-preview.is-hidden { display: none; }
+
+    .pack-preview h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .pack-preview h3 span {
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .pack-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .pack-preview-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .pack-preview-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .preview-card {
+      background: linear-gradient(145deg, #1a1a28, #0f0f18);
+      border: 1px solid var(--rarity-color, var(--common));
+      border-radius: 6px;
+      padding: 6px;
+      text-align: center;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .preview-card img {
+      width: 100%;
+      height: 88px;
+      max-height: 88px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 4px;
+    }
+
+    .preview-card .pname {
+      display: block;
+      font-size: 0.6rem;
+      line-height: 1.2;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .preview-card .pprice {
+      display: block;
+      font-size: 0.55rem;
+      color: #86efac;
+      margin-top: 2px;
+    }
+
+    .preview-card.rarity-common { --rarity-color: var(--common); }
+    .preview-card.rarity-rare { --rarity-color: var(--rare); }
+    .preview-card.rarity-epic { --rarity-color: var(--epic); }
+    .preview-card.rarity-legendary { --rarity-color: var(--legendary); }
+
+    .pack-preview-empty {
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 12px 0;
+    }
+
+    /* ===== Pull popup ===== */
+    .pull-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .pull-modal.is-open {
+      display: flex;
+    }
+
+    .pull-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+    }
+
+    .pull-modal-box {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 380px;
+      padding: 28px 24px;
+      border-radius: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .pull-modal-box h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.35;
+    }
+
+    .pull-modal-box h2 span {
+      color: #c4b5fd;
+    }
+
+    .pull-modal-img {
+      width: 160px;
+      height: 220px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      display: block;
+      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+    }
+
+    .pull-modal-rarity {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .pull-modal-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #86efac;
+      margin-bottom: 6px;
+    }
+
+    .pull-modal-sell {
+      font-size: 1rem;
+      color: #fcd34d;
+      margin-bottom: 20px;
+    }
+
+    .pull-modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .pull-modal-actions button {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.2s;
+    }
+
+  .btn-sell {
+      color: #fff;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+    }
+
+    .btn-inventory {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .pull-modal-actions button:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <a href="../index.html"><span class="logo-text">PokeVault</span></a>
+      </div>
+
+      <div class="nav-links">
+        <a href="market.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Market</span>
+        </a>
+        <a href="crate-opener.html" class="nav-link">
+          <i class="fas fa-box-open"></i>
+          <span>Packs</span>
+        </a>
+        <a href="sets.html" class="nav-link">
+          <i class="fas fa-layer-group"></i>
+          <span>Collection</span>
+        </a>
+      </div>
+
+      <div class="right-actions">
+        <div class="coin-widget">
+          <div class="coin-icon">
+            <img src="../images/pokecoin.png" alt="PokeCoin" class="coin-img" />
+          </div>
+          <span id="coin-amount">0</span>
+        </div>
+
+        <div class="user-profile" id="userProfile">
+          <div class="avatar-icon">
+            <i class="fas fa-user-astronaut"></i>
+          </div>
+          <span class="user-name">Trainer</span>
+          <i class="fas fa-chevron-down dropdown-icon"></i>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="#" class="dropdown-item" id="profileAction">
+              <i class="fas fa-user"></i>
+              <span id="profileActionText">Profile</span>
+            </a>
+            <a href="#" class="dropdown-item" id="authAction">
+              <i class="fas fa-right-to-bracket"></i>
+              <span id="authActionText">Login</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="page-content">
+  <div class="wrap">
+    <h1>Crate Opener</h1>
+    <p class="subtitle" id="setSubtitle">Kaarten worden geladen via TCGdex…</p>
+
+    <div class="layout">
+      <aside class="crate-list" id="crateList">
+        <h2>Packs</h2>
+        <div id="crateButtons"></div>
+      </aside>
+
+      <main class="main-panel">
+        <div class="crate-header">
+          <h2 id="selectedCrateName">Kies een crate</h2>
+          <button type="button" class="open-btn" id="openBtn">Open crate</button>
+        </div>
+
+        <p class="pick-hint" id="pickHint">Kies een pack links en klik Open crate.</p>
+
+        <section class="pack-preview" id="packPreview">
+          <h3>Mogelijke pulls — <span id="packPreviewCount">0 kaarten</span></h3>
+          <div class="pack-preview-grid" id="packPreviewGrid"></div>
+          <p class="pack-preview-empty is-hidden" id="packPreviewEmpty">Geen kaarten in dit pack voor deze set.</p>
+        </section>
+
+        <div class="reel-wrap is-hidden" id="reelWrap">
+          <div class="center-marker" id="centerMarker" aria-hidden="true"></div>
+          <div class="reel-viewport">
+            <div class="reel-track" id="reelTrack"></div>
+          </div>
+        </div>
+
+        <p class="status" id="status"></p>
+      </main>
+    </div>
+  </div>
+</div>
+
+  <!-- Popup na win -->
+  <div class="pull-modal" id="pullModal" aria-hidden="true">
+    <div class="pull-modal-backdrop" id="pullModalBackdrop"></div>
+    <div class="pull-modal-box">
+      <h2>You have pulled a <span id="modalCardName">—</span></h2>
+      <img class="pull-modal-img" id="modalCardImg" alt="" />
+      <p class="pull-modal-rarity" id="modalCardRarity">—</p>
+      <p class="pull-modal-price" id="modalCardPrice">—</p>
+      <p class="pull-modal-sell" id="modalSellPrice">—</p>
+      <div class="pull-modal-actions">
+        <button type="button" class="btn-sell" id="btnSell">Sell</button>
+        <button type="button" class="btn-inventory" id="btnInventory">Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Kaarten + 3 packs komen uit card_logic.js (TCGdex, zelfde als opener/shop)
+    import {
+      buildReelCrates,
+      delay,
+      formatCardPrice,
+      formatCoinsAmount,
+      formatHeaderCoins,
+      getSellCoinsAmount,
+      preloadImageUrls
+    } from '/scripts/card_logic.js';
+
+    async function loadCrates(onProgress) {
+      const data = await buildReelCrates(onProgress);
+      const sub = document.getElementById('setSubtitle');
+      if (data.setCode === 'multi') {
+        sub.textContent =
+          `50 kaarten per pack (Ultra Rare: 80) · ?refresh=1 voor nieuwe pools`;
+      } else {
+        sub.textContent = `Set: ${data.setName} (${data.setCode}) · vaste pools`;
+      }
+      return data.crates;
+    }
+
+    // =============================================================================
+    // CONFIG reel animatie
+    // =============================================================================
+    const REEL_TOTAL = 55;       // aantal cards in de strip
+    const WIN_INDEX = 48;        // index in strip (moet < REEL_TOTAL)
+    const SPIN_MS = 5500;        // moet matchen met CSS transition duur
+    const OPEN_PACK_DELAY_MS = 600; // wacht tot reel-afbeeldingen geladen zijn
+
+    const PULLED_IDS_KEY = "pss-pulled-card-ids";
+    const LAST_PULL_KEY = "pss-last-pull";
+
+    function getApiBase() {
+      if (window.location.port === "5173") {
+        return "http://localhost/pss/api";
+      }
+      const parts = window.location.pathname.split("/");
+      const pagesIndex = parts.indexOf("pages");
+      const rootParts = pagesIndex >= 0 ? parts.slice(0, pagesIndex) : parts.slice(0, -1);
+      const root = rootParts.join("/") || "";
+      return `${window.location.origin}${root}/api`;
+    }
+
+    const API = getApiBase();
+
+    // =============================================================================
+    // STATE
+    // =============================================================================
+    let allCrates = [];
+    let selectedCrate = null;
+    let isSpinning = false;
+
+    const crateListEl = document.getElementById("crateList");
+    const crateButtonsEl = document.getElementById("crateButtons");
+    const selectedCrateNameEl = document.getElementById("selectedCrateName");
+    const openBtn = document.getElementById("openBtn");
+    const pickHintEl = document.getElementById("pickHint");
+    const packPreviewEl = document.getElementById("packPreview");
+    const packPreviewGrid = document.getElementById("packPreviewGrid");
+    const packPreviewCount = document.getElementById("packPreviewCount");
+    const packPreviewEmpty = document.getElementById("packPreviewEmpty");
+    const reelWrapEl = document.getElementById("reelWrap");
+    const centerMarkerEl = document.getElementById("centerMarker");
+    const reelTrack = document.getElementById("reelTrack");
+    const statusEl = document.getElementById("status");
+    const pullModal = document.getElementById("pullModal");
+    const pullModalBackdrop = document.getElementById("pullModalBackdrop");
+    const modalCardName = document.getElementById("modalCardName");
+    const modalCardImg = document.getElementById("modalCardImg");
+    const modalCardRarity = document.getElementById("modalCardRarity");
+    const modalCardPrice = document.getElementById("modalCardPrice");
+    const modalSellPrice = document.getElementById("modalSellPrice");
+    const btnSell = document.getElementById("btnSell");
+    const btnInventory = document.getElementById("btnInventory");
+
+    let lastWonCard = null;
+
+    function measureCardStep() {
+      const first = reelTrack.querySelector(".item-card");
+      if (!first) return document.body.classList.contains("reel-active") ? 260 : 216;
+      const gap = parseFloat(getComputedStyle(reelTrack).gap) || 16;
+      return first.getBoundingClientRect().width + gap;
+    }
+
+    const rarityLabels = {
+      common: "Common",
+      rare: "Rare",
+      epic: "Epic",
+      legendary: "Legendary"
+    };
+
+    const rarityColors = {
+      common: "#9ca3af",
+      rare: "#3b82f6",
+      epic: "#a855f7",
+      legendary: "#f59e0b"
+    };
+
+    // =============================================================================
+    // Random op basis van dropChance (gewogen loot)
+    // =============================================================================
+    function pickWinner(items) {
+      const total = items.reduce((sum, it) => sum + Number(it.dropChance), 0);
+      let roll = Math.random() * total;
+      for (const item of items) {
+        roll -= item.dropChance;
+        if (roll <= 0) return { ...item };
+      }
+      return { ...items[items.length - 1] };
+    }
+
+    // Willekeurig item voor filler in reel (uniform, mag duplicates)
+    function pickFiller(items) {
+      return { ...items[Math.floor(Math.random() * items.length)] };
+    }
+
+    // =============================================================================
+    // Reel bouwen: gewonnen item MOET op WIN_INDEX staan
+    // =============================================================================
+    function buildReelStrip(crateItems, winner) {
+      const strip = [];
+      for (let i = 0; i < REEL_TOTAL; i++) {
+        if (i === WIN_INDEX) {
+          strip.push({ ...winner });
+        } else {
+          strip.push(pickFiller(crateItems));
+        }
+      }
+      return strip;
+    }
+
+    function createCardElement(item, isWinner) {
+      const el = document.createElement("div");
+      el.className = `item-card rarity-${item.rarity}`;
+      if (isWinner) el.dataset.winner = "1";
+      el.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" loading="eager" decoding="async" />
+        <span class="iname">${item.name}</span>
+        <span class="irarity">${item.rarityLabel || rarityLabels[item.rarity] || item.rarity}</span>
+      `;
+      return el;
+    }
+
+    function renderReel(strip) {
+      reelTrack.innerHTML = "";
+      reelTrack.classList.remove("spinning");
+
+      const lead = document.createElement("div");
+      lead.className = "reel-spacer";
+      lead.setAttribute("aria-hidden", "true");
+      reelTrack.appendChild(lead);
+
+      strip.forEach((item, i) => {
+        reelTrack.appendChild(createCardElement(item, i === WIN_INDEX));
+      });
+
+      const trail = document.createElement("div");
+      trail.className = "reel-spacer";
+      trail.setAttribute("aria-hidden", "true");
+      reelTrack.appendChild(trail);
+
+      reelTrack.style.transform = "translateX(0)";
+    }
+
+    function getTranslateX(el) {
+      const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+      return m.m41;
+    }
+
+    /** Winnaar exact onder de middenlijn (meet in DOM, geen off-by-one) */
+    function getOffsetToCenterWinner() {
+      const winnerEl = reelTrack.querySelector("[data-winner='1']");
+      const viewport = reelWrapEl.querySelector(".reel-viewport");
+      if (!winnerEl || !viewport) {
+        return -(WIN_INDEX * measureCardStep());
+      }
+
+      const viewRect = viewport.getBoundingClientRect();
+      const cardRect = winnerEl.getBoundingClientRect();
+      const viewCenter = viewRect.left + viewRect.width / 2;
+      const cardCenter = cardRect.left + cardRect.width / 2;
+      return getTranslateX(reelTrack) + (viewCenter - cardCenter);
+    }
+
+    // ===== pulls =====
+
+    async function refreshHeaderCoins() {
+      const userId = localStorage.getItem("userId");
+      const coinEl = document.getElementById("coin-amount");
+      if (!userId || !coinEl) return;
+
+      try {
+        const res = await fetch(`${API}/users.php?action=getCoins&id=${userId}`, {
+          credentials: "include"
+        });
+        const data = await res.json();
+        if (data.success) coinEl.textContent = formatHeaderCoins(data.coins);
+      } catch (e) {
+        console.warn("Coins laden mislukt", e);
+      }
+    }
+
+    async function addCardToCollection(cardId) {
+      const res = await fetch(`${API}/add_card.php`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId })
+      });
+      return await res.json();
+    }
+
+    async function payForPack(crate) {
+      const res = await fetch(`${API}/users.php?action=removeCoins`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: crate.price })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        if (data.message === "Not logged in") {
+          statusEl.textContent = "Log in om een pack te openen.";
+        } else if (data.message === "Not enough coins") {
+          statusEl.textContent = "Niet genoeg coins voor dit pack.";
+        } else {
+          statusEl.textContent = data.message || "Betaling mislukt.";
+        }
+        return false;
+      }
+
+      const coinEl = document.getElementById("coin-amount");
+      if (coinEl) coinEl.textContent = formatHeaderCoins(data.coins);
+      return true;
+    }
+
+    async function instaSellCard(card) {
+      const res = await fetch(`${API}/users.php?action=instaSell`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardValue: card.price || 0 })
+      });
+      return await res.json();
+    }
+
+    function recordPull(card) {
+      localStorage.setItem(LAST_PULL_KEY, JSON.stringify(card));
+
+      let ids = [];
+      try {
+        ids = JSON.parse(localStorage.getItem(PULLED_IDS_KEY)) || [];
+      } catch {
+        ids = [];
+      }
+      ids.push({ id: card.id, name: card.name, at: Date.now() });
+      localStorage.setItem(PULLED_IDS_KEY, JSON.stringify(ids));
+    }
+
+    function showPullModal(card) {
+      lastWonCard = card;
+      const sellCoins = getSellCoinsAmount(card.price);
+      modalCardName.textContent = card.name;
+      modalCardImg.src = card.image;
+      modalCardImg.alt = card.name;
+      modalCardRarity.textContent = card.rarityLabel || card.rarity || "";
+      modalCardPrice.textContent = `Value: ${formatCardPrice({ price: card.price })}`;
+      modalSellPrice.textContent = `Sell for: ${formatCoinsAmount(sellCoins)} (80%)`;
+      btnSell.textContent = `Sell (${formatCoinsAmount(sellCoins)})`;
+      pullModal.classList.add("is-open");
+      pullModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closePullModal() {
+      pullModal.classList.remove("is-open");
+      pullModal.setAttribute("aria-hidden", "true");
+      lastWonCard = null;
+    }
+
+    function runSpinAnimation() {
+      return new Promise((resolve) => {
+        let finished = false;
+
+        const done = () => {
+          if (finished) return;
+          finished = true;
+          reelTrack.removeEventListener("transitionend", onEnd);
+          reelTrack.classList.remove("spinning");
+          reelTrack.style.willChange = "auto";
+          resolve();
+        };
+
+        const onEnd = (e) => {
+          if (e.target !== reelTrack || e.propertyName !== "transform") return;
+          done();
+        };
+
+        // Reset zonder animatie, daarna pas spin (anders geen beweging bij 2e open)
+        reelTrack.classList.remove("spinning");
+        reelTrack.style.transform = "translateX(0)";
+        reelTrack.offsetHeight;
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const offset = getOffsetToCenterWinner();
+            reelTrack.classList.add("spinning");
+            reelTrack.style.transform = `translateX(${offset}px)`;
+            reelTrack.addEventListener("transitionend", onEnd);
+            setTimeout(done, SPIN_MS + 400);
+          });
+        });
+      });
+    }
+
+    // Tijdens spin: packs weg, reel + middenbalk aan
+    function showSpinMode() {
+      document.body.classList.add("reel-active");
+      crateListEl.classList.add("is-hidden");
+      packPreviewEl.classList.add("is-hidden");
+      reelWrapEl.classList.remove("is-hidden");
+      centerMarkerEl.classList.add("is-visible");
+      pickHintEl.classList.add("is-hidden");
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function showPickMode() {
+      document.body.classList.remove("reel-active");
+      crateListEl.classList.remove("is-hidden");
+      packPreviewEl.classList.remove("is-hidden");
+      centerMarkerEl.classList.remove("is-visible");
+      pickHintEl.classList.add("is-hidden");
+    }
+
+  function renderPackPreview(crate) {
+      packPreviewGrid.innerHTML = "";
+      const count = crate.items.length;
+      packPreviewCount.textContent = `${count} kaart${count === 1 ? "" : "en"}`;
+
+      if (!count) {
+        packPreviewEmpty.classList.remove("is-hidden");
+        packPreviewGrid.classList.add("is-hidden");
+        return;
+      }
+
+      packPreviewEmpty.classList.add("is-hidden");
+      packPreviewGrid.classList.remove("is-hidden");
+
+      crate.items.forEach((item) => {
+        const el = document.createElement("div");
+        el.className = `preview-card rarity-${item.rarity}`;
+        el.title = `${item.name} — ${item.rarityLabel || item.rarity} — ${item.priceLabel || ""}`;
+        el.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" loading="eager" decoding="async" />
+          <span class="pname">${item.name}</span>
+          <span class="pprice">${item.priceLabel || ""}</span>
+        `;
+        packPreviewGrid.appendChild(el);
+      });
+    }
+
+    // =============================================================================
+    // Crate openen — hoofdflow
+    // =============================================================================
+    async function openCrate() {
+      if (!selectedCrate || isSpinning) return;
+
+      if (localStorage.getItem("isLogged") !== "true") {
+        statusEl.textContent = "Log in om een pack te openen.";
+        return;
+      }
+
+      isSpinning = true;
+      openBtn.disabled = true;
+      closePullModal();
+
+      statusEl.textContent = "Betaling verwerken…";
+      const paid = await payForPack(selectedCrate);
+      if (!paid) {
+        isSpinning = false;
+        openBtn.disabled = !selectedCrate?.items?.length;
+        return;
+      }
+
+      statusEl.textContent = "Reel draait…";
+      showSpinMode();
+
+      try {
+        const winner = pickWinner(selectedCrate.items);
+        const strip = buildReelStrip(selectedCrate.items, winner);
+
+        renderReel(strip);
+        statusEl.textContent = "Kaarten laden…";
+
+        await preloadImageUrls(strip.map((item) => item.image));
+        await delay(OPEN_PACK_DELAY_MS);
+
+        statusEl.textContent = "Reel draait…";
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        await runSpinAnimation();
+
+        reelWrapEl.classList.add("is-hidden");
+        centerMarkerEl.classList.remove("is-visible");
+
+        recordPull(winner);
+        showPullModal(winner);
+        statusEl.textContent = "Kies Sell of Inventory.";
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Er ging iets mis — probeer opnieuw.";
+        reelWrapEl.classList.add("is-hidden");
+      } finally {
+        showPickMode();
+        isSpinning = false;
+        openBtn.disabled = !selectedCrate?.items?.length;
+      }
+    }
+
+    // =============================================================================
+    // UI: crates laden en selecteren
+    // =============================================================================
+    function selectCrate(crate) {
+      if (isSpinning) return;
+
+      selectedCrate = crate;
+      selectedCrateNameEl.textContent =
+        `${crate.name} — ${formatHeaderCoins(crate.price)} coins`;
+      const canOpen = crate.items.length > 0;
+      openBtn.disabled = !canOpen;
+      statusEl.textContent = canOpen
+        ? "Klik Open crate om te draaien."
+        : "Dit pack heeft geen kaarten in deze set — kies een ander pack.";
+
+      document.querySelectorAll(".crate-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.id === crate.id);
+      });
+
+      renderPackPreview(crate);
+      preloadImageUrls(crate.items.map((item) => item.image)).catch(() => {});
+
+      reelTrack.innerHTML = "";
+      reelWrapEl.classList.add("is-hidden");
+      centerMarkerEl.classList.remove("is-visible");
+      pickHintEl.classList.remove("is-hidden");
+      packPreviewEl.classList.remove("is-hidden");
+    }
+
+    function renderCrateList() {
+      crateButtonsEl.innerHTML = "";
+      allCrates.forEach((crate) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "crate-btn";
+        btn.dataset.id = crate.id;
+        const countLabel = crate.items.length
+          ? `${crate.items.length} kaarten · ${formatHeaderCoins(crate.price)}c`
+          : "leeg";
+        btn.innerHTML = `
+          <img src="${crate.image}" alt="" />
+          <div class="info">
+            <div class="name">${crate.name}</div>
+            <div class="price">${formatHeaderCoins(crate.price)} coins · ${countLabel}</div>
+          </div>
+        `;
+        btn.style.opacity = crate.items.length ? "1" : "0.55";
+        btn.addEventListener("click", () => selectCrate(crate));
+        crateButtonsEl.appendChild(btn);
+      });
+    }
+
+    async function init() {
+      openBtn.disabled = true;
+      statusEl.textContent = "Kaarten laden van TCGdex…";
+
+      try {
+        allCrates = await loadCrates((msg) => {
+          statusEl.textContent = msg;
+        });
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Kon kaarten niet laden. Start via npm run dev of check console.";
+        return;
+      }
+
+      renderCrateList();
+
+      const firstPlayable = allCrates.find((c) => c.items.length > 0) || allCrates[0];
+      if (!firstPlayable) {
+        statusEl.textContent = "Geen packs geladen. Probeer ?set=anderecode";
+        return;
+      }
+
+      selectCrate(firstPlayable);
+      openBtn.disabled = false;
+
+      const allUrls = allCrates.flatMap((c) => c.items.map((i) => i.image));
+      statusEl.textContent = "Afbeeldingen voorladen…";
+      await preloadImageUrls(allUrls);
+      await delay(300);
+      statusEl.textContent = "Klik Open crate om te draaien.";
+    }
+
+    btnSell.addEventListener("click", async () => {
+      if (!lastWonCard) return;
+
+      if (localStorage.getItem("isLogged") !== "true") {
+        alert("Log in om te verkopen.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      btnSell.disabled = true;
+      const data = await instaSellCard(lastWonCard);
+      btnSell.disabled = false;
+
+      if (!data.success) {
+        alert(data.message || "Verkopen mislukt");
+        return;
+      }
+
+      closePullModal();
+      await refreshHeaderCoins();
+      statusEl.textContent =
+        `Sold! +${formatCoinsAmount(data.coinsAdded)} · balance ${formatHeaderCoins(data.coins)} coins`;
+    });
+
+    btnInventory.addEventListener("click", async () => {
+      if (!lastWonCard) return;
+
+      if (localStorage.getItem("isLogged") !== "true") {
+        alert("Log in om je inventory op te slaan.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      btnInventory.disabled = true;
+      try {
+        const data = await addCardToCollection(lastWonCard.id);
+        if (!data.success) {
+          alert(data.message || "Opslaan mislukt");
+          return;
+        }
+
+        closePullModal();
+        statusEl.textContent = `${lastWonCard.name} opgeslagen in je collectie`;
+      } finally {
+        btnInventory.disabled = false;
+      }
+    });
+
+    pullModalBackdrop.addEventListener("click", closePullModal);
+
+    openBtn.addEventListener("click", openCrate);
+    init();
+    refreshHeaderCoins();
+  </script>
+  <script src="../scripts/login.js"></script>
+</body>
+</html>
