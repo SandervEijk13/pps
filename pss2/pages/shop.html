@@ -16,6 +16,7 @@
     <h1>Pokémon Pack Shop</h1>
 
     <div class="shop-controls">
+        <button id="openInventoryBtn" class="inventory-toggle-btn" type="button">Inventory</button>
 
         <select id="priceFilter" class="price-filter">
             <option value="default">Default</option>
@@ -33,6 +34,28 @@
 
         <div id="shopGrid" class="shop-grid"></div>
 
+    </div>
+
+    <aside class="inventory-panel" id="inventoryPanel" aria-label="Pack inventory">
+        <div class="inventory-panel-header">
+            <h2>Your packs</h2>
+            <button id="closeInventoryBtn" class="close-inventory-btn" type="button">Close</button>
+        </div>
+        <div id="inventoryGrid" class="inventory-grid"></div>
+    </aside>
+
+    <div id="packOpenOverlay" class="pack-open-overlay" aria-hidden="true">
+        <div class="pack-open-stage" id="packOpenStage">
+            <button id="closePackOverlayBtn" class="close-pack-overlay-btn" type="button">Close</button>
+            <div class="pack-open-scene" id="packOpenScene">
+                <div class="pack-open-shell" id="packOpenShell">
+                    <div class="pack-open-half pack-open-top"></div>
+                    <div class="pack-open-half pack-open-bottom"></div>
+                </div>
+            </div>
+            <div id="packOpenCards" class="pack-open-cards"></div>
+            <div id="packOpenReview" class="pack-open-review"></div>
+        </div>
     </div>
 
     <script type="module" src="/scripts/shop.js"></script>

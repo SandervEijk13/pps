@@ -16,6 +16,11 @@ let ownedCards = [];
 let currentCards = [];
 let currentSetCode = '';
 
+// DEBUG RELOAD DETECTION
+window.addEventListener('beforeunload', () => {
+    console.log('PAGE IS RELOADING');
+});
+
 // ---------------- LOAD OWNED ----------------
 
 async function loadOwnedCards() {
@@ -54,6 +59,7 @@ function imageUrl(card) {
 // ---------------- PRICE ----------------
 
 function isRare(card) {
+
     return /rare|holo|v|vmax|vstar|gx|ex|secret|gold/i
         .test((card.rarity || '').toLowerCase());
 }
@@ -91,6 +97,7 @@ function priceText(card) {
 // ---------------- OWNED COUNT ----------------
 
 function getOwnedCount(id) {
+
     return ownedCards.filter(x => x === id).length;
 }
 
@@ -101,7 +108,9 @@ async function sellCard(cardId) {
     const res = await fetch(`${API}/sell_card.php`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ cardId })
     });
 
@@ -110,7 +119,7 @@ async function sellCard(cardId) {
 
 // ---------------- SEND TO MARKET ----------------
 
-window.sendToMarket = async function(card) {
+async function sendToMarket(card) {
 
     const cardPrice = getCardPrice(card);
 
@@ -120,7 +129,6 @@ window.sendToMarket = async function(card) {
         headers: {
             'Content-Type': 'application/json'
         },
-
         body: JSON.stringify({
             cardId: card.id,
             cardprice: cardPrice
@@ -132,15 +140,20 @@ window.sendToMarket = async function(card) {
     console.log("SEND TO MARKET RESPONSE:", data);
 
     if (!data.success) {
+
         alert(data.message || "Failed");
+
         return;
     }
 
-    // Reload inventory from DB
-    await loadOwnedCards();
+    const i = ownedCards.indexOf(card.id);
 
-    rerender();
-};
+    if (i !== -1) {
+        ownedCards.splice(i, 1);
+    }
+
+    updateCardUI(card.id);
+}
 
 // ---------------- RENDER CARD ----------------
 
@@ -167,35 +180,91 @@ function renderCard(card) {
 
         <p>Owned: ${ownedCount}</p>
 
-        <button ${ownedCount === 0 ? 'disabled' : ''} class="sell">
+        <button
+            type="button"
+            ${ownedCount === 0 ? 'disabled' : ''}
+            class="sell">
             Sell 1
         </button>
 
-        <button ${ownedCount === 0 ? 'disabled' : ''} class="market">
+        <button
+            type="button"
+            ${ownedCount === 0 ? 'disabled' : ''}
+            class="market">
             Send to Market
         </button>
     `;
 
-    // SELL
-    el.querySelector('.sell').onclick = async () => {
+    // ---------------- SELL BUTTON ----------------
 
-        const res = await sellCard(card.id);
+    try{
+        const sellBtn = el.querySelector('.sell');
 
-        if (res.success) {
-            const i = ownedCards.indexOf(card.id);
+         sellBtn.addEventListener('click', async (e) => {
 
-            if (i !== -1) {
-                ownedCards.splice(i, 1);
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        try {
+
+            sellBtn.disabled = true;
+
+            const res = await sellCard(card.id);
+
+            if (res.success) {
+
+                const i = ownedCards.indexOf(card.id);
+
+                if (i !== -1) {
+                    ownedCards.splice(i, 1);
+                }
+
+                rerender();
             }
 
-            rerender();
+            } catch (err) {
+
+            console.error(err);
+
+            } finally {
+
+            sellBtn.disabled = false;
+            }
+
+            }, true);
+    }
+    catch{
+        console.log("warning geen sell button")
+    }
+    
+
+   
+
+    // ---------------- MARKET BUTTON ----------------
+
+    const marketBtn = el.querySelector('.market');
+
+    marketBtn.addEventListener('click', async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            marketBtn.disabled = true;
+
+            await sendToMarket(card);
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            marketBtn.disabled = false;
         }
-    };
 
-    // MARKET
-    el.querySelector('.market').onclick = () =>
-        sendToMarket(card);
-
+    });
     cardsGrid.appendChild(el);
 }
 
@@ -206,6 +275,43 @@ function rerender() {
     cardsGrid.innerHTML = '';
 
     currentCards.forEach(renderCard);
+
+    updateSetInfo();
+}
+
+function updateCardUI(cardId) {
+
+    const cardEls = document.querySelectorAll('.card-item');
+
+    cardEls.forEach(el => {
+
+        const title = el.querySelector('h3');
+
+        const card = currentCards.find(c => c.name === title.textContent);
+
+        if (!card || card.id !== cardId) {
+            return;
+        }
+
+        const ownedCount = getOwnedCount(card.id);
+
+        const ownedText = el.querySelector('p:nth-of-type(3)');
+        ownedText.textContent = `Owned: ${ownedCount}`;
+
+        const sellBtn = el.querySelector('.sell');
+        const marketBtn = el.querySelector('.market');
+
+        const disabled = ownedCount === 0;
+
+        sellBtn.disabled = disabled;
+        marketBtn.disabled = disabled;
+
+        if (disabled) {
+            el.classList.add('missing-card');
+        } else {
+            el.classList.remove('missing-card');
+        }
+    });
 
     updateSetInfo();
 }
@@ -252,5 +358,7 @@ async function loadSet() {
 
     rerender();
 }
+
+// ---------------- START ----------------
 
 loadSet();

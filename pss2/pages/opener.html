@@ -5,51 +5,233 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TCG Pack Opener</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      padding: 20px;
+    :root {
+      --panel: #141824;
+      --border: rgba(130, 146, 255, 0.35);
+      --card-back-fallback: linear-gradient(145deg, #253047, #1a2235);
     }
 
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin-right: 10px;
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #1c2340, #0a0d16 55%, #080a12 100%);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .opener-page {
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      z-index: 5;
+    }
+
+    input,
+    button {
+      padding: 10px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    input {
+      min-width: 280px;
+      background: #101626;
+      color: #fff;
     }
 
     button {
       cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, #5b6ee1, #3a48ac);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .stage {
+      position: relative;
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(8, 9, 16, 0.55), rgba(8, 9, 16, 0.75)),
+        var(--stage-bg, radial-gradient(circle at 40% 20%, #252b4f, #101321 70%));
+      background-size: cover;
+      background-position: center;
+      min-height: 70vh;
+    }
+
+    .pack-scene {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    .pack-shell {
+      position: relative;
+      width: min(350px, 72vw);
+      aspect-ratio: 2 / 3;
+      filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.5));
+    }
+
+    .pack-half {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 380ms linear;
+    }
+
+    .pack-top {
+      top: 0;
+      height: 38%;
+      transform-origin: bottom center;
+      background-image: var(--pack-top-image);
+      z-index: 2;
+    }
+
+    .pack-bottom {
+      bottom: 0;
+      height: 66%;
+      background-image: var(--pack-bottom-image);
+      z-index: 1;
+    }
+
+    .pack-shell.is-opening .pack-top {
+      transform: translateY(-120%) rotate(-10deg);
+      opacity: 0;
+    }
+
+    .pack-shell.is-opening .pack-bottom {
+      transition-delay: 180ms;
+      transform: translateY(140%);
+      opacity: 0;
     }
 
     #pack {
-      margin-top: 20px;
+      position: absolute;
+      inset: 0;
+      padding: 22px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 10px;
+      gap: 12px;
+      align-content: start;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 300ms ease, transform 300ms ease;
+    }
+
+    #pack.is-visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .card {
-      background: #222;
-      padding: 10px;
-      border-radius: 10px;
-      text-align: center;
+      perspective: 1000px;
+      min-height: 255px;
     }
 
-    .card img {
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 520ms cubic-bezier(0.2, 0.65, 0.25, 1);
+      cursor: pointer;
+    }
+
+    .card.is-flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .card-front {
+      transform: rotateY(180deg);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 8px;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .card-front img {
       width: 100%;
       border-radius: 8px;
+      object-fit: cover;
+      min-height: 170px;
+      background: #0d1018;
+    }
+
+    .card-front h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .card-front p {
+      margin: 0;
+      font-size: 12px;
+      color: #b7c2ff;
+    }
+
+    .card-back {
+      background-image: var(--card-back-image), var(--card-back-fallback);
+      background-size: cover;
+      background-position: center;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎴 TCG Pack Opener</h1>
+  <div class="opener-page">
+    <h1>🎴 TCG Pack Opener</h1>
 
-  <input id="setInput" type="text" placeholder="Enter set code (e.g. sv1)" />
-  <button id="openBtn">Open Pack</button>
+    <div class="controls">
+      <input id="setInput" type="text" placeholder="Enter set code (e.g. sv1)" />
+      <button id="openBtn">Open Pack</button>
+    </div>
 
-  <div id="pack"></div>
+    <div class="stage" id="stage">
+      <div class="pack-scene" id="packScene" aria-hidden="true">
+        <div class="pack-shell" id="packShell">
+          <div class="pack-half pack-top"></div>
+          <div class="pack-half pack-bottom"></div>
+        </div>
+      </div>
+      <div id="pack"></div>
+    </div>
+  </div>
 
   <script type="module" src="/scripts/card_logic.js"></script>
 
@@ -58,7 +240,33 @@
 
     const input = document.getElementById('setInput');
     const button = document.getElementById('openBtn');
+    const stage = document.getElementById('stage');
+    const packScene = document.getElementById('packScene');
+    const packShell = document.getElementById('packShell');
     const packDiv = document.getElementById('pack');
+
+    const ANIMATION = {
+      topRipMs: 700,
+      bottomSlideMs: 700,
+      settleMs: 180
+    };
+
+    // Replace these with your exact files from the img folder if needed.
+    const PACK_TOP_IMG = '../images/pack-top.png';
+    const PACK_BOTTOM_IMG = '../images/pack-bottom.png';
+    const CARD_BACK_IMG = '../images/card-back.png';
+    const STAGE_BG_IMG = '../images/card-open-bg.jpg';
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function setStageAssets() {
+      stage.style.setProperty('--pack-top-image', `url("${PACK_TOP_IMG}")`);
+      stage.style.setProperty('--pack-bottom-image', `url("${PACK_BOTTOM_IMG}")`);
+      stage.style.setProperty('--card-back-image', `url("${CARD_BACK_IMG}")`);
+      stage.style.setProperty('--stage-bg', `url("${STAGE_BG_IMG}")`);
+    }
 
     function renderPack(cards) {
       packDiv.innerHTML = '';
@@ -66,15 +274,33 @@
       cards.forEach(card => {
         const div = document.createElement('div');
         div.className = 'card';
-
         div.innerHTML = `
-          <img src="${card.image}" alt="${card.name}" />
-          <h3>${card.name}</h3>
-          <p>${card.rarity}</p>
+          <div class="card-inner">
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front">
+              <img src="${card.image}" alt="${card.name}" />
+              <h3>${card.name}</h3>
+              <p>${card.rarity}</p>
+            </div>
+          </div>
         `;
+        div.addEventListener('click', () => {
+          div.classList.toggle('is-flipped');
+        });
 
         packDiv.appendChild(div);
       });
+    }
+
+    async function runPackOpenAnimation() {
+      packDiv.classList.remove('is-visible');
+      packDiv.innerHTML = '';
+      packScene.style.display = 'grid';
+      packShell.classList.remove('is-opening');
+
+      await sleep(120);
+      packShell.classList.add('is-opening');
+      await sleep(ANIMATION.topRipMs + ANIMATION.bottomSlideMs + ANIMATION.settleMs);
     }
 
     button.addEventListener('click', async () => {
@@ -87,17 +313,27 @@
 
       try {
         console.log('Opening pack for set:', setCode);
+        button.disabled = true;
+        input.disabled = true;
 
+        await runPackOpenAnimation();
         const pack = await openPack(setCode);
 
         console.log('Pack opened:', pack);
 
         renderPack(pack);
+        packDiv.classList.add('is-visible');
+        packScene.style.display = 'none';
       } catch (err) {
         console.error('Error opening pack:', err);
         alert('Failed to open pack. Check console for details.');
+      } finally {
+        button.disabled = false;
+        input.disabled = false;
       }
     });
+
+    setStageAssets();
   </script>
 
 </body>
