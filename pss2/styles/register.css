@@ -192,7 +192,7 @@ body {
 .user-name { font-size: 0.85rem; font-weight: 500; color: #cad2ff; }
 .dropdown-icon { font-size: 0.7rem; color: #7f95cf; }
 
-/* ========== LOGIN PAGE LAYOUT ========== */
+/* ========== REGISTER PAGE LAYOUT ========== */
 .auth-page {
     display: flex;
     align-items: center;
@@ -203,7 +203,7 @@ body {
     overflow: hidden;
 }
 
-/* Subtle background glow */
+/* Teal-tinted background glow to differentiate from login */
 .auth-page::before {
     content: '';
     position: absolute;
@@ -212,14 +212,14 @@ body {
     transform: translateX(-50%);
     width: 600px;
     height: 400px;
-    background: radial-gradient(ellipse at center, rgba(44, 91, 255, 0.07) 0%, transparent 70%);
+    background: radial-gradient(ellipse at center, rgba(30, 180, 140, 0.06) 0%, transparent 70%);
     pointer-events: none;
 }
 
 /* ========== AUTH CARD ========== */
 .auth-card {
     width: 100%;
-    max-width: 440px;
+    max-width: 460px;
     background: #0d1117;
     border: 1px solid #1e2a3e;
     border-radius: 24px;
@@ -233,13 +233,13 @@ body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Top accent line */
+/* Teal accent line on register */
 .auth-card::before {
     content: '';
     position: absolute;
     top: 0; left: 24px; right: 24px;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #2c5bff, #6b8fff, transparent);
+    background: linear-gradient(90deg, transparent, #1db892, #5de0c4, transparent);
     border-radius: 0 0 2px 2px;
 }
 
@@ -252,8 +252,8 @@ body {
 .auth-icon {
     width: 56px;
     height: 56px;
-    background: linear-gradient(145deg, #111828, #0c1523);
-    border: 1px solid #1e2f4a;
+    background: linear-gradient(145deg, #0f1e1b, #0c1a17);
+    border: 1px solid #163028;
     border-radius: 18px;
     display: flex;
     align-items: center;
@@ -263,7 +263,7 @@ body {
 
 .auth-icon i {
     font-size: 1.6rem;
-    color: #5580ff;
+    color: #1db892;
 }
 
 .auth-title {
@@ -331,33 +331,65 @@ body {
 .form-input::placeholder { color: #374057; }
 
 .form-input:focus {
-    border-color: #2c5bff;
-    box-shadow: 0 0 0 3px rgba(44, 91, 255, 0.12);
+    border-color: #1db892;
+    box-shadow: 0 0 0 3px rgba(29, 184, 146, 0.10);
     background: #0b0f1a;
 }
 
-.form-input:focus + .input-icon,
+.form-input:focus ~ .input-icon,
 .input-wrapper:focus-within .input-icon {
-    color: #5580ff;
+    color: #1db892;
 }
 
-/* ========== FORGOT LINK ========== */
-.forgot-link {
-    align-self: flex-end;
-    margin-top: -6px;
-    font-size: 0.82rem;
+/* ========== PASSWORD STRENGTH ========== */
+.strength-bar {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.strength-segment {
+    height: 3px;
+    flex: 1;
+    border-radius: 99px;
+    background: #1a2438;
+    transition: background 0.3s;
+}
+
+.strength-segment.weak   { background: #b84040; }
+.strength-segment.medium { background: #c49a1a; }
+.strength-segment.strong { background: #1db892; }
+
+.strength-label {
+    font-size: 0.75rem;
     color: #4d6aaa;
+    margin-top: 5px;
+    min-height: 16px;
+    transition: color 0.2s;
+}
+
+/* ========== TERMS NOTE ========== */
+.terms-note {
+    font-size: 0.78rem;
+    color: #3d5070;
+    text-align: center;
+    line-height: 1.6;
+    margin-top: -2px;
+}
+
+.terms-note a {
+    color: #4a6faa;
     text-decoration: none;
     transition: color 0.2s;
 }
 
-.forgot-link:hover { color: #88abff; }
+.terms-note a:hover { color: #88abff; }
 
 /* ========== SUBMIT BUTTON ========== */
 .btn-auth {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #2c5bff, #1a40d4);
+    background: linear-gradient(135deg, #1db892, #13907a);
     border: none;
     border-radius: 14px;
     font-size: 0.97rem;
@@ -367,14 +399,14 @@ body {
     cursor: pointer;
     letter-spacing: 0.2px;
     transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-    margin-top: 6px;
-    box-shadow: 0 4px 20px -4px rgba(44, 91, 255, 0.45);
+    margin-top: 4px;
+    box-shadow: 0 4px 20px -4px rgba(29, 184, 146, 0.4);
 }
 
 .btn-auth:hover {
-    opacity: 0.92;
+    opacity: 0.9;
     transform: translateY(-1px);
-    box-shadow: 0 8px 28px -6px rgba(44, 91, 255, 0.55);
+    box-shadow: 0 8px 28px -6px rgba(29, 184, 146, 0.5);
 }
 
 .btn-auth:active {
@@ -412,10 +444,10 @@ body {
 }
 
 .auth-switch a {
-    color: #5580ff;
+    color: #1db892;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s;
 }
 
-.auth-switch a:hover { color: #88abff; }
+.auth-switch a:hover { color: #5de0c4; }
