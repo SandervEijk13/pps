@@ -4,6 +4,78 @@ import MemoryCache from '@cachex/memory';
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
 
+/** Zelfde whitelist als scripts/sets.js */
+export const ALLOWED_SET_IDS = [
+    'base1', 'base2', 'base3', 'base4', 'base5',
+    'gym1', 'gym2',
+    'neo1', 'neo2', 'neo3', 'neo4',
+    'lc',
+    'ecard1',
+    'ex1', 'ex2', 'ex3', 'ex4', 'ex5', 'ex6', 'ex7', 'ex8', 'ex9', 'ex10', 'ex11', 'ex12', 'ex13', 'ex14', 'ex15', 'ex16',
+    'dp1', 'dp2', 'dp3', 'dp5', 'dp6', 'dp7',
+    'pl1', 'pl3', 'pl4',
+    'hgss1', 'hgss2', 'hgss3', 'hgss4',
+    'col1',
+    'bw1', 'bw2', 'bw3', 'bw4', 'bw5', 'bw6', 'bw7', 'bw8', 'bw9', 'bw10', 'bw11',
+    'xy1', 'xy2', 'xy3', 'xy4', 'xy5', 'xy6', 'xy7', 'g1', 'xy9', 'xy10', 'xy11', 'xy12',
+    'sm1', 'sm3', 'sm4', 'sm5', 'sm6', 'sm7', 'sm8', 'sm9', 'sm10', 'sm11', 'sm115', 'sm12',
+    'swsh1', 'swsh2', 'swsh3', 'swsh3.5', 'swsh4', 'swsh4.5', 'swsh5', 'swsh6', 'swsh7', 'swsh8', 'swsh9', 'swsh10', 'swsh10.5', 'swsh11', 'swsh12', 'swsh12.5',
+    'sv01', 'sv02', 'sv03', 'sv03.5', 'sv04', 'sv04.5', 'sv05', 'sv06', 'sv06.5', 'sv07', 'sv08', 'sv08.5', 'sv09', 'sv10', 'sv10.5w', 'sv10.5b',
+    'me01', 'me02', 'me02.5', 'me03'
+];
+
+const ALLOWED_SET_IDS_SET = new Set(ALLOWED_SET_IDS);
+
+/* -------------------------
+   LOADER (overlay tot content geladen is)
+--------------------------*/
+
+export function Loader(root, defaultMessage = 'Loading…') {
+    if (!root) {
+        return { show() {}, hide() {}, setMessage() {}, isVisible: () => false };
+    }
+
+    let overlay = null;
+
+    const ensureOverlay = () => {
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.className = 'pss-loader';
+        overlay.setAttribute('role', 'status');
+        overlay.setAttribute('aria-live', 'polite');
+        overlay.innerHTML = `
+            <div class="pss-loader-box">
+                <div class="pss-loader-spinner" aria-hidden="true"></div>
+                <p class="pss-loader-text"></p>
+            </div>
+        `;
+        root.appendChild(overlay);
+        return overlay;
+    };
+
+    return {
+        show(message = defaultMessage) {
+            const el = ensureOverlay();
+            el.querySelector('.pss-loader-text').textContent = message;
+            el.classList.add('is-visible');
+            root.classList.add('is-loading');
+        },
+        setMessage(message) {
+            if (!overlay) return;
+            overlay.querySelector('.pss-loader-text').textContent = message;
+        },
+        hide() {
+            if (!overlay) return;
+            overlay.classList.remove('is-visible');
+            root.classList.remove('is-loading');
+        },
+        isVisible() {
+            return Boolean(overlay?.classList.contains('is-visible'));
+        }
+    };
+}
+
 /* -------------------------
    BASIC HELPERS
 --------------------------*/
@@ -231,7 +303,12 @@ const MIN_OBTAINABLE_PRICE = 0;
 const MAX_OBTAINABLE_PRICE = 1_000_000;
 const PACK_POOL_SIZE = 50;
 const ELITE_PACK_POOL_SIZE = 80;
-const MAX_SETS_TO_SCAN = 36;
+/** Genoeg pool per tier; stop met laden zodra dit bereikt is */
+const TIER_POOL_TARGETS = {
+    basic: 70,
+    rare: 70,
+    elite: 100
+};
 const SET_LOAD_DELAY_MS = 300;
 const CARD_BATCH_SIZE = 15;
 const CARD_BATCH_DELAY_MS = 120;
@@ -321,7 +398,8 @@ function cardToReelItem(card) {
 }
 
 const PACK_CACHE_KEY = 'pss-fixed-crate-packs';
-const PACK_CACHE_VERSION = 7;
+const PACK_SEED_KEY = 'pss-pack-roll-seed';
+const PACK_CACHE_VERSION = 8;
 /** Vaste packprijzen (coins) */
 const PACK_PRICE_BY_TIER = {
     basic: 0.5,
@@ -378,14 +456,15 @@ function buildElitePackItems(allCards) {
     const highEnd = [...tierMap.chase, ...tierMap.ultra, ...tierMap.mid];
     const filler = tierMap.rare;
 
+    const packSeed = getPackSeed();
     const highPicked = pickUniqueDeterministic(
         highEnd,
         Math.min(highEnd.length, ELITE_PACK_POOL_SIZE),
-        'pss-pack-elite-high-v2'
+        `pss-pack-elite-high-${packSeed}`
     );
     const slotsLeft = ELITE_PACK_POOL_SIZE - highPicked.length;
     const restPicked = slotsLeft > 0
-        ? pickUniqueDeterministic(filler, slotsLeft, 'pss-pack-elite-rest-v2')
+        ? pickUniqueDeterministic(filler, slotsLeft, `pss-pack-elite-rest-${packSeed}`)
         : [];
 
     return [...highPicked, ...restPicked].map(c => cardToReelItem(c));
@@ -395,7 +474,11 @@ function buildFixedPackItems(allCards, packTier) {
     if (packTier === 'elite') return buildElitePackItems(allCards);
 
     const pool = allCards.filter(c => getReelPackTier(c) === packTier);
-    const picked = pickUniqueDeterministic(pool, PACK_POOL_SIZE, `pss-pack-${packTier}-v1`);
+    const picked = pickUniqueDeterministic(
+        pool,
+        PACK_POOL_SIZE,
+        `pss-pack-${packTier}-${getPackSeed()}`
+    );
     return picked.map(c => cardToReelItem(c));
 }
 
@@ -443,6 +526,23 @@ function savePackCache(data) {
 /** Wis cache om packs opnieuw te laten samenstellen */
 export function clearPackCache() {
     localStorage.removeItem(PACK_CACHE_KEY);
+}
+
+function getPackSeed() {
+    let seed = localStorage.getItem(PACK_SEED_KEY);
+    if (!seed) {
+        seed = 'initial';
+        localStorage.setItem(PACK_SEED_KEY, seed);
+    }
+    return seed;
+}
+
+/** Nieuwe random roll — andere kaarten in alle packs */
+export function rotatePackSeed() {
+    const seed = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem(PACK_SEED_KEY, seed);
+    clearPackCache();
+    return seed;
 }
 
 function formatPackCard(card, setCode) {
@@ -507,51 +607,97 @@ const REEL_PACK_DEFS = [
     { id: 'elite', name: 'Ultra Rare Pack', tier: 'elite', imageTint: 'b45309' }
 ];
 
-async function loadCardsFromSet(setId) {
+function tierPoolsReady(counts) {
+    return counts.basic >= TIER_POOL_TARGETS.basic
+        && counts.rare >= TIER_POOL_TARGETS.rare
+        && counts.elite >= TIER_POOL_TARGETS.elite;
+}
+
+function addCardToTierPools(card, obtainable, tierCounts) {
+    const tier = getReelPackTier(card);
+    if (!tier) return;
+
+    obtainable.push(card);
+    tierCounts[tier] = (tierCounts[tier] || 0) + 1;
+}
+
+/** Volledige set (voor ?set= filter) */
+async function loadCardsFromSet(setId, onProgress) {
+    if (!ALLOWED_SET_IDS_SET.has(setId)) {
+        return [];
+    }
+
     const set = await tcgdex.set.get(setId);
     const cards = [];
+    const total = set.cards.length;
 
-    for (let i = 0; i < set.cards.length; i += CARD_BATCH_SIZE) {
+    for (let i = 0; i < total; i += CARD_BATCH_SIZE) {
         const batch = set.cards.slice(i, i + CARD_BATCH_SIZE);
         const loaded = await Promise.all(
             batch.map(c => c.getCard().catch(() => null))
         );
-        cards.push(...loaded.filter(Boolean));
 
-        if (i + CARD_BATCH_SIZE < set.cards.length) {
+        for (const card of loaded) {
+            if (card && isObtainable(card)) cards.push(card);
+        }
+
+        if (onProgress) {
+            onProgress(`Set laden… ${Math.min(i + CARD_BATCH_SIZE, total)}/${total}`);
+        }
+
+        if (i + CARD_BATCH_SIZE < total) {
             await delay(CARD_BATCH_DELAY_MS);
         }
     }
 
-    return cards.filter(isObtainable);
+    return cards;
 }
 
-/** Kaarten uit willekeurige sets — alleen met marktprijs €0 – €1.000.000 */
-async function loadObtainableCardsFromManySets(onProgress) {
-    const allSets = await tcgdex.set.list();
-    const shuffled = [...allSets].sort(() => Math.random() - 0.5);
+/**
+ * Alleen whitelist-sets; per set batches tot pools vol zijn.
+ * Stopt midden in een set zodra genoeg basic/rare/elite kaarten zijn.
+ */
+async function loadObtainableCardsFromAllowedSets(onProgress) {
+    const setIds = [...ALLOWED_SET_IDS].sort(() => Math.random() - 0.5);
     const obtainable = [];
+    const tierCounts = { basic: 0, rare: 0, elite: 0 };
 
-    let scanned = 0;
+    let setIndex = 0;
 
-    for (const brief of shuffled) {
-        if (scanned >= MAX_SETS_TO_SCAN) break;
+    for (const setId of setIds) {
+        if (tierPoolsReady(tierCounts)) break;
 
-        scanned++;
+        setIndex++;
         if (onProgress) {
-            onProgress(`Kaarten zoeken… set ${scanned}/${MAX_SETS_TO_SCAN}`);
+            onProgress(`Kaarten laden… set ${setIndex}/${setIds.length}`);
         }
 
         try {
-            const fromSet = await loadCardsFromSet(brief.id);
-            obtainable.push(...fromSet);
+            const set = await tcgdex.set.get(setId);
+            const briefs = [...set.cards].sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < briefs.length; i += CARD_BATCH_SIZE) {
+                if (tierPoolsReady(tierCounts)) break;
+
+                const batch = briefs.slice(i, i + CARD_BATCH_SIZE);
+                const loaded = await Promise.all(
+                    batch.map(c => c.getCard().catch(() => null))
+                );
+
+                for (const card of loaded) {
+                    if (!card || !isObtainable(card)) continue;
+                    addCardToTierPools(card, obtainable, tierCounts);
+                }
+
+                if (i + CARD_BATCH_SIZE < briefs.length) {
+                    await delay(CARD_BATCH_DELAY_MS);
+                }
+            }
         } catch (e) {
-            console.warn('Set overgeslagen:', brief.id, e);
+            console.warn('Set overgeslagen:', setId, e);
         }
 
         await delay(SET_LOAD_DELAY_MS);
-
-        if (obtainable.length >= ELITE_PACK_POOL_SIZE * 6) break;
     }
 
     return obtainable;
@@ -562,10 +708,10 @@ async function loadObtainableCardsFromManySets(onProgress) {
  * Packprijs: basic €0,50 · rare €11,00 · elite = gem. + bonus.
  * Optioneel: ?set=sv8 of ?refresh=1 om cache te negeren.
  */
-export async function buildReelCrates(onProgress) {
+export async function buildReelCrates(onProgress, options = {}) {
     const params = new URLSearchParams(window.location.search);
     const setFilter = params.get('set');
-    const forceRefresh = params.get('refresh') === '1';
+    const forceRefresh = options.forceRefresh || params.get('refresh') === '1';
 
     if (forceRefresh) clearPackCache();
 
@@ -583,13 +729,16 @@ export async function buildReelCrates(onProgress) {
     let setCode = 'multi';
 
     if (setFilter) {
-        if (onProgress) onProgress(`Set ${setFilter} laden…`);
-        cards = await loadCardsFromSet(setFilter);
+        if (!ALLOWED_SET_IDS_SET.has(setFilter)) {
+            throw new Error(`Set "${setFilter}" staat niet op de whitelist.`);
+        }
+
+        cards = await loadCardsFromSet(setFilter, onProgress);
         const set = await tcgdex.set.get(setFilter);
         setName = set.name;
         setCode = setFilter;
     } else {
-        cards = await loadObtainableCardsFromManySets(onProgress);
+        cards = await loadObtainableCardsFromAllowedSets(onProgress);
     }
 
     if (onProgress) onProgress('Packs samenstellen…');

@@ -1,0 +1,213 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PokeVault | Trainer Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="/styles/profile.css">
+<body>
+</head>
+ 
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <!-- Logo Left -->
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <a href="/index.html"><span class="logo-text">PokeVault</span></a>
+      </div>
+
+      <!-- Centered Navigation (clean, placeholder links) -->
+      <div class="nav-links">
+        <a href="pages/market.html" class="nav-link" id="nav-market">
+          <i class="fas fa-chart-line"></i> 
+          <span>Market</span>
+        </a>
+        <a href="/pages/crate-opener.html" class="nav-link" id="nav-packs">
+          <i class="fas fa-box-open"></i> 
+          <span>Packs</span>
+        </a>
+        <a href="/pages/sets.html" class="nav-link" id="nav-collection">
+          <i class="fas fa-layer-group"></i> 
+          <span>Collection</span>
+        </a>
+      </div>
+
+      <!-- Right Side: Currency + User Profile -->
+        <div class="right-actions">
+
+          <div class="coin-widget">
+            <div class="coin-icon">
+              <img src="/images/pokecoin.png" alt="PokeCoin" class="coin-img" />
+            </div>
+            <span id="coin-amount">0</span>
+          </div>
+
+          <!-- USER PROFILE -->
+          <div class="user-profile" id="userProfile">
+
+            <div class="avatar-icon">
+              <i class="fas fa-user-astronaut"></i>
+            </div>
+
+            <span class="user-name" id="username">Trainer</span>
+
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+
+            <!-- DROPDOWN -->
+            <div class="profile-dropdown" id="profileDropdown">
+
+              <a href="#" class="dropdown-item" id="profileAction">
+                <i class="fas fa-user"></i>
+                <span id="profileActionText">Profile</span>
+              </a>
+
+              <a href="#" class="dropdown-item" id="authAction">
+                <i class="fas fa-right-to-bracket"></i>
+                <span id="authActionText">Login</span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</header>
+ 
+<!-- ===== PROFILE PAGE ===== -->
+<main>
+  <div class="profile-page">
+ 
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+ 
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar">
+          <i class="fas fa-user-astronaut"></i>
+        </div>
+      </div>
+ 
+      <div class="profile-info">
+        <div class="profile-badge">
+          <i class="fas fa-certificate"></i> Elite Trainer
+        </div>
+        <div class="profile-name" id="profileName">Loading...</div>
+        <div class="profile-handle" id="profileHandle">Loading...</div>
+      </div>
+    </div>
+ 
+    <!-- Coins Box -->
+    <div class="coins-box">
+      <div class="coins-icon-wrap">
+        <img class="coin-img" src="/images/pokecoin.png">
+      </div>
+      <div class="coins-info">
+        <div class="coins-label">PokéCoins</div>
+        <div class="coins-value" id="profileCoins">4,250</div>
+        <div class="coins-sub">Available balance</div>
+      </div>
+
+        <!-- VISITOR BUTTONS — toggle display via JS based on whether this is your own profile -->
+      <div class="visitor-actions" id="visitorActions" style="display:none;">
+        <button class="btn-trade" onclick="alert('Trade feature coming soon!')">
+          <i class="fas fa-right-left"></i> Trade
+        </button>
+        <button class="btn-battle" onclick="alert('Battle feature coming soon!')">
+          <i class="fas fa-bolt"></i> Battle
+        </button>
+      </div>
+    </div>
+ 
+    <!-- Favorite Cards -->
+    <div class="section-title">
+      <i class="fas fa-star"></i>
+      <h2>Favourite Cards</h2>
+      <div class="title-line"></div>
+    </div>
+ 
+    <div class="favorite-cards-grid" id="favoriteCardsGrid">
+ 
+      <!-- Card 1 (placeholder) -->
+      <div class="fav-card">
+        <div class="fav-card-image">
+          <i class="fas fa-dragon"></i>
+        </div>
+        <div class="fav-card-info">
+          <div class="fav-card-name">Charizard ex</div>
+          <div class="fav-card-set">Obsidian Flames</div>
+          <div class="fav-card-value"><img class="coin-img coin-card" src="/images/pokecoin.png"> 1,200</div>
+        </div>
+      </div>
+ 
+      <!-- Card 2 (placeholder) -->
+      <div class="fav-card">
+        <div class="fav-card-image">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="fav-card-info">
+          <div class="fav-card-name">Pikachu VMAX</div>
+          <div class="fav-card-set">Vivid Voltage</div>
+          <div class="fav-card-value"><img class="coin-img coin-card" src="/images/pokecoin.png"> 840</div>
+        </div>
+      </div>
+ 
+      <!-- Card 3 (placeholder) -->
+      <div class="fav-card">
+        <div class="fav-card-image">
+          <i class="fas fa-moon"></i>
+        </div>
+        <div class="fav-card-info">
+          <div class="fav-card-name">Umbreon VMAX</div>
+          <div class="fav-card-set">Evolving Skies</div>
+          <div class="fav-card-value"><img class="coin-img coin-card" src="/images/pokecoin.png"> 2,100</div>
+        </div>
+      </div>
+ 
+      <!-- Card 4 (placeholder) -->
+      <div class="fav-card">
+        <div class="fav-card-image">
+          <i class="fas fa-feather-alt"></i>
+        </div>
+        <div class="fav-card-info">
+          <div class="fav-card-name">Rayquaza ex</div>
+          <div class="fav-card-set">Scarlet &amp; Violet</div>
+          <div class="fav-card-value"><img class="coin-img coin-card" src="/images/pokecoin.png">980</div>
+        </div>
+      </div>
+ 
+      <!-- Card 5 (empty slot) -->
+      <div class="fav-card empty">
+        <div class="fav-card-image">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="fav-card-info">
+          <div class="fav-card-name">Empty Slot</div>
+          <div class="fav-card-set">Add a favourite</div>
+          <div class="fav-card-value"><img class="coin-img coin-card" src="/images/pokecoin.png"> —</div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+</main>
+ 
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <i class="fas fa-database"></i><span>PokeVault</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://tcgdex.dev/">API (TCGdex)</a>
+      </div>
+    </div>
+    <div class="copyright">© 2025 PokeVault — A clean foundation for Pokémon TCG collection.</div>
+  </div>
+</footer>
+
+<script src="/scripts/login.js"></script>
+<script src="/scripts/profile.js"></script>
+</body> 

@@ -32,6 +32,9 @@ switch ($action) {
     case 'instaSell':
         instaSell($pdo);
         break;
+    case 'getProfile':
+        getProfile($pdo);
+        break;
 
     default:
         echo json_encode([
@@ -217,5 +220,50 @@ function instaSell($pdo)
         "coinsAdded" => $coinsAdded,
         "coins" => round((float) ($result['user_coins'] ?? 0), 2),
         "message" => "Card sold instantly"
+    ]);
+}
+
+function getProfile($pdo)
+{
+    $id = $_GET['id'] ?? 0;
+
+    if (!$id) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Missing user id"
+        ]);
+        return;
+    }
+
+    $stmt = $pdo->prepare("
+        SELECT
+            id,
+            username,
+            user_coins
+        FROM users
+        WHERE id = ?
+    ");
+
+    $stmt->execute([$id]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "User not found"
+        ]);
+
+        return;
+    }
+
+    echo json_encode([
+        "success" => true,
+        "user" => [
+            "id" => $user["id"],
+            "username" => $user["username"],
+            "coins" => round((float) $user["user_coins"], 2)
+        ]
     ]);
 }

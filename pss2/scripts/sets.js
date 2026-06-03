@@ -1,5 +1,6 @@
 import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
+import { ALLOWED_SET_IDS } from './card_logic.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
@@ -12,27 +13,8 @@ const setsGrid = document.getElementById('setsGrid');
 const eraFilters = document.getElementById('eraFilters');
 const setSearch = document.getElementById('setSearch');
 
-const allowedSetIds = [
-    'base1', 'base2', 'base3', 'base4', 'base5',
-    'gym1', 'gym2',
-    'neo1', 'neo2', 'neo3', 'neo4',
-    'lc',
-    'ecard1',
-    'ex1', 'ex2', 'ex3', 'ex4', 'ex5', 'ex6', 'ex7', 'ex8', 'ex9', 'ex10', 'ex11', 'ex12', 'ex13', 'ex14', 'ex15', 'ex16',
-    'dp1', 'dp2', 'dp3', 'dp5', 'dp6', 'dp7',
-    'pl1','pl3', 'pl4',
-    'hgss1', 'hgss2', 'hgss3', 'hgss4',
-    'col1',
-    'bw1', 'bw2', 'bw3', 'bw4', 'bw5', 'bw6', 'bw7', 'bw8', 'bw9', 'bw10', 'bw11',
-    'xy1', 'xy2', 'xy3', 'xy4', 'xy5', 'xy6', 'xy7', 'g1', 'xy9', 'xy10', 'xy11', 'xy12',
-    'sm1', 'sm3', 'sm4', 'sm5', 'sm6', 'sm7', 'sm8', 'sm9', 'sm10', 'sm11', 'sm115', 'sm12',
-    'swsh1', 'swsh2', 'swsh3', 'swsh3.5', 'swsh4', 'swsh4.5', 'swsh5', 'swsh6', 'swsh7', 'swsh8', 'swsh9', 'swsh10', 'swsh10.5', 'swsh11', 'swsh12', 'swsh12.5',
-    'sv01', 'sv02', 'sv03', 'sv03.5', 'sv04', 'sv04.5', 'sv05', 'sv06', 'sv06.5', 'sv07', 'sv08', 'sv08.5', 'sv09', 'sv10', 'sv10.5w', 'sv10.5b',
-    'me01', 'me02', 'me02.5', 'me03'
-];
-
 const allowedSetIdsMap = new Map(
-    allowedSetIds.map((id, index) => [id, index])
+    ALLOWED_SET_IDS.map((id, index) => [id, index])
 );
 
 const eraLookup = {
@@ -92,31 +74,22 @@ function getEraKey(setId) {
 // ---------------------- COLLECTION (FIXED) ----------------------
 
 async function loadUserCollectionProgress() {
-
     const res = await fetch(`${API}/get_cards.php`, {
         credentials: 'include'
     });
 
     const data = res.ok ? await res.json() : [];
 
+    // expand duplicates like cards page
+    const ownedCards = data.flatMap(c =>
+        Array(Number(c.card_amount)).fill(c.card_id)
+    );
+
     userCollectionProgress = {};
 
-    // track unique card ids globally
-    const uniqueCardIds = new Set();
-
-    for (const cardEntry of data) {
-
-        // skip duplicates
-        if (uniqueCardIds.has(cardEntry.card_id)) {
-            continue;
-        }
-
-        uniqueCardIds.add(cardEntry.card_id);
-
+    for (const cardId of ownedCards) {
         try {
-
-            const card = await tcgdex.card.get(cardEntry.card_id);
-
+            const card = await tcgdex.card.get(cardId);
             const setId = card?.set?.id;
 
             if (!setId) continue;
@@ -125,7 +98,6 @@ async function loadUserCollectionProgress() {
                 (userCollectionProgress[setId] || 0) + 1;
 
         } catch (e) {
-
             // ignore missing cards
         }
     }
