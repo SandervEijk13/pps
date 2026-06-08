@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Crates & Battles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/crate-battles.css" />
+    <link rel="stylesheet" href="/styles/crate-reel.css" />
+</head>
+<body>
+
+    <div id="app-header" data-active="battles"></div>
+
+    <main class="battle-page">
+        <section class="battle-hero">
+            <div class="battle-hero-badge"><i class="fas fa-box-open"></i> Crates & Battles</div>
+            <h1 id="heroTitle">Open crates or battle for everything.</h1>
+            <p id="heroSubtitle">Solo openings with the reel, or fight PvE/PvP — highest total value wins all cards.</p>
+        </section>
+
+        <div id="battleLoader" class="battle-loader">
+            <div class="battle-loader-spinner"></div>
+            <p id="battleLoaderText">Loading crate pools…</p>
+        </div>
+
+        <section id="battleSetup" class="battle-panel is-hidden">
+            <div class="mode-picker mode-picker-3">
+                <button type="button" class="mode-btn is-active" data-mode="solo">
+                    <i class="fas fa-user"></i>
+                    <span>Solo</span>
+                    <small>Open crates yourself</small>
+                </button>
+                <button type="button" class="mode-btn" data-mode="pve">
+                    <i class="fas fa-robot"></i>
+                    <span>PvE</span>
+                    <small>vs AI</small>
+                </button>
+                <button type="button" class="mode-btn" data-mode="pvp">
+                    <i class="fas fa-users"></i>
+                    <span>PvP</span>
+                    <small>Room code</small>
+                </button>
+            </div>
+
+            <div id="pvpLobby" class="pvp-lobby is-hidden">
+                <div class="pvp-lobby-grid">
+                    <div class="pvp-card">
+                        <h3><i class="fas fa-plus-circle"></i> Create room</h3>
+                        <p>Select crates first, then create a room and share the code.</p>
+                        <button type="button" id="btnCreateRoom" class="btn-battle-primary">Create room</button>
+                    </div>
+                    <div class="pvp-card">
+                        <h3><i class="fas fa-door-open"></i> Join room</h3>
+                        <input type="text" id="joinRoomCode" class="room-code-input" maxlength="6" placeholder="ABC123" />
+                        <button type="button" id="btnJoinRoom" class="btn-battle-secondary">Join room</button>
+                    </div>
+                </div>
+                <div id="pvpRoomInfo" class="pvp-room-info is-hidden">
+                    <p>Room code: <strong id="roomCodeDisplay">------</strong>
+                        <button type="button" id="btnCopyCode" class="btn-copy-code" title="Copy code"><i class="fas fa-copy"></i></button>
+                    </p>
+                    <p id="pvpRoomWager" class="pvp-room-wager">Entry: —</p>
+                    <p id="pvpRoomStatus">Waiting for opponent…</p>
+                    <div id="pvpRoomActions" class="pvp-room-actions">
+                        <button type="button" id="btnPayEntry" class="btn-battle-primary is-hidden">
+                            <i class="fas fa-coins"></i> Pay entry
+                        </button>
+                        <button type="button" id="btnStartPvp" class="btn-battle-primary is-hidden">
+                            <i class="fas fa-play"></i> Start battle
+                        </button>
+                        <button type="button" id="btnRefreshRoom" class="btn-battle-ghost"><i class="fas fa-rotate"></i> Refresh</button>
+                        <button type="button" id="btnCancelRoom" class="btn-battle-danger is-hidden">
+                            <i class="fas fa-times"></i> Cancel room
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="crate-picker">
+                <div class="panel-heading">
+                    <h2 id="cratePickerTitle">Select crates <span class="crate-count" id="selectedCrateCount">0 / 5</span></h2>
+                    <p id="cratePickerHint">Click + to add the same crate again (max 5 total).</p>
+                </div>
+                <div id="crateSelectGrid" class="crate-select-grid"></div>
+            </div>
+
+            <div class="battle-summary">
+                <div class="summary-stat">
+                    <span class="summary-label" id="summaryCostLabel">Total cost</span>
+                    <span class="summary-value" id="summaryWager">0.00 coins</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-label">Crates</span>
+                    <span class="summary-value" id="summaryCrates">None</span>
+                </div>
+            </div>
+
+            <p id="battleStatus" class="battle-status" role="status"></p>
+
+            <div class="battle-actions">
+                <button type="button" id="btnClearCrates" class="btn-battle-ghost">Clear</button>
+                <button type="button" id="btnStartBattle" class="btn-battle-primary" disabled>
+                    <i class="fas fa-play"></i> Open crates
+                </button>
+            </div>
+        </section>
+
+        <section id="battleArena" class="battle-arena is-hidden">
+            <div id="arenaPhaseBanner" class="arena-phase-banner is-hidden" role="status">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+                <span id="arenaPhaseText">Watching opponent</span>
+            </div>
+            <div id="arenaScoreboard" class="arena-scoreboard">
+                <div class="arena-player you">
+                    <span class="arena-label" id="playerLabel">You</span>
+                    <span class="arena-value" id="playerTotalValue">€0.00</span>
+                </div>
+                <div class="arena-vs">VS</div>
+                <div class="arena-player opponent">
+                    <span class="arena-label" id="opponentLabel">Opponent</span>
+                    <span class="arena-value" id="opponentTotalValue">€0.00</span>
+                </div>
+            </div>
+
+            <p id="arenaStatus" class="arena-status">Preparing reel…</p>
+
+            <div id="reelWrap" class="reel-wrap is-hidden">
+                <div id="centerMarker" class="center-marker"></div>
+                <div class="reel-viewport">
+                    <div id="reelTrack" class="reel-track"></div>
+                </div>
+            </div>
+
+            <div id="arenaMiniPulls" class="arena-mini-pulls">
+                <div class="mini-pulls-col">
+                    <h4 id="playerColumnTitle">Your pulls</h4>
+                    <div id="playerMiniPulls" class="mini-pulls-row"></div>
+                </div>
+                <div id="opponentPullsCol" class="mini-pulls-col opponent-col">
+                    <h4 id="opponentColumnTitle">Opponent pulls</h4>
+                    <div id="opponentMiniPulls" class="mini-pulls-row"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="battleResults" class="battle-results is-hidden">
+            <div id="resultBanner" class="result-banner">
+                <i class="fas fa-trophy"></i>
+                <h2 id="resultTitle">Victory!</h2>
+                <p id="resultSubtitle">You won all cards from this battle.</p>
+            </div>
+            <div class="result-stats">
+                <div class="result-stat"><span>Your value</span><strong id="resultPlayerValue">€0.00</strong></div>
+                <div class="result-stat"><span>Opponent value</span><strong id="resultOpponentValue">€0.00</strong></div>
+                <div class="result-stat"><span>Cards won</span><strong id="resultCardsWon">0</strong></div>
+            </div>
+            <div class="result-pulls-split">
+                <div class="result-pulls-block">
+                    <h4>Your pulls</h4>
+                    <div id="resultYourCards" class="result-cards-grid"></div>
+                </div>
+                <div class="result-pulls-block">
+                    <h4 id="resultOpponentLabel">Opponent pulls</h4>
+                    <div id="resultOpponentCards" class="result-cards-grid"></div>
+                </div>
+            </div>
+            <div class="battle-actions">
+                <button type="button" id="btnBattleAgain" class="btn-battle-primary">Back to menu</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="pullModal" class="pull-modal" aria-hidden="true">
+        <div id="pullModalBackdrop" class="pull-modal-backdrop"></div>
+        <div class="pull-modal-card">
+            <h3 id="modalCardName">Card</h3>
+            <img id="modalCardImg" src="" alt="" />
+            <p id="modalCardRarity"></p>
+            <p id="modalCardPrice"></p>
+            <p id="modalSellPrice"></p>
+            <div class="pull-modal-actions">
+                <button type="button" id="btnSell" class="btn-sell">Sell</button>
+                <button type="button" id="btnKeep" class="btn-keep">Keep</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/scripts/crate-battles.js"></script>
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+</body>
+</html>

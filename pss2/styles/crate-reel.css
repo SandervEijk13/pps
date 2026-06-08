@@ -1,0 +1,237 @@
+:root {
+    --reel-card-w: 200px;
+    --reel-card-gap: 16px;
+    --reel-img: 140px;
+}
+
+.reel-wrap {
+    position: relative;
+    margin: 0 0 20px;
+    padding: 36px 0;
+    overflow: hidden;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(20, 20, 40, 0.75));
+    min-height: 300px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    box-shadow: inset 0 0 60px rgba(139, 92, 246, 0.08);
+}
+
+.reel-wrap.is-hidden {
+    display: none;
+}
+
+.reel-wrap::before,
+.reel-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 90px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.reel-wrap::before {
+    left: 0;
+    background: linear-gradient(90deg, #0f172a, transparent);
+}
+
+.reel-wrap::after {
+    right: 0;
+    background: linear-gradient(-90deg, #0f172a, transparent);
+}
+
+.center-marker {
+    position: absolute;
+    left: 50%;
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    transform: translateX(-50%);
+    z-index: 3;
+    background: linear-gradient(180deg, transparent, #fff, transparent);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.center-marker.is-visible {
+    opacity: 1;
+}
+
+.center-marker::before,
+.center-marker::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 10px solid transparent;
+}
+
+.center-marker::before {
+    top: 0;
+    border-bottom-color: rgba(255, 255, 255, 0.85);
+}
+
+.center-marker::after {
+    bottom: 0;
+    border-top-color: rgba(255, 255, 255, 0.85);
+}
+
+.reel-viewport {
+    overflow: hidden;
+    width: 100%;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+}
+
+.reel-track {
+    display: flex;
+    gap: var(--reel-card-gap);
+    padding: 12px 0;
+    will-change: transform;
+    align-items: stretch;
+}
+
+.reel-spacer {
+    flex: 0 0 calc(50% - var(--reel-card-w) / 2);
+    width: calc(50% - var(--reel-card-w) / 2);
+    min-width: calc(50% - var(--reel-card-w) / 2);
+    max-width: calc(50% - var(--reel-card-w) / 2);
+    height: 1px;
+    pointer-events: none;
+}
+
+.reel-track.spinning {
+    transition: transform 5.5s cubic-bezier(0.12, 0.75, 0.18, 1);
+}
+
+.item-card {
+    flex: 0 0 var(--reel-card-w);
+    width: var(--reel-card-w);
+    min-width: var(--reel-card-w);
+    height: 260px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #1a1a28, #0f0f18);
+    border: 2px solid var(--rarity-color, #9ca3af);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.item-card.rarity-common { --rarity-color: #9ca3af; }
+.item-card.rarity-rare { --rarity-color: #3b82f6; }
+.item-card.rarity-epic { --rarity-color: #a855f7; }
+.item-card.rarity-legendary { --rarity-color: #f59e0b; }
+
+.item-card img {
+    width: var(--reel-img);
+    height: var(--reel-img);
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.item-card .iname {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.item-card .irarity {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.arena-mini-pulls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.mini-pulls-col h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.mini-pulls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 52px;
+}
+
+.mini-pull-thumb {
+    width: 40px;
+    height: 56px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+/* Pull modal (solo) */
+.pull-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.pull-modal.is-open {
+    display: flex;
+}
+
+.pull-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.pull-modal-card {
+    position: relative;
+    z-index: 1;
+    width: min(380px, 96vw);
+    padding: 24px;
+    border-radius: 18px;
+    background: #111827;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    text-align: center;
+}
+
+.pull-modal-card img {
+    width: min(220px, 70vw);
+    border-radius: 12px;
+    margin-bottom: 14px;
+}
+
+.pull-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.pull-modal-actions button {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+}
+
+.pull-modal-actions .btn-sell { background: #dc2626; }
+.pull-modal-actions .btn-keep { background: #2563eb; }

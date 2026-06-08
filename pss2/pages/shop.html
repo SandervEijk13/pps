@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pack Shop</title>
-
+    <title>PokeVault | Pack Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
     <link rel="stylesheet" href="/styles/shop.css">
 </head>
 <body>
+
+    <div id="app-header" data-active="crates"></div>
 
     <div class="shop-page">
 
@@ -23,10 +26,6 @@
             <option value="low-high">Price: Low → High</option>
             <option value="high-low">Price: High → Low</option>
         </select>
-
-        <div class="coins-display">
-            <span id="coinsAmount">0</span> Coins
-        </div>
 
     </div>
 
@@ -53,12 +52,27 @@
                     <div class="pack-open-half pack-open-bottom"></div>
                 </div>
             </div>
-            <div id="packOpenCards" class="pack-open-cards"></div>
+            <div id="packOpenWorkspace" class="pack-open-workspace">
+                <div id="packOpenCards" class="pack-open-cards"></div>
+                <aside id="packOpenCardTab" class="pack-open-card-tab" aria-hidden="true">
+                    <span class="pack-tab-label">Card details</span>
+                    <h3 id="packTabName" class="pack-tab-name">—</h3>
+                    <p id="packTabRarity" class="pack-tab-rarity">—</p>
+                    <p id="packTabPrice" class="pack-tab-price">—</p>
+                    <div id="packTabActions" class="pack-tab-actions" hidden>
+                        <button type="button" class="pack-tab-btn btn-sell" id="packTabSell">Sell</button>
+                        <button type="button" class="pack-tab-btn btn-keep" id="packTabKeep">Keep</button>
+                    </div>
+                    <p id="packTabHint" class="pack-tab-hint">Click the top card to reveal</p>
+                </aside>
+            </div>
             <div id="packOpenReview" class="pack-open-review"></div>
         </div>
     </div>
 
     <script type="module" src="/scripts/shop.js"></script>
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
 
 </body>
 </html>

@@ -6,77 +6,12 @@
   <title>PokeVault | Premium Pokémon TCG Collection</title>
   <!-- FontAwesome 6 (free) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="styles/header.css" />
   <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
 
-<header class="header">
-  <div class="container">
-    <div class="header-inner">
-      <!-- Logo Left -->
-      <div class="logo-area">
-        <div class="logo-icon">
-          <i class="fas fa-database"></i>
-        </div>
-        <a href="/index.html"><span class="logo-text">PokeVault</span></a>
-      </div>
-
-      <!-- Centered Navigation (clean, placeholder links) -->
-      <div class="nav-links">
-        <a href="pages/market.html" class="nav-link" id="nav-market">
-          <i class="fas fa-chart-line"></i> 
-          <span>Market</span>
-        </a>
-        <a href="/pages/crate-opener.html" class="nav-link" id="nav-packs">
-          <i class="fas fa-box-open"></i> 
-          <span>Packs</span>
-        </a>
-        <a href="/pages/sets.html" class="nav-link" id="nav-collection">
-          <i class="fas fa-layer-group"></i> 
-          <span>Collection</span>
-        </a>
-      </div>
-
-      <!-- Right Side: Currency + User Profile -->
-        <div class="right-actions">
-
-          <div class="coin-widget">
-            <div class="coin-icon">
-              <img src="images/pokecoin.png" alt="PokeCoin" class="coin-img" />
-            </div>
-            <span id="coin-amount">0</span>
-          </div>
-
-          <!-- USER PROFILE -->
-          <div class="user-profile" id="userProfile">
-
-            <div class="avatar-icon">
-              <i class="fas fa-user-astronaut"></i>
-            </div>
-
-            <span class="user-name">Trainer</span>
-
-            <i class="fas fa-chevron-down dropdown-icon"></i>
-
-            <!-- DROPDOWN -->
-            <div class="profile-dropdown" id="profileDropdown">
-
-              <a href="#" class="dropdown-item" id="profileAction">
-                <i class="fas fa-user"></i>
-                <span id="profileActionText">Profile</span>
-              </a>
-
-              <a href="#" class="dropdown-item" id="authAction">
-                <i class="fas fa-right-to-bracket"></i>
-                <span id="authActionText">Login</span>
-              </a>
-
-            </div>
-          </div>
-        </div>
-    </div>
-  </div>
-</header>
+<div id="app-header"></div>
 
 <main>
   <!-- Hero section: clean onboarding, no game yet -->
@@ -92,8 +27,14 @@
           <a href="#" class="btn-primary" id="getStartedBtn">
             <i class="fas fa-rocket"></i> Get Started
           </a>
-          <a href="#" class="btn-secondary" id="exploreBtn">
-            <i class="fas fa-compass"></i> Explore Packs
+          <a href="/pages/crate-battles.html" class="btn-secondary" id="exploreBtn">
+            <i class="fas fa-box-open"></i> Open Crates
+          </a>
+          <a href="/pages/crate-battles.html?mode=battle" class="btn-secondary">
+            <i class="fas fa-bolt"></i> Crate Battles
+          </a>
+          <a href="/pages/wheel.html" class="btn-secondary">
+            <i class="fas fa-dharmachakra"></i> Wheel
           </a>
         </div>
       </div>
@@ -108,6 +49,8 @@
         <p>Everything you need to build your ultimate card collection</p>
       </div>
       <div class="features-grid">
+
+        <a href="pages/shop.html">
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-boxes"></i>
@@ -115,6 +58,9 @@
           <h3>Open Packs</h3>
           <p>Experience the thrill of opening booster packs. Each pack contains rare cards ready for your vault.</p>
         </div>
+        </a>
+
+        <a href="/pages/market.html">
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fa-solid fa-chart-line"></i>
@@ -122,13 +68,17 @@
           <h3>Live Market</h3>
           <p>Buy and sell cards with other collectors. Dynamic pricing based on rarity and demand.</p>
         </div>
+        </a>
+
+        <a href="pages/crate-battles.html">
         <div class="feature-card">
           <div class="feature-icon">
-            <i class="fas fa-shield-alt"></i>
+            <i class="fas fa-bolt"></i>
           </div>
-          <h3>True Ownership</h3>
-          <p>Your collection is securely stored. Trade with confidence in our vault.</p>
+          <h3>Crate Battles</h3>
+          <p>Pick your crates and battle PvE or PvP. Highest total pull value wins every card from the match.</p>
         </div>
+        </a>
       </div>
     </div>
   </section>
@@ -196,6 +146,7 @@
   </div>
 </footer>
 
+<script src="scripts/header.js" defer></script>
 <script src="scripts/login.js" defer></script>
 </body>
 </html>

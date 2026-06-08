@@ -1,3 +1,5 @@
+@import url('/styles/header.css');
+
     * {
       margin: 0;
       padding: 0;
@@ -11,249 +13,7 @@
       line-height: 1.5;
     }
 
-    /* ========== HEADER STYLES (clean, professional) ========== */
-    .header {
-      background: #0b0e14;
-      border-bottom: 1px solid #1e2a3e;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 32px;
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 74px;
-      position: relative;
-    }
-
-    /* Logo */
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-shrink: 0;
-      z-index: 2;
-    }
-
-    
-    .logo-area a {
-        text-decoration: none
-    }
-
-    .logo-icon {
-      background: linear-gradient(135deg, #2c5bff, #0f2f6b);
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 12px -6px rgba(0, 40, 120, 0.5);
-    }
-
-    .logo-icon i {
-      font-size: 22px;
-      color: white;
-    }
-
-    .logo-text {
-      font-size: 1.7rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      background: linear-gradient(135deg, #f0f5ff, #aac9ff);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    /* Centered Navigation */
-    .nav-links {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 2.5rem;
-      align-items: center;
-    }
-
-    .nav-link {
-      text-decoration: none;
-      color: #d2defc;
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 0;
-      border-bottom: 2px solid transparent;
-    }
-
-    .nav-link i {
-      font-size: 1rem;
-      color: #5a7bcb;
-      transition: 0.2s;
-    }
-
-    .nav-link:hover {
-      color: white;
-      border-bottom-color: #2c5bff;
-    }
-
-    .nav-link:hover i {
-      color: #88abff;
-    }
-
-    /* Right Actions */
-    .right-actions {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      flex-shrink: 0;
-      z-index: 2;
-    }
-
-    .coin-widget {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #121724;
-      padding: 8px 20px;
-      border-radius: 48px;
-      border: 1px solid #25344d;
-      transition: all 0.2s;
-    }
-
-    .coin-widget:hover {
-      border-color: #3e5a85;
-      background: #151e2c;
-    }
-
-    .coin-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-
-    /* main fix */
-    .coin-img {
-    width: 30px;
-    height: 30px;
-    }
-
-    #coin-amount {
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: #f3e5c0;
-      letter-spacing: 0.3px;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 6px 12px 6px 14px;
-      border-radius: 48px;
-      cursor: pointer;
-      border: 1px solid #202a3a;
-      background: #0e121c;
-      transition: 0.2s;
-      position: relative;
-    }
-
-    .profile-dropdown {
-      position: absolute;
-      top: 120%;
-      right: 0;
-      width: 167px;
-      background: #111827;
-      border: 1px solid #25344d;
-      border-radius: 18px;
-      padding: 10px;
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-      z-index: 999;
-      animation: dropdownFade 0.18s ease;
-    }
-
-    .profile-dropdown.active {
-      display: flex;
-    }
-
-    .dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: #d6e2ff;
-      padding: 12px 14px;
-      border-radius: 12px;
-      transition: 0.2s ease;
-      font-size: 0.92rem;
-    }
-
-    .dropdown-item i {
-      color: #7fa7ff;
-      width: 18px;
-    }
-
-    .dropdown-item:hover {
-      background: #1a2336;
-      color: white;
-    }
-
-    @keyframes dropdownFade {
-      from {
-        opacity: 0;
-        transform: translateY(-6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .user-profile:hover {
-      background: #161e2c;
-      border-color: #2c5bff60;
-    }
-
-    .avatar-icon {
-      width: 34px;
-      height: 34px;
-      background: linear-gradient(145deg, #18243f, #0c1220);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .avatar-icon i {
-      font-size: 1.15rem;
-      color: #8aabf0;
-    }
-
-    .user-name {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #cad2ff;
-    }
-
-    .dropdown-icon {
-      font-size: 0.7rem;
-      color: #7f95cf;
-    }
+    /* header: /styles/header.css */
 
     /* ========== MAIN HOMEPAGE (clean, no game logic) ========== */
     .hero {
@@ -383,6 +143,11 @@
       flex-wrap: wrap;
     }
 
+    .features-grid a {
+      text-decoration: none;
+      color: white;
+    }
+
     .feature-card {
       background: #0f1422;
       border: 1px solid #202a42;
@@ -424,6 +189,21 @@
     .feature-card p {
       color: #9aabcf;
       font-size: 0.9rem;
+    }
+
+    .feature-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      color: #88abff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .feature-link:hover {
+      color: #c7d9ff;
     }
 
     /* Pack Preview Section (showcases upcoming Pokémon integration) */

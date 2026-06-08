@@ -15,6 +15,7 @@ const setInfo = document.getElementById('setInfo');
 let ownedCards = [];
 let currentCards = [];
 let currentSetCode = '';
+let favoriteCards = [];
 
 // DEBUG RELOAD DETECTION
 window.addEventListener('beforeunload', () => {
@@ -103,20 +104,22 @@ function getOwnedCount(id) {
 
 // ---------------- SELL ----------------
 
-async function sellCard(cardId) {
+async function sellCard(card) {
 
-    const res = await fetch(`${API}/sell_card.php`, {
+    const res = await fetch(`${API}/users.php?action=instaSell`, {
         method: 'POST',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ cardId })
+        body: JSON.stringify({
+            cardId: card.id,
+            cardValue: getCardPrice(card)
+        })
     });
 
     return await res.json();
 }
-
 // ---------------- SEND TO MARKET ----------------
 
 async function sendToMarket(card) {
@@ -160,6 +163,9 @@ async function sendToMarket(card) {
 function renderCard(card) {
 
     const ownedCount = getOwnedCount(card.id);
+    const favoriteCount = getFavoriteCount(card.id);
+
+    const isFavorite = favoriteCount > 0;
 
     const el = document.createElement('article');
 
@@ -193,53 +199,60 @@ function renderCard(card) {
             class="market">
             Send to Market
         </button>
+
+        <button
+            type="button"
+            ${ownedCount === 0 ? 'disabled' : ''}
+            class="favorite">
+            ${isFavorite ? 'Unfavorite' : 'Favorite'}
+        </button>
     `;
 
     // ---------------- SELL BUTTON ----------------
 
-    try{
+    try {
         const sellBtn = el.querySelector('.sell');
 
-         sellBtn.addEventListener('click', async (e) => {
+        sellBtn.addEventListener('click', async (e) => {
 
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-        try {
+            try {
 
-            sellBtn.disabled = true;
+                sellBtn.disabled = true;
 
-            const res = await sellCard(card.id);
+                const res = await sellCard(card);
 
-            if (res.success) {
+                if (res.success) {
 
-                const i = ownedCards.indexOf(card.id);
+                    const i = ownedCards.indexOf(card.id);
 
-                if (i !== -1) {
-                    ownedCards.splice(i, 1);
+                    if (i !== -1) {
+                        ownedCards.splice(i, 1);
+                    }
+
+                    rerender();
                 }
-
-                rerender();
-            }
 
             } catch (err) {
 
-            console.error(err);
+                console.error(err);
 
             } finally {
 
-            sellBtn.disabled = false;
+                sellBtn.disabled = false;
             }
 
-            }, true);
+        }, true);
     }
-    catch{
+    catch {
         console.log("warning geen sell button")
     }
-    
 
-   
+
+
 
     // ---------------- MARKET BUTTON ----------------
 
@@ -265,7 +278,60 @@ function renderCard(card) {
         }
 
     });
-    cardsGrid.appendChild(el);
+
+    const favoriteBtn = el.querySelector('.favorite');
+
+favoriteBtn.addEventListener('click', async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+        favoriteBtn.disabled = true;
+
+        const favoriteCount = getFavoriteCount(card.id);
+        const ownedCount = getOwnedCount(card.id);
+
+        if (favoriteCount === 0) {
+
+            const res = await favoriteCard(card.id);
+
+            if (res.success) {
+
+                favoriteCards.push({
+                    card_id: card.id
+                });
+            }
+
+        } else {
+
+            const res = await unfavoriteCard(card.id);
+
+            if (res.success) {
+
+                const index = favoriteCards.findIndex(
+                    x => x.card_id === card.id
+                );
+
+                if (index !== -1) {
+                    favoriteCards.splice(index, 1);
+                }
+            }
+        }
+
+        rerender();
+
+    } catch (err) {
+
+        console.error(err);
+
+    } finally {
+
+        favoriteBtn.disabled = false;
+    }
+});
+
+cardsGrid.appendChild(el);
 }
 
 // ---------------- RERENDER ----------------
@@ -322,12 +388,13 @@ function updateSetInfo() {
 
     const ownedSet = new Set(ownedCards);
 
-    const ownedCount = currentCards.filter(c =>
-        ownedSet.has(c.id)
+    const ownedCount = currentCards.filter(card =>
+        ownedSet.has(card.id)
     ).length;
 
     setInfo.textContent =
         `${ownedCount}/${currentCards.length} collected`;
+        
 }
 
 // ---------------- LOAD SET ----------------
@@ -341,6 +408,7 @@ async function loadSet() {
     setTitle.textContent = 'Loading...';
 
     await loadOwnedCards();
+    await loadFavorites();
 
     const set = await tcgdex.fetch('sets', setId);
 
@@ -357,6 +425,78 @@ async function loadSet() {
     setTitle.textContent = set.name;
 
     rerender();
+}
+
+
+// -------------- Favorites --------------
+
+
+async function loadFavorites() {
+
+    const res = await fetch(
+        `${API}/favorite.php?action=get`,
+        {
+            credentials: 'include'
+        }
+    );
+
+    favoriteCards = await res.json();
+}
+
+function getFavoriteCount(cardId) {
+
+    return favoriteCards.filter(
+        x => x.card_id === cardId
+    ).length;
+}
+
+function totalFavorites() {
+
+    return favoriteCards.length;
+}
+
+function isFavorited(cardId) {
+
+    return getFavoriteCount(cardId) > 0;
+}
+
+async function favoriteCard(cardId) {
+
+    const res = await fetch(
+        `${API}/favorite.php?action=add`,
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cardId })
+        }
+    );
+
+    const text = await res.text();
+
+    console.log(text);
+
+    return JSON.parse(text);
+}
+
+async function unfavoriteCard(cardId) {
+
+    const res = await fetch(
+        `${API}/favorite.php?action=remove`,
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                cardId
+            })
+        }
+    );
+    return await res.json();
 }
 
 // ---------------- START ----------------

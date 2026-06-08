@@ -80,10 +80,10 @@ async function loadUserCollectionProgress() {
 
     const data = res.ok ? await res.json() : [];
 
-    // expand duplicates like cards page
-    const ownedCards = data.flatMap(c =>
-        Array(Number(c.card_amount)).fill(c.card_id)
-    );
+    // only count unique cards
+    const ownedCards = [...new Set(
+        data.map(c => c.card_id)
+    )];
 
     userCollectionProgress = {};
 
@@ -234,7 +234,7 @@ async function loadSets() {
                 userCollectionProgress[set.id] || 0;
 
             const totalCards =
-                set.cardCount?.official || 0;
+                set.cardCount.total || 0;
 
             const percentage = totalCards > 0
                 ? Math.round((ownedCards / totalCards) * 100)

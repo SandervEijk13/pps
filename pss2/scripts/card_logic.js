@@ -368,6 +368,18 @@ export function formatHeaderCoins(amount) {
     return roundTo2(amount).toFixed(2);
 }
 
+/** Weighted pull from a reel crate pool (same logic as crate-opener). */
+export function pickWeightedReelItem(items, randomFn = Math.random) {
+    if (!items?.length) return null;
+    const total = items.reduce((sum, it) => sum + Number(it.dropChance || 1), 0);
+    let roll = randomFn() * total;
+    for (const item of items) {
+        roll -= Number(item.dropChance || 1);
+        if (roll <= 0) return { ...item };
+    }
+    return { ...items[items.length - 1] };
+}
+
 function isObtainable(card) {
     if (isEnergy(card)) return false;
 
@@ -399,7 +411,8 @@ function cardToReelItem(card) {
 
 const PACK_CACHE_KEY = 'pss-fixed-crate-packs';
 const PACK_SEED_KEY = 'pss-pack-roll-seed';
-const PACK_CACHE_VERSION = 8;
+const PACK_CACHE_VERSION = 9;
+const GLOBAL_CATALOG_SEED = 'pss-global-v1';
 /** Vaste packprijzen (coins) */
 const PACK_PRICE_BY_TIER = {
     basic: 0.5,
@@ -448,7 +461,7 @@ function getPackPoolSize(packTier) {
 }
 
 /** Ultra Rare pack: eerst chase/ultra/mid, daarna overige elite-kaarten tot 80 */
-function buildElitePackItems(allCards) {
+function buildElitePackItems(allCards, seedSuffix = '', packSeedOverride = null) {
     const pool = allCards.filter(c => getReelPackTier(c) === 'elite');
     if (!pool.length) return [];
 
@@ -456,28 +469,31 @@ function buildElitePackItems(allCards) {
     const highEnd = [...tierMap.chase, ...tierMap.ultra, ...tierMap.mid];
     const filler = tierMap.rare;
 
-    const packSeed = getPackSeed();
+    const packSeed = packSeedOverride ?? getPackSeed();
     const highPicked = pickUniqueDeterministic(
         highEnd,
         Math.min(highEnd.length, ELITE_PACK_POOL_SIZE),
-        `pss-pack-elite-high-${packSeed}`
+        `pss-pack-elite-high-${packSeed}${seedSuffix}`
     );
     const slotsLeft = ELITE_PACK_POOL_SIZE - highPicked.length;
     const restPicked = slotsLeft > 0
-        ? pickUniqueDeterministic(filler, slotsLeft, `pss-pack-elite-rest-${packSeed}`)
+        ? pickUniqueDeterministic(filler, slotsLeft, `pss-pack-elite-rest-${packSeed}${seedSuffix}`)
         : [];
 
     return [...highPicked, ...restPicked].map(c => cardToReelItem(c));
 }
 
-function buildFixedPackItems(allCards, packTier) {
-    if (packTier === 'elite') return buildElitePackItems(allCards);
+function buildFixedPackItems(allCards, packTier, seedSuffix = '', packSeedOverride = null) {
+    if (packTier === 'elite') {
+        return buildElitePackItems(allCards, seedSuffix, packSeedOverride);
+    }
 
     const pool = allCards.filter(c => getReelPackTier(c) === packTier);
+    const packSeed = packSeedOverride ?? getPackSeed();
     const picked = pickUniqueDeterministic(
         pool,
         PACK_POOL_SIZE,
-        `pss-pack-${packTier}-${getPackSeed()}`
+        `pss-pack-${packTier}-${packSeed}${seedSuffix}`
     );
     return picked.map(c => cardToReelItem(c));
 }
@@ -602,9 +618,12 @@ export async function openPack(setCode) {
 --------------------------*/
 
 const REEL_PACK_DEFS = [
-    { id: 'basic', name: 'Common & Uncommon Pack', tier: 'basic', imageTint: '4c1d95' },
-    { id: 'rare', name: 'Rare Pack', tier: 'rare', imageTint: '1d4ed8' },
-    { id: 'elite', name: 'Ultra Rare Pack', tier: 'elite', imageTint: 'b45309' }
+    { id: 'basic', name: 'Starter Pack', tier: 'basic', seedSuffix: '', imageTint: '4c1d95' },
+    { id: 'basic_ii', name: 'Starter Pack II', tier: 'basic', seedSuffix: '-v2', imageTint: '5b21b6' },
+    { id: 'rare', name: 'Rare Pack', tier: 'rare', seedSuffix: '', imageTint: '1d4ed8' },
+    { id: 'rare_ii', name: 'Rare Pack II', tier: 'rare', seedSuffix: '-v2', imageTint: '2563eb' },
+    { id: 'elite', name: 'Ultra Rare Pack', tier: 'elite', seedSuffix: '', imageTint: 'b45309' },
+    { id: 'elite_ii', name: 'Chase Pack', tier: 'elite', seedSuffix: '-v2', imageTint: 'c2410c' }
 ];
 
 function tierPoolsReady(counts) {
@@ -657,8 +676,10 @@ async function loadCardsFromSet(setId, onProgress) {
  * Alleen whitelist-sets; per set batches tot pools vol zijn.
  * Stopt midden in een set zodra genoeg basic/rare/elite kaarten zijn.
  */
-async function loadObtainableCardsFromAllowedSets(onProgress) {
-    const setIds = [...ALLOWED_SET_IDS].sort(() => Math.random() - 0.5);
+async function loadObtainableCardsFromAllowedSets(onProgress, deterministic = false) {
+    const setIds = deterministic
+        ? [...ALLOWED_SET_IDS].sort()
+        : [...ALLOWED_SET_IDS].sort(() => Math.random() - 0.5);
     const obtainable = [];
     const tierCounts = { basic: 0, rare: 0, elite: 0 };
 
@@ -674,7 +695,9 @@ async function loadObtainableCardsFromAllowedSets(onProgress) {
 
         try {
             const set = await tcgdex.set.get(setId);
-            const briefs = [...set.cards].sort(() => Math.random() - 0.5);
+            const briefs = deterministic
+                ? [...set.cards].sort((a, b) => String(a.id).localeCompare(String(b.id)))
+                : [...set.cards].sort(() => Math.random() - 0.5);
 
             for (let i = 0; i < briefs.length; i += CARD_BATCH_SIZE) {
                 if (tierPoolsReady(tierCounts)) break;
@@ -712,8 +735,10 @@ export async function buildReelCrates(onProgress, options = {}) {
     const params = new URLSearchParams(window.location.search);
     const setFilter = params.get('set');
     const forceRefresh = options.forceRefresh || params.get('refresh') === '1';
+    const catalogSeed = options.catalogSeed || null;
+    const deterministic = Boolean(catalogSeed);
 
-    if (forceRefresh) clearPackCache();
+    if (forceRefresh && !catalogSeed) clearPackCache();
 
     if (!forceRefresh) {
         const cached = loadPackCache();
@@ -738,13 +763,19 @@ export async function buildReelCrates(onProgress, options = {}) {
         setName = set.name;
         setCode = setFilter;
     } else {
-        cards = await loadObtainableCardsFromAllowedSets(onProgress);
+        cards = await loadObtainableCardsFromAllowedSets(onProgress, deterministic);
     }
 
     if (onProgress) onProgress('Packs samenstellen…');
 
+    const packSeed = catalogSeed || getPackSeed();
     const crates = REEL_PACK_DEFS.map(def => {
-        const items = buildFixedPackItems(cards, def.tier);
+        const items = buildFixedPackItems(
+            cards,
+            def.tier,
+            def.seedSuffix || '',
+            packSeed
+        );
         const price = getPackPriceForTier(def.tier, items);
         const cover = items.length
             ? items[0].image

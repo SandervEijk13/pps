@@ -15,7 +15,7 @@
     const inventoryGrid = document.getElementById('inventoryGrid');
     const openInventoryBtn = document.getElementById('openInventoryBtn');
     const closeInventoryBtn = document.getElementById('closeInventoryBtn');
-    const coinsAmount = document.getElementById('coinsAmount');
+    const coinsAmount = document.getElementById('coin-amount');
     function ensurePackOverlay() {
         let overlay = document.getElementById('packOpenOverlay');
         if (!overlay) {
@@ -30,7 +30,20 @@
                                 <div class="pack-open-half pack-open-bottom"></div>
                             </div>
                         </div>
-                        <div id="packOpenCards" class="pack-open-cards"></div>
+                        <div id="packOpenWorkspace" class="pack-open-workspace">
+                            <div id="packOpenCards" class="pack-open-cards"></div>
+                            <aside id="packOpenCardTab" class="pack-open-card-tab" aria-hidden="true">
+                                <span class="pack-tab-label">Card details</span>
+                                <h3 id="packTabName" class="pack-tab-name">—</h3>
+                                <p id="packTabRarity" class="pack-tab-rarity">—</p>
+                                <p id="packTabPrice" class="pack-tab-price">—</p>
+                                <div id="packTabActions" class="pack-tab-actions" hidden>
+                                    <button type="button" class="pack-tab-btn btn-sell" id="packTabSell">Sell</button>
+                                    <button type="button" class="pack-tab-btn btn-keep" id="packTabKeep">Keep</button>
+                                </div>
+                                <p id="packTabHint" class="pack-tab-hint">Click the top card to reveal</p>
+                            </aside>
+                        </div>
                         <div id="packOpenReview" class="pack-open-review"></div>
                     </div>
                 </div>
@@ -45,7 +58,9 @@
             scene: document.getElementById('packOpenScene'),
             shell: document.getElementById('packOpenShell'),
             cardsContainer: document.getElementById('packOpenCards'),
-        reviewContainer: document.getElementById('packOpenReview'),
+            workspace: document.getElementById('packOpenWorkspace'),
+            cardTab: document.getElementById('packOpenCardTab'),
+            reviewContainer: document.getElementById('packOpenReview'),
             closeBtn: document.getElementById('closePackOverlayBtn')
         };
     }
@@ -168,6 +183,8 @@
                 scene: overlayRefs.scene,
                 shell: overlayRefs.shell,
                 cardsContainer: overlayRefs.cardsContainer,
+                workspace: overlayRefs.workspace,
+                cardTab: overlayRefs.cardTab,
                 reviewContainer: overlayRefs.reviewContainer,
                 cardsPromise: openPack(setCode),
                 callbacks: {
@@ -185,7 +202,9 @@
                 scene: overlayRefs.scene,
                 shell: overlayRefs.shell,
                 cardsContainer: overlayRefs.cardsContainer,
-            reviewContainer: overlayRefs.reviewContainer,
+                workspace: overlayRefs.workspace,
+                cardTab: overlayRefs.cardTab,
+                reviewContainer: overlayRefs.reviewContainer,
                 force: true
             });
             alert('Could not open this pack right now.');
@@ -415,7 +434,9 @@
                 scene: overlayRefs.scene,
                 shell: overlayRefs.shell,
                 cardsContainer: overlayRefs.cardsContainer,
-            reviewContainer: overlayRefs.reviewContainer,
+                workspace: overlayRefs.workspace,
+                cardTab: overlayRefs.cardTab,
+                reviewContainer: overlayRefs.reviewContainer,
                 isBusy: isOpeningPack
             });
         });
@@ -427,7 +448,9 @@
                     scene: overlayRefs.scene,
                     shell: overlayRefs.shell,
                     cardsContainer: overlayRefs.cardsContainer,
-                reviewContainer: overlayRefs.reviewContainer,
+                    workspace: overlayRefs.workspace,
+                    cardTab: overlayRefs.cardTab,
+                    reviewContainer: overlayRefs.reviewContainer,
                     isBusy: isOpeningPack
                 });
             }

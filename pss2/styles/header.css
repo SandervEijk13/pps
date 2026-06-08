@@ -1,0 +1,313 @@
+/**
+ * Shared site header — load on every page before page-specific CSS.
+ * Render markup via scripts/header.js → #app-header
+ */
+
+.header {
+    background: #0b0e14;
+    border-bottom: 1px solid #1e2a3e;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 74px;
+    position: relative;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.logo-area a {
+    text-decoration: none;
+}
+
+.logo-icon {
+    background: linear-gradient(135deg, #2c5bff, #0f2f6b);
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 12px -6px rgba(0, 40, 120, 0.5);
+}
+
+.logo-icon i {
+    font-size: 22px;
+    color: white;
+}
+
+.logo-text {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #f0f5ff, #aac9ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.header .nav-links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.header .nav-link {
+    text-decoration: none;
+    color: #d2defc;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+}
+
+.header .nav-link i {
+    font-size: 1rem;
+    color: #5a7bcb;
+    transition: 0.2s;
+}
+
+.header .nav-link:hover,
+.header .nav-link.nav-link-active {
+    color: white;
+    border-bottom-color: #2c5bff;
+}
+
+.header .nav-link:hover i,
+.header .nav-link.nav-link-active i {
+    color: #88abff;
+}
+
+.right-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.ticket-widget {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #121724;
+    padding: 8px 16px;
+    border-radius: 48px;
+    border: 1px solid #25344d;
+    color: #d6e2ff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.ticket-widget:hover {
+    border-color: #3e5a85;
+    background: #151e2c;
+}
+
+.ticket-widget i {
+    color: #7fa7ff;
+}
+
+.coin-widget {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #121724;
+    padding: 8px 20px;
+    border-radius: 48px;
+    border: 1px solid #25344d;
+    transition: all 0.2s;
+}
+
+.coin-widget:hover {
+    border-color: #3e5a85;
+    background: #151e2c;
+}
+
+.coin-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coin-img {
+    width: 30px;
+    height: 30px;
+}
+
+#coin-amount {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #f3e5c0;
+    letter-spacing: 0.3px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 12px 6px 14px;
+    border-radius: 48px;
+    cursor: pointer;
+    border: 1px solid #202a3a;
+    background: #0e121c;
+    transition: 0.2s;
+    position: relative;
+}
+
+.user-profile:hover {
+    background: #161e2c;
+    border-color: rgba(44, 91, 255, 0.38);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 167px;
+    background: #111827;
+    border: 1px solid #25344d;
+    border-radius: 18px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    z-index: 999;
+    animation: headerDropdownFade 0.18s ease;
+}
+
+.profile-dropdown.active {
+    display: flex;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #d6e2ff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    transition: 0.2s ease;
+    font-size: 0.92rem;
+}
+
+.dropdown-item i {
+    color: #7fa7ff;
+    width: 18px;
+}
+
+.dropdown-item:hover {
+    background: #1a2336;
+    color: white;
+}
+
+@keyframes headerDropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.avatar-icon {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(145deg, #18243f, #0c1220);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-icon i {
+    font-size: 1.15rem;
+    color: #8aabf0;
+}
+
+.user-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #cad2ff;
+}
+
+.dropdown-icon {
+    font-size: 0.7rem;
+    color: #7f95cf;
+}
+
+@media (max-width: 900px) {
+    .header .nav-links {
+        gap: 1.25rem;
+    }
+
+    .header .nav-link {
+        font-size: 0.88rem;
+    }
+}
+
+@media (max-width: 720px) {
+    .header .nav-links {
+        position: static;
+        transform: none;
+        justify-content: center;
+        width: 100%;
+        order: 3;
+        margin-top: 12px;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .header-inner {
+        flex-wrap: wrap;
+    }
+
+    .container {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header .nav-link span {
+        font-size: 0.8rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .ticket-widget {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}

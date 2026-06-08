@@ -1,3 +1,5 @@
+@import url('/styles/header.css');
+
 * {
     margin: 0;
     padding: 0;
@@ -5,11 +7,12 @@
 }
 
 body {
-    background: #0f172a;
-    color: white;
-    font-family: Arial, sans-serif;
+    background: #0a0c10;
+    color: #eef2ff;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    line-height: 1.5;
 }
 
 .shop-page {
@@ -28,15 +31,6 @@ body {
 
 .shop-header h1 {
     font-size: 42px;
-}
-
-.coins-display {
-    background: #1e293b;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 20px;
-    font-weight: bold;
-    border: 2px solid #334155;
 }
 
 .shop-grid {
@@ -238,10 +232,10 @@ body.inventory-open .inventory-panel {
     margin-bottom: 18px;
 }
 
-.coin-icon {
+.pack-price .coin-icon {
     width: 30px;
     height: 30px;
-    margin-right: 15px;
+    margin-right: 0;
 }
 
 .pack-open-overlay {
@@ -269,6 +263,7 @@ body.inventory-open .inventory-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     background:
         linear-gradient(rgba(8, 9, 16, 0.55), rgba(8, 9, 16, 0.75)),
         var(--pack-bg-image),
@@ -288,6 +283,10 @@ body.inventory-open .inventory-panel {
     padding: 8px 12px;
     border-radius: 10px;
     cursor: pointer;
+}
+
+.pack-open-overlay.is-open:not(.has-review) .close-pack-overlay-btn {
+    display: none;
 }
 
 .pack-open-scene {
@@ -344,13 +343,29 @@ body.inventory-open .inventory-panel {
     opacity: 0;
 }
 
+.pack-open-workspace {
+    display: none;
+    flex: 1;
+    width: min(1100px, 96vw);
+    min-height: min(58vh, 480px);
+    align-items: center;
+    justify-content: center;
+    gap: clamp(20px, 4vw, 48px);
+    margin: auto;
+}
+
+.pack-open-workspace.is-visible {
+    display: flex;
+}
+
 .pack-open-cards {
     display: none;
     position: relative;
-    width: min(1200px, 96vw);
-    height: min(46vh, 420px);
-    margin: -20px auto 10px;
-    overflow: hidden;
+    width: clamp(200px, 28vw, 280px);
+    height: clamp(280px, 42vh, 400px);
+    margin: 0;
+    overflow: visible;
+    flex-shrink: 0;
 }
 
 .pack-open-cards.is-visible {
@@ -360,14 +375,15 @@ body.inventory-open .inventory-panel {
 .pack-open-card {
     position: absolute;
     left: 50%;
-    bottom: 6%;
+    top: 50%;
     width: clamp(120px, 14vw, 190px);
     aspect-ratio: 63 / 88;
     perspective: 1000px;
-    transform-origin: center bottom;
+    transform-origin: center center;
     opacity: 0;
     z-index: var(--stack-order, 1);
-    transform: translate(-50%, 10px) rotate(0deg);
+    transform:
+        translate(calc(-50% + var(--stack-x, 0px)), calc(-50% + var(--stack-y, 0px)));
     transition:
         transform 850ms cubic-bezier(0.2, 0.7, 0.2, 1),
         opacity 360ms ease;
@@ -375,18 +391,136 @@ body.inventory-open .inventory-panel {
 
 .pack-open-card.is-dealt {
     opacity: 1;
-    transform:
-        translate(calc(-50% + var(--fan-x, 0px)), calc(var(--fan-y, 0px)))
-        rotate(var(--fan-rot, 0deg));
+}
+
+.pack-open-card:not(.is-active) {
+    pointer-events: none;
+}
+
+.pack-open-card.is-active {
+    cursor: pointer;
 }
 
 .pack-open-card.is-vanished {
     opacity: 0;
     transform:
-        translate(calc(-50% + var(--fan-x, 0px)), calc(var(--fan-y, 0px) + 24px))
-        rotate(var(--fan-rot, 0deg))
+        translate(calc(-50% + var(--stack-x, 0px)), calc(-50% + var(--stack-y, 0px) + 20px))
         scale(0.82);
     pointer-events: none;
+}
+
+.pack-open-card-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(250px, 32vw);
+    padding: 18px 20px 20px 26px;
+    margin-left: 28px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.38);
+    border-radius: 4px 16px 16px 16px;
+    box-shadow: -10px 8px 28px rgba(0, 0, 0, 0.38);
+    position: relative;
+    flex-shrink: 0;
+    opacity: 0.72;
+    transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.pack-open-card-tab::before {
+    content: "";
+    position: absolute;
+    left: -18px;
+    top: 36px;
+    width: 18px;
+    height: 56px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.38);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    box-shadow: -6px 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.pack-open-card-tab.is-ready {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.pack-tab-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+}
+
+.pack-tab-name {
+    font-size: 20px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.pack-tab-rarity {
+    font-size: 14px;
+    color: #c4b5fd;
+    margin: 0;
+}
+
+.pack-tab-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #facc15;
+    margin: 0;
+}
+
+.pack-tab-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.pack-tab-btn {
+    flex: 1;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+}
+
+.pack-tab-btn.btn-sell {
+    background: #dc2626;
+}
+
+.pack-tab-btn.btn-keep {
+    background: #2563eb;
+}
+
+.pack-tab-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.pack-tab-hint {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 4px 0 0;
+}
+
+@media (max-width: 720px) {
+    .pack-open-workspace.is-visible {
+        flex-direction: column;
+    }
+
+    .pack-open-card-tab {
+        width: min(320px, 92vw);
+        margin-left: 0;
+        border-radius: 16px;
+    }
+
+    .pack-open-card-tab::before {
+        display: none;
+    }
 }
 
 .pack-open-loading {
@@ -449,6 +583,28 @@ body.inventory-open .inventory-panel {
     background: rgba(30, 41, 59, 0.78);
 }
 
+.pack-review-choice {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 6px 10px;
+    border-radius: 7px;
+    color: #fff;
+}
+
+.pack-review-row.is-sold .pack-review-choice {
+    background: #dc2626;
+}
+
+.pack-review-row.is-kept .pack-review-choice {
+    background: #2563eb;
+}
+
+.pack-review-row.is-error .pack-review-choice {
+    background: #64748b;
+}
+
 .pack-review-thumb {
     width: 52px;
     height: 72px;
@@ -474,28 +630,6 @@ body.inventory-open .inventory-panel {
 .pack-review-price {
     color: #facc15;
     font-size: 13px;
-}
-
-.pack-review-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.pack-review-btn {
-    border: none;
-    border-radius: 7px;
-    padding: 6px 10px;
-    font-size: 12px;
-    cursor: pointer;
-    color: white;
-}
-
-.pack-review-btn.btn-sell {
-    background: #dc2626;
-}
-
-.pack-review-btn.btn-keep {
-    background: #2563eb;
 }
 
 .pack-review-row.is-sold {
@@ -537,27 +671,13 @@ body.inventory-open .inventory-panel {
 
 .pack-open-card-front {
     transform: rotateY(180deg);
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 8px;
-    padding: 8px;
-    text-align: center;
+    padding: 6px;
 }
 
 .pack-open-card-front img {
     width: 100%;
-    min-height: 175px;
+    height: 100%;
     border-radius: 8px;
     object-fit: cover;
     background: #0d1018;
-}
-
-.pack-open-card-front h3 {
-    font-size: 14px;
-    line-height: 1.2;
-}
-
-.pack-open-card-front p {
-    font-size: 12px;
-    color: #b7c2ff;
 }

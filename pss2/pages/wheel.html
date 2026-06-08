@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Wheel of Fortune</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/wheel.css" />
+</head>
+<body>
+
+    <div id="app-header" data-active="wheel" data-show-tickets="true"></div>
+
+    <main class="wheel-page">
+        <section class="wheel-hero">
+            <div class="wheel-hero-badge"><i class="fas fa-dharmachakra"></i> Wheel of Fortune</div>
+            <h1>Spin for coins, cards & packs</h1>
+            <p>Spin for 50 coins or 1 ticket</p>
+        </section>
+
+        <div id="wheelLoginGate" class="wheel-gate is-hidden">
+            <p>Log in to spin the wheel.</p>
+            <a href="/pages/login.html" class="btn-wheel-primary">Login</a>
+        </div>
+
+        <section id="wheelMain" class="wheel-layout is-hidden">
+            <div class="wheel-stage">
+                <div class="wheel-pointer" aria-hidden="true"></div>
+                <canvas id="wheelCanvas" width="420" height="420" aria-label="Prize wheel"></canvas>
+                <div class="wheel-hub"><i class="fas fa-star"></i></div>
+            </div>
+
+            <aside class="wheel-panel">
+                <div class="wheel-actions">
+                    <button type="button" id="btnSpinCoins" class="btn-wheel-primary" disabled>
+                        <i class="fas fa-coins"></i> Spin (<span id="coinCostLabel">50</span> coins)
+                    </button>
+                    <button type="button" id="btnSpinTicket" class="btn-wheel-secondary" disabled>
+                        <i class="fas fa-ticket"></i> Spin (1 ticket)
+                    </button>
+                </div>
+
+                <p id="wheelStatus" class="wheel-status" role="status"></p>
+
+                <div class="wheel-prize-panel">
+                    <h3>Alle prijzen op dit rad</h3>
+                    <div id="wheelPrizeList" class="wheel-prize-list"></div>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <div id="rewardModal" class="reward-modal is-hidden" role="dialog" aria-modal="true">
+        <div class="reward-modal-backdrop"></div>
+        <div class="reward-modal-card">
+            <div id="rewardModalBadge" class="reward-modal-badge">You won!</div>
+            <div id="rewardModalVisual" class="reward-modal-visual"></div>
+            <h2 id="rewardModalTitle">Prize</h2>
+            <p id="rewardModalMessage"></p>
+            <button type="button" id="btnCloseReward" class="btn-wheel-primary">Nice!</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script type="module" src="/scripts/wheel.js"></script>
+</body>
+</html>
