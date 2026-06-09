@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Leaderboards</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/game-font.css" />
+    <link rel="stylesheet" href="/styles/leaderboard.css" />
+</head>
+<body>
+
+    <div id="app-header" data-active="leaderboard"></div>
+
+    <main class="leaderboard-page">
+        <section class="leaderboard-hero">
+            <div class="leaderboard-hero-badge"><i class="fas fa-trophy"></i> Leaderboards</div>
+            <h1>Top trainers</h1>
+            <p>Compare coins, collection value, biggest wins and total wagered.</p>
+        </section>
+
+        <div class="leaderboard-tabs" id="leaderboardTabs" role="tablist"></div>
+
+        <div id="myRankCard" class="leaderboard-my-rank is-hidden">
+            <span class="leaderboard-my-rank__label">Your rank</span>
+            <strong id="myRankValue">—</strong>
+            <span id="myRankStat" class="leaderboard-my-rank__stat">—</span>
+        </div>
+
+        <section class="leaderboard-panel" aria-live="polite">
+            <div id="leaderboardLoader" class="leaderboard-loader is-hidden">
+                <div class="leaderboard-loader-spin"></div>
+            </div>
+            <p id="leaderboardError" class="leaderboard-error is-hidden"></p>
+            <ol id="leaderboardList" class="leaderboard-list"></ol>
+            <p id="leaderboardEmpty" class="leaderboard-empty is-hidden">No entries yet. Play to climb the ranks!</p>
+        </section>
+    </main>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script type="module" src="/scripts/leaderboard.js"></script>
+</body>
+</html>

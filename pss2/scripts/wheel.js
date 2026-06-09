@@ -1,4 +1,5 @@
 import { formatHeaderCoins } from '/scripts/card_logic.js';
+import { initGameInfo } from '/scripts/game-info.js';
 
 function getApiBase() {
     if (window.location.port === '5173') {
@@ -362,6 +363,7 @@ async function doSpin(payment) {
 }
 
 function bindEvents() {
+    initGameInfo();
     els.btnSpinCoins?.addEventListener('click', () => doSpin('coins'));
     els.btnSpinTicket?.addEventListener('click', () => doSpin('ticket'));
     els.btnCloseReward?.addEventListener('click', () => els.rewardModal?.classList.add('is-hidden'));

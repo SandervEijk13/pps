@@ -2,6 +2,7 @@
     import MemoryCache from '@cachex/memory';
     import { openPack, formatHeaderCoins } from '/scripts/card_logic.js';
     import { runPackOpenAnimation, closePackOpenAnimation } from '/scripts/pack-opening-animation.js';
+    import { initGameInfo } from '/scripts/game-info.js';
 
     const tcgdex = new TCGdex('en');
     tcgdex.setCache(new MemoryCache());
@@ -457,6 +458,7 @@
         });
     }
 
+    initGameInfo();
     refreshCoins();
     loadInventory();
     loadPacks();

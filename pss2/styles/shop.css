@@ -9,7 +9,6 @@
 body {
     background: #0a0c10;
     color: #eef2ff;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.5;
@@ -23,10 +22,12 @@ body {
 }
 
 .shop-header {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
+    padding-right: 48px;
 }
 
 .shop-header h1 {

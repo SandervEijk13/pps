@@ -9,6 +9,7 @@ import {
     getSellCoinsAmount
 } from '/scripts/card_logic.js';
 import { CrateReel, spinCrate } from '/scripts/crate-reel.js';
+import { initGameInfo } from '/scripts/game-info.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
@@ -1346,6 +1347,7 @@ function resetToSetup() {
 }
 
 function bindEvents() {
+    initGameInfo();
     document.querySelectorAll('.mode-btn').forEach((btn) => {
         btn.addEventListener('click', () => setMode(btn.dataset.mode));
     });

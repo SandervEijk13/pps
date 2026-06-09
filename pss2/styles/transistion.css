@@ -1,0 +1,24 @@
+/* loading.css */ 
+@view-transition { 
+    navigation: auto; 
+}
+
+::view-transition-old(root) { 
+    animation: fade-out 0.3s ease;
+ } 
+
+::view-transition-new(root) { 
+    animation: fade-in 0.3s ease; 
+} 
+
+@keyframes fade-out { 
+    to { 
+        opacity: 0; 
+    }
+ }
+
+ @keyframes fade-in { 
+    from { 
+        opacity: 0; 
+    } 
+}

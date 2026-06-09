@@ -632,6 +632,13 @@ function spinWheel(PDO $pdo): void
         $cardPool = getWheelCardPool($pdo);
         $reward = applySegmentReward($pdo, $userId, $segment, $cardPool);
 
+        recordUserWager($pdo, $userId, wheelSpinCostCoins());
+
+        $winValue = rewardValueFromPayload($reward);
+        if ($winValue > 0) {
+            recordUserWin($pdo, $userId, $winValue);
+        }
+
         $stmt = $pdo->prepare('
             INSERT INTO wheel_spins (user_id, segment_id, payment_type, reward_type, reward_json)
             VALUES (?, ?, ?, ?, ?)
@@ -671,7 +678,9 @@ function spinWheel(PDO $pdo): void
             'bigWin' => $bigWin,
         ]);
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         echo json_encode(['success' => false, 'message' => 'Spin failed']);
     }
 }
@@ -699,6 +708,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 session_start();
 require 'db.php';
 require_once __DIR__ . '/crates.php';
+require_once __DIR__ . '/leaderboard.php';
 
 $action = $_GET['action'] ?? '';
 

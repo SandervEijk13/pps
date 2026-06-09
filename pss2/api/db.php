@@ -17,3 +17,10 @@ try {
     echo json_encode(["success" => false, "message" => "DB connection failed"]);
     exit;
 }
+
+require_once __DIR__ . '/progression.php';
+try {
+    bootstrapProgressionSchema($pdo);
+} catch (PDOException $e) {
+    // Schema bootstrap failed — individual endpoints may still report errors.
+}

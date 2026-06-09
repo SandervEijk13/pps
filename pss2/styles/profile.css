@@ -204,6 +204,305 @@
       width: 28px;
       height: 28px;
     }
+
+    /* ---- LEVEL CARD ---- */
+    .level-card {
+      background: #0f1422;
+      border: 1px solid #202a42;
+      border-radius: 24px;
+      padding: 28px 32px;
+      margin-top: 24px;
+    }
+
+    .level-card-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .level-label {
+      font-size: 0.75rem;
+      color: #6a7faa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .level-value {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #88abff, #2c5bff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .level-xp-wrap {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .level-xp-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #8e9fc3;
+      margin-bottom: 8px;
+    }
+
+    .level-xp-bar {
+      height: 10px;
+      background: #141b2d;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #24304a;
+    }
+
+    .level-xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2c5bff, #6d9eff);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .level-reqs-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #9eb0d8;
+      margin-bottom: 12px;
+    }
+
+    .level-reqs-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .level-req {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #12192b;
+      border: 1px solid #1f2a42;
+      font-size: 0.82rem;
+      color: #b8c8ea;
+    }
+
+    .level-req i {
+      color: #5a6b8a;
+      width: 16px;
+      text-align: center;
+    }
+
+    .level-req.met {
+      border-color: rgba(72, 199, 142, 0.35);
+      background: rgba(72, 199, 142, 0.08);
+    }
+
+    .level-req.met i {
+      color: #48c78e;
+    }
+
+    .level-req-label {
+      flex: 1;
+    }
+
+    .level-req-value {
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      color: #eef2ff;
+    }
+
+    /* ---- RAFFLE CARD ---- */
+    .raffle-card {
+      background: linear-gradient(145deg, #10182a, #0c1220);
+      border: 1px solid #2a3658;
+      border-radius: 24px;
+      padding: 28px 32px;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .raffle-card::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(246, 201, 78, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .raffle-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .raffle-title {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .raffle-title i {
+      font-size: 1.4rem;
+      color: #f6c94e;
+      margin-top: 4px;
+    }
+
+    .raffle-title h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #eef2ff;
+      margin-bottom: 4px;
+    }
+
+    .raffle-title p {
+      font-size: 0.8rem;
+      color: #7f91b8;
+      max-width: 420px;
+    }
+
+    .raffle-timer {
+      font-family: ui-monospace, monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f6c94e;
+      background: rgba(246, 201, 78, 0.1);
+      border: 1px solid rgba(246, 201, 78, 0.25);
+      padding: 8px 14px;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .raffle-prize-row {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .raffle-prize {
+      background: #12192b;
+      border: 1px solid #24304a;
+      border-radius: 16px;
+      padding: 16px 18px;
+    }
+
+    .raffle-prize-label {
+      display: block;
+      font-size: 0.72rem;
+      color: #6a7faa;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .raffle-prize-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #f3e5c0;
+    }
+
+    .raffle-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .raffle-stat {
+      background: #12192b;
+      border: 1px solid #24304a;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .raffle-stat-label {
+      display: block;
+      font-size: 0.68rem;
+      color: #6a7faa;
+      margin-bottom: 4px;
+    }
+
+    .raffle-stat-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #eef2ff;
+    }
+
+    .raffle-history-title {
+      font-size: 0.8rem;
+      color: #8e9fc3;
+      margin-bottom: 8px;
+    }
+
+    .raffle-history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .raffle-history-list li {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(18, 25, 43, 0.7);
+      font-size: 0.78rem;
+    }
+
+    .raffle-winner {
+      color: #d6e2ff;
+      font-weight: 600;
+    }
+
+    .raffle-win-prize {
+      color: #f6c94e;
+    }
+
+    .raffle-win-meta {
+      color: #6a7faa;
+      font-family: ui-monospace, monospace;
+    }
+
+    .raffle-history-empty {
+      color: #5a6b8a;
+      font-style: italic;
+      padding: 8px 0;
+    }
+
+    @media (max-width: 720px) {
+      .raffle-prize-row {
+        grid-template-columns: 1fr;
+      }
+
+      .raffle-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .raffle-history-list li {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+    }
  
     /* ---- FAVORITE CARDS SECTION ---- */
     .section-title {
@@ -319,12 +618,6 @@
       font-size: 0.72rem;
       font-weight: 600;
       color: #f3e5c0;
-    }
-
-    .fav-coin-img
-    {
-      width: 15px;
-      height: 15px;
     }
  
     .fav-card-value i {

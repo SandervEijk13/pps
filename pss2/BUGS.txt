@@ -1,0 +1,9 @@
+1. kaart geen data? dan kan je niet verder naar de volgende 
+op alle dingen van de "info" laat hij een - zien
+
+soms staats er wel geen price
+
+2. kaarten met no price kan ik wel verkopen voor 0$
+
+3. prijs verandered op veel plekken pas na een refresh en niet dynamisch
+

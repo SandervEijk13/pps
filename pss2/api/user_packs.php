@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 session_start();
 require_once 'db.php';
+require_once __DIR__ . '/leaderboard.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([
@@ -179,6 +180,7 @@ function buyPack($pdo, $userId, $columns)
             WHERE id = ?
         ");
         $stmt->execute([$amount, $userId]);
+        recordUserWager($pdo, $userId, $amount);
 
         $insertColumns = ['user_id'];
         $insertValues = [$userId];

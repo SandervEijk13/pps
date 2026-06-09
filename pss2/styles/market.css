@@ -77,7 +77,6 @@
 
 body {
     background: var(--bg-base);
-    font-family: 'DM Sans', system-ui, sans-serif;
     color: var(--text);
     min-height: 100vh;
     background-image:
@@ -169,6 +168,7 @@ body {
 
 /* PAGE HERO */
 .page-hero {
+    position: relative;
     max-width: 1400px;
     margin: 0 auto;
     padding: 52px 32px 36px;

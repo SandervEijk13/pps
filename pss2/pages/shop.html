@@ -6,6 +6,8 @@
     <title>PokeVault | Pack Shop</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/game-font.css" />
+    <link rel="stylesheet" href="/styles/game-info.css" />
     <link rel="stylesheet" href="/styles/shop.css">
 </head>
 <body>
@@ -14,7 +16,11 @@
 
     <div class="shop-page">
 
-        <div class="shop-header">
+        <div class="shop-header game-hero-wrap game-info-theme--gold">
+
+    <button type="button" id="btnGameInfo" class="game-info-btn" aria-label="Hoe werkt de pack shop?">
+        <i class="fas fa-circle-info" aria-hidden="true"></i>
+    </button>
 
     <h1>Pokémon Pack Shop</h1>
 
@@ -67,6 +73,69 @@
                 </aside>
             </div>
             <div id="packOpenReview" class="pack-open-review"></div>
+        </div>
+    </div>
+
+    <div id="infoModal" class="game-info-modal game-info-theme--gold is-hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+        <div class="game-info-backdrop"></div>
+        <div class="game-info-card">
+            <button type="button" id="btnCloseInfo" class="game-info-close" aria-label="Sluiten"><i class="fas fa-times"></i></button>
+            <h2 id="infoModalTitle">Hoe werkt de Pack Shop?</h2>
+            <p class="game-info-intro">Koop Pokémon packs met coins, open ze en bouw je collectie op.</p>
+            <ol class="game-info-steps">
+                <li class="game-info-step">
+                    <div class="game-info-step-visual">
+                        <div class="info-anim info-anim--coins" aria-hidden="true">
+                            <i class="fas fa-coins"></i>
+                            <span class="info-anim-coin-val">buy</span>
+                        </div>
+                    </div>
+                    <div class="game-info-step-text">
+                        <strong>1. Koop een pack</strong>
+                        <span>Browse de shop en koop packs met je coins. Filter op prijs om snel iets in je budget te vinden.</span>
+                    </div>
+                </li>
+                <li class="game-info-step">
+                    <div class="game-info-step-visual">
+                        <div class="info-anim info-anim--pack" aria-hidden="true"></div>
+                    </div>
+                    <div class="game-info-step-text">
+                        <strong>2. Open uit inventory</strong>
+                        <span>Gekochte packs gaan naar je <em>Inventory</em>. Open ze wanneer je wilt via de inventory-knop.</span>
+                    </div>
+                </li>
+                <li class="game-info-step">
+                    <div class="game-info-step-visual">
+                        <div class="info-anim info-anim--card" aria-hidden="true">
+                            <div class="info-anim-card-face"></div>
+                        </div>
+                    </div>
+                    <div class="game-info-step-text">
+                        <strong>3. Bekijk je pulls</strong>
+                        <span>Elke pack onthult kaarten één voor één met een open-animatie. Klik door je pulls heen.</span>
+                    </div>
+                </li>
+                <li class="game-info-step">
+                    <div class="game-info-step-visual">
+                        <div class="info-anim info-anim--outcome" aria-hidden="true">
+                            <span class="info-outcome-win"><i class="fas fa-check"></i></span>
+                            <span class="info-outcome-loss"><i class="fas fa-coins"></i></span>
+                        </div>
+                    </div>
+                    <div class="game-info-step-text">
+                        <strong>4. Keep of sell</strong>
+                        <span><strong>Keep</strong> → kaart naar je collectie. <strong>Sell</strong> → direct coins (80% van de waarde).</span>
+                    </div>
+                </li>
+            </ol>
+            <div class="game-info-note">
+                <i class="fas fa-layer-group"></i>
+                <div>
+                    <span class="game-info-note-label">Collectie</span>
+                    <span class="game-info-note-hint">Bewaarde kaarten vind je terug onder Collection in de navigatie.</span>
+                </div>
+            </div>
+            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Begrepen!</button>
         </div>
     </div>
 

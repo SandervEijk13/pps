@@ -1,21 +1,9 @@
+@import url('/styles/header.css');
 @import url('/styles/crate-battles.css');
 
 body {
     background: radial-gradient(ellipse at 50% -20%, #1c1917 0%, #0c0a09 55%, #030712 100%);
     min-height: 100vh;
-}
-
-.ticket-widget {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: rgba(39, 39, 42, 0.9);
-    border: 1px solid rgba(82, 82, 91, 0.6);
-    color: #d4d4d8;
-    font-weight: 600;
-    font-size: 0.9rem;
 }
 
 .wheel-page {
@@ -25,6 +13,7 @@ body {
 }
 
 .wheel-hero {
+    position: relative;
     text-align: center;
     margin-bottom: 32px;
 }

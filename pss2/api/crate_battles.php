@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/crates.php';
+require_once __DIR__ . '/leaderboard.php';
 require "db.php";
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -228,6 +229,7 @@ function deductCoins(PDO $pdo, int $userId, float $amount): array
 
     $stmt = $pdo->prepare("UPDATE users SET user_coins = user_coins - ? WHERE id = ?");
     $stmt->execute([$amount, $userId]);
+    recordUserWager($pdo, $userId, $amount);
 
     $stmt = $pdo->prepare("SELECT user_coins FROM users WHERE id = ?");
     $stmt->execute([$userId]);
@@ -662,6 +664,9 @@ function tryFinishPvpRoom(PDO $pdo, array $room): ?array
 
     $allPulls = array_merge($hostPulls, $guestPulls);
     addCardsToUser($pdo, $winnerId, $allPulls);
+    recordUserWin($pdo, $winnerId, sumPullValues($allPulls));
+    require_once __DIR__ . '/progression.php';
+    progressionOnBattleWin($pdo, $winnerId);
 
     $stmt = $pdo->prepare("
         UPDATE crate_battle_rooms
@@ -857,6 +862,9 @@ function completePve(PDO $pdo): void
     $allPulls = array_merge($playerPulls, $opponentPulls);
     if ($outcome === 'win') {
         addCardsToUser($pdo, $userId, $allPulls);
+        recordUserWin($pdo, $userId, sumPullValues($allPulls));
+        require_once __DIR__ . '/progression.php';
+        progressionOnBattleWin($pdo, $userId);
     }
 
     unset($_SESSION['pve_battle']);

@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 session_start();
 require "db.php";
+require_once __DIR__ . '/leaderboard.php';
 
 $action = $_GET['action'] ?? '';
 
@@ -125,6 +126,7 @@ function removeCoins($pdo)
         WHERE id = ?
     ");
     $stmt->execute([$amount, $userId]);
+    recordUserWager($pdo, $userId, $amount);
 
     $stmt = $pdo->prepare("SELECT user_coins FROM users WHERE id = ?");
     $stmt->execute([$userId]);

@@ -1,31 +1,63 @@
 document.addEventListener("DOMContentLoaded", () => {
+
   const params = new URLSearchParams(window.location.search);
-  const profileId = params.get("id") || localStorage.getItem("userId");
-  const loggedInUserId = localStorage.getItem("userId");
-  
+
+  const profileId =
+    params.get("id") ||
+    localStorage.getItem("userId");
+
+  const loggedInUserId =
+    localStorage.getItem("userId");
+
   const profileName = document.getElementById("profileName");
   const profileHandle = document.getElementById("profileHandle");
   const profileCoins = document.getElementById("profileCoins");
   const visitorActions = document.getElementById("visitorActions");
-  const favoriteCardsGrid = document.getElementById("favoriteCardsGrid");
+  const profileLevelTitle = document.getElementById("profileLevelTitle");
+  const profileLevel = document.getElementById("profileLevel");
+  const levelXpText = document.getElementById("levelXpText");
+  const levelXpFill = document.getElementById("levelXpFill");
+  const nextLevelNum = document.getElementById("nextLevelNum");
+  const levelReqsList = document.getElementById("levelReqsList");
+  const raffleTimer = document.getElementById("raffleTimer");
+  const rafflePrize = document.getElementById("rafflePrize");
+  const raffleMyTickets = document.getElementById("raffleMyTickets");
+  const raffleMyChance = document.getElementById("raffleMyChance");
+  const rafflePool = document.getElementById("rafflePool");
+  const raffleHistory = document.getElementById("raffleHistory");
+
+  const API = typeof getApiBase === "function"
+    ? getApiBase()
+    : "http://localhost/pss/api";
+
+  let raffleEndsIn = 0;
+  let raffleTimerInterval = null;
+
+  const isOwnProfile = String(profileId) === String(loggedInUserId);
 
   loadProfile();
-  loadFavoriteCards();
+  loadLevel();
+  loadRaffle(isOwnProfile);
 
   async function loadProfile() {
+
     if (!profileId) {
       console.error("No profile id found");
       return;
     }
 
     try {
+
       const response = await fetch(
-        `http://localhost/pss/api/users.php?action=getProfile&id=${profileId}`
+        `${API}/users.php?action=getProfile&id=${profileId}`
       );
+
       const data = await response.json();
 
       if (!data.success) {
+
         console.error(data.message);
+
         profileName.textContent = "User not found";
         profileHandle.textContent = "";
         return;
@@ -33,132 +65,155 @@ document.addEventListener("DOMContentLoaded", () => {
 
       profileName.textContent = data.user.username;
       profileHandle.textContent = `@${data.user.username}`;
-      profileCoins.textContent = data.user.coins;
+      profileCoins.textContent = formatNumber(data.user.coins);
 
       if (String(profileId) !== String(loggedInUserId)) {
         visitorActions.style.display = "flex";
       } else {
         visitorActions.style.display = "none";
       }
+
     } catch (err) {
       console.error("Failed to load profile:", err);
     }
   }
 
-  async function loadFavoriteCards() {
-    if (!profileId) {
-      console.error("No profile id found");
+  async function loadLevel() {
+    if (!profileId || !profileLevel) {
       return;
     }
 
     try {
-      const favoritesResponse = await fetch(
-        `http://localhost/pss/api/favorite.php?action=get&user_id=${profileId}`
+      const response = await fetch(
+        `${API}/progression.php?action=getLevel&id=${profileId}`
       );
-      const favorites = await favoritesResponse.json();
-      
-      if (!favorites || favorites.length === 0) {
-        renderFavoriteCards([]);
+      const data = await response.json();
+
+      if (!data.success || !data.level) {
         return;
       }
 
-      const cardIds = favorites.map(fav => fav.card_id);
-      
-      const cardPromises = cardIds.map(cardId => 
-        fetch(`https://api.tcgdex.net/v2/en/cards/${cardId}`).then(res => res.json())
-      );
-      
-      const cards = await Promise.all(cardPromises);
-      renderFavoriteCards(cards);
-      
+      const level = data.level;
+
+      if (profileLevelTitle) {
+        profileLevelTitle.textContent = level.title;
+      }
+
+      profileLevel.textContent = level.level;
+      nextLevelNum.textContent = level.nextLevel;
+      levelXpText.textContent = `${formatNumber(level.xp)} / ${formatNumber(level.xpRequired)}`;
+      levelXpFill.style.width = `${level.xpProgress}%`;
+
+      levelReqsList.innerHTML = level.requirements.map((req) => {
+        const metClass = req.met ? " met" : "";
+        const icon = req.icon || "fa-circle-check";
+        const current = formatReqValue(req.current, req.type);
+        const required = formatReqValue(req.required, req.type);
+
+        return `
+          <li class="level-req${metClass}">
+            <i class="fas ${icon}"></i>
+            <span class="level-req-label">${escapeHtml(req.label)}</span>
+            <span class="level-req-value">${current} / ${required}</span>
+          </li>
+        `;
+      }).join("");
+
     } catch (err) {
-      console.error("Failed to load favorite cards:", err);
-      favoriteCardsGrid.innerHTML = `
-        <div class="fav-error">
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>Failed to load favourite cards</p>
-        </div>
-      `;
+      console.error("Failed to load level:", err);
     }
   }
 
-  function renderFavoriteCards(cards) {
-    const MAX_SLOTS = 5;
-    let html = '';
-
-    // Render filled card slots
-    for (let i = 0; i < Math.min(cards.length, MAX_SLOTS); i++) {
-      const card = cards[i];
-      const price = getCardPrice(card);
-      const priceDisplay = price ? `€${price.toFixed(2)}` : 'No price';
-
-      html += `
-        <div class="fav-card" data-card-id="${card.id}">
-          <div class="fav-card-image">
-            ${card.image
-              ? `<img src="${card.image}/high.jpg" alt="${card.name}" loading="lazy">`
-              : `<i class="fas fa-image"></i>`
-            }
-          </div>
-          <div class="fav-card-info">
-            <div class="fav-card-name">${card.name}</div>
-            <div class="fav-card-set">${card.set?.name || 'Unknown Set'} · #${card.localId}</div>
-            <div class="fav-card-rarity">
-              <i class="fas fa-gem"></i>
-              <span>${card.rarity || 'Common'}</span>
-            </div>
-            <div class="fav-card-value">
-              <img src="/images/pokecoin.png" alt="coin" class="fav-coin-img" />
-              <span>${priceDisplay}</span>
-            </div>
-          </div>
-        </div>
-      `;
+  async function loadRaffle(ownProfile = isOwnProfile) {
+    if (!rafflePrize) {
+      return;
     }
 
-    // Render empty slots for the remainder up to 5
-    for (let i = cards.length; i < MAX_SLOTS; i++) {
-      html += `
-        <div class="fav-card empty">
-          <div class="fav-card-image">
-            <i class="fas fa-plus"></i>
-          </div>
-          <div class="fav-card-info">
-            <div class="fav-card-name">Empty Slot</div>
-            <div class="fav-card-set">No card favourited</div>
-            <div class="fav-card-value fav-card-value--empty">
-              <img src="/images/pokecoin.png" alt="coin" class="fav-coin-img fav-coin-img--empty" />
-              <span>—</span>
-            </div>
-          </div>
-        </div>
-      `;
+    const ticketLabel = document.querySelector(
+      "#raffleCard .raffle-stat:first-child .raffle-stat-label"
+    );
+    if (ticketLabel) {
+      ticketLabel.textContent = ownProfile ? "Jouw tickets" : "Tickets";
     }
 
-    favoriteCardsGrid.innerHTML = html;
+    try {
+      const url = ownProfile
+        ? `${API}/progression.php?action=getRaffle`
+        : `${API}/progression.php?action=getRaffle&userId=${profileId}`;
+
+      const response = await fetch(url, { credentials: "include" });
+      const data = await response.json();
+
+      if (!data.success || !data.raffle) {
+        return;
+      }
+
+      const raffle = data.raffle;
+
+      rafflePrize.textContent = raffle.prizeLabel;
+      raffleMyTickets.textContent = formatNumber(raffle.myTickets);
+      raffleMyChance.textContent = `${raffle.myChancePercent}%`;
+      rafflePool.textContent = formatNumber(raffle.totalTickets);
+
+      raffleEndsIn = raffle.endsInSeconds;
+      updateRaffleTimer();
+      if (raffleTimerInterval) {
+        clearInterval(raffleTimerInterval);
+      }
+      raffleTimerInterval = setInterval(() => {
+        if (raffleEndsIn > 0) {
+          raffleEndsIn -= 1;
+        }
+        updateRaffleTimer();
+        if (raffleEndsIn <= 0) {
+          loadRaffle(ownProfile);
+        }
+      }, 1000);
+
+      if (!raffle.history.length) {
+        raffleHistory.innerHTML = `<li class="raffle-history-empty">Nog geen winnaars deze sessie.</li>`;
+      } else {
+        raffleHistory.innerHTML = raffle.history.map((item) => `
+          <li>
+            <span class="raffle-winner">${escapeHtml(item.winnerName)}</span>
+            <span class="raffle-win-prize">${escapeHtml(item.prizeLabel)}</span>
+            <span class="raffle-win-meta">${item.winnerTickets}/${item.totalTickets} tickets</span>
+          </li>
+        `).join("");
+      }
+
+    } catch (err) {
+      console.error("Failed to load raffle:", err);
+    }
   }
 
-  function isRare(card) {
-    return /rare|holo|v|vmax|vstar|gx|ex|secret|gold/i
-      .test((card.rarity || '').toLowerCase());
+  function updateRaffleTimer() {
+    if (!raffleTimer) {
+      return;
+    }
+
+    const mins = Math.floor(raffleEndsIn / 60);
+    const secs = raffleEndsIn % 60;
+    raffleTimer.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   }
 
-  function getCardPrice(card) {
-    const p = card.pricing?.cardmarket;
-    if (!p) return 0;
+  function formatNumber(value) {
+    const num = Number(value) || 0;
+    return num.toLocaleString("nl-NL", { maximumFractionDigits: 2 });
+  }
 
-    const values = [
-      p.low,
-      p.trend,
-      p.avg1,
-      p.avg7,
-      p.avg30
-    ].filter(v => typeof v === 'number' && v > 0);
+  function formatReqValue(value, type) {
+    if (["win_count", "upgrader_wins", "battles_won"].includes(type)) {
+      return String(Math.floor(Number(value) || 0));
+    }
+    return formatNumber(value);
+  }
 
-    if (!values.length) return 0;
-
-    return isRare(card)
-      ? Math.max(...values)
-      : Math.min(...values);
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 });

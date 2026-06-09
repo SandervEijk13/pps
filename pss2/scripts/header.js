@@ -14,6 +14,7 @@ const HEADER_NAV = [
     { id: 'crates', href: '/pages/shop.html', icon: 'fa-box-open', label: 'Pack Shop' },
     { id: 'battles', href: '/pages/crate-battles.html?mode=battle', icon: 'fa-bolt', label: 'Battles' },
     { id: 'wheel', href: '/pages/wheel.html', icon: 'fa-dharmachakra', label: 'Wheel' },
+    { id: 'upgrader', href: '/pages/upgrader.html', icon: 'fa-arrow-up', label: 'Upgrader' },
     { id: 'collection', href: '/pages/sets.html', icon: 'fa-layer-group', label: 'Collection' },
 ];
 
@@ -96,6 +97,10 @@ function buildHeaderHtml(options = {}) {
                             <span class="user-name">Trainer</span>
                             <i class="fas fa-chevron-down dropdown-icon"></i>
                             <div class="profile-dropdown" id="profileDropdown">
+                                <a href="${escapeHtml(appUrl('/pages/leaderboard.html'))}" class="dropdown-item" id="leaderboardAction">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>Leaderboards</span>
+                                </a>
                                 <a href="#" class="dropdown-item" id="profileAction">
                                     <i class="fas fa-user"></i>
                                     <span id="profileActionText">Profile</span>
