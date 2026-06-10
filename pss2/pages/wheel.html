@@ -10,30 +10,40 @@
     <link rel="stylesheet" href="/styles/game-info.css" />
     <link rel="stylesheet" href="/styles/wheel.css" />
 </head>
-<body>
+<body class="game-page-body wheel-body">
 
     <div id="app-header" data-active="wheel" data-show-tickets="true"></div>
 
+    <div class="game-ambient game-ambient--fixed wheel-ambient" aria-hidden="true">
+        <span class="game-orb game-orb--a wheel-orb--gold"></span>
+        <span class="game-orb game-orb--b wheel-orb--amber"></span>
+    </div>
+
     <main class="wheel-page">
-        <section class="wheel-hero game-hero-wrap game-info-theme--zinc">
+        <section class="wheel-hero game-hero-wrap game-info-theme--wheel">
             <button type="button" id="btnGameInfo" class="game-info-btn" aria-label="Hoe werkt het rad?">
                 <i class="fas fa-circle-info" aria-hidden="true"></i>
             </button>
             <div class="wheel-hero-badge"><i class="fas fa-dharmachakra"></i> Wheel of Fortune</div>
             <h1>Spin for coins, cards & packs</h1>
-            <p>Spin for 50 coins or 1 ticket</p>
+            <p>Spin for 50 coins or 1 ticket — every spin could be a jackpot.</p>
         </section>
 
         <div id="wheelLoginGate" class="wheel-gate is-hidden">
+            <div class="wheel-gate-icon"><i class="fas fa-lock"></i></div>
             <p>Log in to spin the wheel.</p>
             <a href="/pages/login.html" class="btn-wheel-primary">Login</a>
         </div>
 
         <section id="wheelMain" class="wheel-layout is-hidden">
-            <div class="wheel-stage">
-                <div class="wheel-pointer" aria-hidden="true"></div>
-                <canvas id="wheelCanvas" width="420" height="420" aria-label="Prize wheel"></canvas>
-                <div class="wheel-hub"><i class="fas fa-star"></i></div>
+            <div class="wheel-stage-wrap">
+                <div class="wheel-stage-ring" aria-hidden="true"></div>
+                <div class="wheel-stage-glow" aria-hidden="true"></div>
+                <div class="wheel-stage">
+                    <div class="wheel-pointer" aria-hidden="true"></div>
+                    <canvas id="wheelCanvas" width="420" height="420" aria-label="Prize wheel"></canvas>
+                    <div class="wheel-hub"><i class="fas fa-star"></i></div>
+                </div>
             </div>
 
             <aside class="wheel-panel">
@@ -56,7 +66,7 @@
         </section>
     </main>
 
-    <div id="infoModal" class="game-info-modal game-info-theme--zinc is-hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+    <div id="infoModal" class="game-info-modal game-info-theme--wheel is-hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
         <div class="game-info-backdrop"></div>
         <div class="game-info-card">
             <button type="button" id="btnCloseInfo" class="game-info-close" aria-label="Sluiten"><i class="fas fa-times"></i></button>

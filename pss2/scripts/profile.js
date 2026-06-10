@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProfile();
   loadLevel();
   loadRaffle(isOwnProfile);
+  loadFavorites();
 
   async function loadProfile() {
 
@@ -216,4 +217,116 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
+
+async function loadFavorites() {
+
+  const grid = document.getElementById("favoriteCardsGrid");
+
+  if (!grid || !profileId) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${API}/favorite.php?action=get&user_id=${profileId}`,
+      {
+        credentials: "include"
+      }
+    );
+
+    const favorites = await response.json();
+
+    grid.innerHTML = "";
+
+    for (const favorite of favorites) {
+
+      try {
+
+        const cardResponse = await fetch(
+          `https://api.tcgdex.net/v2/en/cards/${favorite.card_id}`
+        );
+
+        const card = await cardResponse.json();
+
+       const image = card.image
+        ? `${card.image}/high.webp`
+        : "/images/card-placeholder.png";
+
+      const price =
+        card.pricing?.cardmarket?.avg ??
+        card.pricing?.cardmarket?.trend ??
+        card.pricing?.tcgplayer?.normal?.marketPrice ??
+        0;
+
+        grid.innerHTML += `
+          <div class="fav-card">
+            <div class="fav-card-image">
+              <img
+                src="${image}"
+                alt="${escapeHtml(card.name)}"
+                loading="lazy"
+              >
+            </div>
+
+            <div class="fav-card-info">
+              <div class="fav-card-name">
+                ${escapeHtml(card.name)}
+              </div>
+
+              <div class="fav-card-set">
+                ${escapeHtml(card.set?.name || "Unknown Set")}
+              </div>
+
+              <div class="fav-card-value">
+                <img
+                  class="coin-img coin-card"
+                  src="/images/pokecoin.png"
+                >
+                ${formatNumber(price)}
+              </div>
+            </div>
+          </div>
+        `;
+
+      } catch (err) {
+        console.error("Card load failed:", favorite.card_id, err);
+      }
+    }
+
+    const emptySlots = Math.max(0, 5 - favorites.length);
+
+    for (let i = 0; i < emptySlots; i++) {
+
+      grid.innerHTML += `
+        <div class="fav-card empty">
+          <div class="fav-card-image">
+            <i class="fas fa-plus"></i>
+          </div>
+
+          <div class="fav-card-info">
+            <div class="fav-card-name">
+              Empty Slot
+            </div>
+
+            <div class="fav-card-set">
+              Add a favourite
+            </div>
+
+            <div class="fav-card-value">
+              <img class="coin-img coin-card" src="/images/pokecoin.png">
+              —
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+  } catch (err) {
+    console.error("Failed to load favorites:", err);
+  }
+}
+
 });
+
+

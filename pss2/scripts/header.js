@@ -13,10 +13,16 @@ const HEADER_NAV = [
     { id: 'market', href: '/pages/market.html', icon: 'fa-chart-line', label: 'Market' },
     { id: 'crates', href: '/pages/shop.html', icon: 'fa-box-open', label: 'Pack Shop' },
     { id: 'battles', href: '/pages/crate-battles.html?mode=battle', icon: 'fa-bolt', label: 'Battles' },
-    { id: 'wheel', href: '/pages/wheel.html', icon: 'fa-dharmachakra', label: 'Wheel' },
-    { id: 'upgrader', href: '/pages/upgrader.html', icon: 'fa-arrow-up', label: 'Upgrader' },
     { id: 'collection', href: '/pages/sets.html', icon: 'fa-layer-group', label: 'Collection' },
 ];
+
+const HEADER_GAMES = [
+    { id: 'higher-lower', href: '/pages/higher-lower.html', icon: 'fa-sort', label: 'Higher / Lower' },
+    { id: 'wheel', href: '/pages/wheel.html', icon: 'fa-dharmachakra', label: 'Wheel of Fortune' },
+    { id: 'upgrader', href: '/pages/upgrader.html', icon: 'fa-arrow-up', label: 'Upgrader' },
+];
+
+const GAMES_ACTIVE_IDS = new Set(['games', 'higher-lower', 'wheel', 'upgrader']);
 
 function getAppRoot() {
     if (window.location.port === '5173') {
@@ -55,7 +61,7 @@ function buildHeaderHtml(options = {}) {
     const active = options.active || '';
     const showTickets = Boolean(options.showTickets);
 
-    const navHtml = HEADER_NAV.map((item) => {
+    const buildNavLink = (item) => {
         const href = appUrl(item.href.replace(/^\//, ''));
         const isActive = active === item.id ? ' nav-link-active' : '';
         return `
@@ -64,7 +70,41 @@ function buildHeaderHtml(options = {}) {
                 <span>${escapeHtml(item.label)}</span>
             </a>
         `;
+    };
+
+    const navBeforeGames = HEADER_NAV.slice(0, 2);
+    const navAfterGames = HEADER_NAV.slice(2);
+
+    const gamesActive = GAMES_ACTIVE_IDS.has(active) ? ' nav-link-active' : '';
+    const gamesItemsHtml = HEADER_GAMES.map((item) => {
+        const href = appUrl(item.href.replace(/^\//, ''));
+        const isActive = active === item.id ? ' nav-games-item-active' : '';
+        return `
+            <a href="${escapeHtml(href)}" class="nav-games-item${isActive}" data-nav="${item.id}">
+                <i class="fas ${item.icon}"></i>
+                <span>${escapeHtml(item.label)}</span>
+            </a>
+        `;
     }).join('');
+
+    const gamesDropdownHtml = `
+        <div class="nav-games" id="navGames">
+            <button type="button" class="nav-link nav-games-trigger${gamesActive}" aria-expanded="false" aria-haspopup="true">
+                <i class="fas fa-gamepad"></i>
+                <span>Games</span>
+                <i class="fas fa-chevron-down nav-games-chevron"></i>
+            </button>
+            <div class="nav-games-dropdown" id="navGamesDropdown">
+                ${gamesItemsHtml}
+            </div>
+        </div>
+    `;
+
+    const navHtml = [
+        ...navBeforeGames.map(buildNavLink),
+        gamesDropdownHtml,
+        ...navAfterGames.map(buildNavLink),
+    ].join('');
 
     const ticketsHtml = showTickets
         ? `
@@ -97,9 +137,9 @@ function buildHeaderHtml(options = {}) {
                             <span class="user-name">Trainer</span>
                             <i class="fas fa-chevron-down dropdown-icon"></i>
                             <div class="profile-dropdown" id="profileDropdown">
-                                <a href="${escapeHtml(appUrl('/pages/leaderboard.html'))}" class="dropdown-item" id="leaderboardAction">
+                                <a href="${escapeHtml(appUrl('/pages/leaderboard.html'))}" class="dropdown-item">
                                     <i class="fas fa-trophy"></i>
-                                    <span>Leaderboards</span>
+                                    <span>Leaderboard</span>
                                 </a>
                                 <a href="#" class="dropdown-item" id="profileAction">
                                     <i class="fas fa-user"></i>
@@ -130,6 +170,33 @@ function renderAppHeader(options = {}) {
 
     mount.innerHTML = buildHeaderHtml(options);
     return mount;
+}
+
+function setupHeaderGamesMenu() {
+    const navGames = document.getElementById('navGames');
+    const navGamesDropdown = document.getElementById('navGamesDropdown');
+    const trigger = navGames?.querySelector('.nav-games-trigger');
+
+    if (!navGames || !navGamesDropdown || !trigger) {
+        return;
+    }
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = navGamesDropdown.classList.toggle('active');
+        trigger.classList.toggle('is-open', isOpen);
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', () => {
+        navGamesDropdown.classList.remove('active');
+        trigger.classList.remove('is-open');
+        trigger.setAttribute('aria-expanded', 'false');
+    });
+
+    navGamesDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
 }
 
 function setupHeaderProfileMenu() {
@@ -234,6 +301,7 @@ function initAppHeader(options = {}) {
         (mountEl?.dataset.showTickets === 'true');
 
     renderAppHeader({ ...options, active, showTickets });
+    setupHeaderGamesMenu();
     setupHeaderProfileMenu();
     loadHeaderWallet(showTickets);
 }
@@ -248,5 +316,6 @@ window.getAppRoot = getAppRoot;
 window.getApiBase = getApiBase;
 window.renderAppHeader = renderAppHeader;
 window.initAppHeader = initAppHeader;
+window.setupHeaderGamesMenu = setupHeaderGamesMenu;
 window.setupHeaderProfileMenu = setupHeaderProfileMenu;
 window.loadHeaderWallet = loadHeaderWallet;

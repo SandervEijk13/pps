@@ -1,6 +1,8 @@
 import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
+import { resolveTcgdexImageUrl } from '/scripts/card_logic.js';
 import { initGameInfo } from '/scripts/game-info.js';
+import { openTradeWithUserFromMarket } from '/scripts/trade.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
@@ -59,7 +61,11 @@ async function getCard(cardId) {
 // ── IMAGE ─────────────────────────────────────────────────────────────────
 
 function imageUrl(card) {
-    return card?.image || '';
+    return resolveTcgdexImageUrl(card, {
+        cardId: card?.id,
+        set: card?.set?.id,
+        localId: card?.localId || card?.number,
+    });
 }
 
 // ── OWNERSHIP ─────────────────────────────────────────────────────────────
@@ -160,21 +166,29 @@ async function renderMarketplace(filter = '') {
 
         div.innerHTML += `
             <img
-                src="${imageUrl(card)}/high.webp"
+                src="${imageUrl(card)}"
                 alt="${card.name}"
                 width="128"
+                loading="lazy"
             >
             <h3>${card.name}</h3>
             <p class="set-name">${card.set?.name || 'Unknown set'}</p>
-            <p class="seller">Listed by <strong>${item.username}</strong></p>
+            <p class="seller">
+                <a href="profile.html?id=${item.user_id}" class="seller-link">
+                    Listed by <strong>${item.username}</strong>
+                </a>
+            </p>
             <p class="price">${formatPrice(card)}</p>
-            <button ${isOwner ? 'disabled' : ''}>
-                ${isOwner ? 'Your listing' : 'Buy card'}
-            </button>
+            <div class="market-card-actions">
+                <button class="market-buy-btn" ${isOwner ? 'disabled' : ''}>
+                    ${isOwner ? 'Your listing' : 'Buy card'}
+                </button>
+                ${!isOwner ? '<button type="button" class="market-trade-btn">Trade</button>' : ''}
+            </div>
         `;
 
-        const button = div.querySelector('button');
-        button.onclick = async () => {
+        const buyBtn = div.querySelector('.market-buy-btn');
+        buyBtn.onclick = async () => {
             if (isOwner) return;
             try {
                 const res  = await fetch(`${API}/buy_from_market.php`, {
@@ -198,6 +212,20 @@ async function renderMarketplace(filter = '') {
                 alert('Server error');
             }
         };
+
+        const tradeBtn = div.querySelector('.market-trade-btn');
+        tradeBtn?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (Number(item.user_id) === Number(currentUserId)) {
+                alert('Je kunt niet met jezelf traden');
+                return;
+            }
+            try {
+                await openTradeWithUserFromMarket(Number(item.user_id), item.username);
+            } catch (err) {
+                alert(err.message || 'Trade kon niet gestart worden');
+            }
+        });
 
         el.appendChild(div);
     }

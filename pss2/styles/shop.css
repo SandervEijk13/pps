@@ -1,4 +1,5 @@
-@import url('/styles/header.css');
+@import url('/styles/game-pages.css');
+@import url("scrollbar.css");
 
 * {
     margin: 0;
@@ -7,126 +8,262 @@
 }
 
 body {
-    background: #0a0c10;
-    color: #eef2ff;
+    background: var(--gp-bg-deep);
+    color: var(--gp-text);
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.5;
+    background-image:
+        radial-gradient(ellipse 50% 38% at 15% 0%, rgba(251, 191, 36, 0.1) 0%, transparent 55%),
+        radial-gradient(ellipse 42% 32% at 88% 75%, rgba(245, 158, 11, 0.07) 0%, transparent 50%);
 }
 
 .shop-page {
-    width: 100%;
-    max-width: 1400px;
-    margin: auto;
-    padding: 40px 20px;
-}
-
-.shop-header {
     position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    padding-right: 48px;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+    overflow: hidden;
 }
 
-.shop-header h1 {
-    font-size: 42px;
+.shop-orb--gold {
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.32) 0%, transparent 70%);
+}
+
+.shop-orb--amber {
+    background: radial-gradient(circle, rgba(217, 119, 6, 0.2) 0%, transparent 70%);
+}
+
+/* ── Hero ───────────────────────────────────────────────────── */
+
+.shop-hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.shop-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(180, 83, 9, 0.32), rgba(69, 26, 3, 0.5));
+    border: 1px solid rgba(251, 191, 36, 0.38);
+    color: #fde68a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    box-shadow: 0 0 28px rgba(251, 191, 36, 0.14);
+}
+
+.shop-hero h1 {
+    font-size: clamp(1.85rem, 4.5vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 10px;
+    background: linear-gradient(180deg, #fff 0%, #fde68a 55%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.shop-hero p {
+    color: var(--gp-muted);
+    margin: 0 auto;
+    max-width: 520px;
+    font-size: 0.98rem;
+}
+
+.shop-toolbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.shop-panel {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(165deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.94));
+    border: 1px solid var(--gp-border);
+    border-radius: var(--gp-radius-xl);
+    padding: 24px;
+    backdrop-filter: var(--gp-blur);
+    box-shadow: var(--gp-shadow-panel);
 }
 
 .shop-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
 }
 
 .shop-pack {
-    background: #1e293b;
-    border-radius: 18px;
-    padding: 20px;
-    transition: 0.2s ease;
-    border: 2px solid transparent;
+    position: relative;
+    background: linear-gradient(165deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+    border-radius: var(--gp-radius-lg);
+    padding: 18px;
+    border: 1px solid rgba(51, 65, 85, 0.75);
+    transition: transform 0.22s ease, border-color 0.22s, box-shadow 0.22s;
+    overflow: hidden;
+    animation: gp-fade-up 0.45s ease backwards;
+}
+
+.shop-pack::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 45%);
+    pointer-events: none;
+}
+
+.shop-pack::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.06), transparent);
+    transition: left 0.5s ease;
+    pointer-events: none;
 }
 
 .shop-pack:hover {
-    transform: translateY(-5px);
-    border-color: #3b82f6;
+    transform: translateY(-6px);
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(251, 191, 36, 0.12);
 }
 
+.shop-pack:hover::after {
+    left: 120%;
+}
+
+.shop-pack:nth-child(1) { animation-delay: 0.03s; }
+.shop-pack:nth-child(2) { animation-delay: 0.06s; }
+.shop-pack:nth-child(3) { animation-delay: 0.09s; }
+.shop-pack:nth-child(4) { animation-delay: 0.12s; }
+.shop-pack:nth-child(5) { animation-delay: 0.15s; }
+.shop-pack:nth-child(6) { animation-delay: 0.18s; }
 
 .pack-name {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 1.05rem;
+    font-weight: 700;
     margin-bottom: 10px;
+    color: #f1f5f9;
+    text-align: center;
 }
 
 .pack-price {
-    color: #facc15;
-    font-size: 16px;
-    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #fde68a;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.22);
+    font-family: 'DM Mono', monospace;
 }
 
 .buy-btn {
+    position: relative;
+    overflow: hidden;
     width: 100%;
     border: none;
-    background: #3b82f6;
-    color: white;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fffbeb;
+    padding: 13px;
+    border-radius: var(--gp-radius-md);
+    font-size: 0.95rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: 0.2s ease;
+    border: 1px solid rgba(253, 230, 138, 0.35);
+    box-shadow: 0 4px 0 #92400e, 0 8px 20px rgba(245, 158, 11, 0.22);
+    transition: transform 0.12s, box-shadow 0.12s, filter 0.2s;
 }
 
 .buy-btn:hover {
-    background: #2563eb;
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #92400e, 0 12px 28px rgba(245, 158, 11, 0.32);
 }
 
 .buy-btn:active {
-    transform: scale(0.98);
-}
-.shop-controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #92400e;
 }
 
 .price-filter {
-    background: #1e293b;
-    border: 2px solid #334155;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 15px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid var(--gp-border);
+    color: #e2e8f0;
+    padding: 11px 14px;
+    border-radius: var(--gp-radius-md);
+    font-size: 0.9rem;
+    font-family: inherit;
     outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.price-filter:focus,
+.price-filter:hover {
+    border-color: rgba(251, 191, 36, 0.35);
 }
 
 .inventory-toggle-btn {
-    border: 1px solid #334155;
-    background: #1e293b;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--gp-border);
+    background: rgba(15, 23, 42, 0.9);
+    color: #e2e8f0;
+    padding: 11px 16px;
+    border-radius: var(--gp-radius-md);
     cursor: pointer;
-    font-size: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.inventory-toggle-btn:hover {
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(30, 41, 59, 0.95);
+    transform: translateY(-1px);
 }
 
 .inventory-panel {
     position: fixed;
     top: 0;
     right: 0;
-    width: min(380px, 92vw);
+    width: min(400px, 92vw);
     height: 100vh;
-    background: #111827;
-    border-left: 1px solid #334155;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.99));
+    border-left: 1px solid rgba(251, 191, 36, 0.2);
+    box-shadow: -16px 0 48px rgba(0, 0, 0, 0.45);
     transform: translateX(105%);
-    transition: transform 220ms ease;
+    transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
     z-index: 1200;
-    padding: 18px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
+    backdrop-filter: var(--gp-blur);
 }
 
 body.inventory-open .inventory-panel {
@@ -140,7 +277,11 @@ body.inventory-open .inventory-panel {
 }
 
 .inventory-panel-header h2 {
-    font-size: 22px;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fde68a;
 }
 
 .close-inventory-btn {
@@ -160,10 +301,16 @@ body.inventory-open .inventory-panel {
 }
 
 .inventory-pack {
-    border: 1px solid #334155;
-    background: #1e293b;
-    border-radius: 12px;
+    border: 1px solid var(--gp-border);
+    background: rgba(2, 6, 23, 0.75);
+    border-radius: var(--gp-radius-md);
     padding: 14px;
+    transition: border-color 0.2s, transform 0.15s;
+}
+
+.inventory-pack:hover {
+    border-color: rgba(251, 191, 36, 0.3);
+    transform: translateX(-2px);
 }
 
 .inventory-pack h3 {
@@ -193,49 +340,22 @@ body.inventory-open .inventory-panel {
     font-size: 14px;
 }
 
-.shop-pack {
-    background: #1e293b;
-    border-radius: 18px;
-    padding: 20px;
-    transition: 0.2s ease;
-    border: 2px solid transparent;
-}
-
-.shop-pack:hover {
-    transform: translateY(-5px);
-    border-color: #3b82f6;
-}
-
 .pack-image {
     width: 100%;
-    height: 240px;
+    height: 220px;
     object-fit: contain;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+    transition: transform 0.35s ease;
 }
 
-
-
-.pack-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    text-align: center;
-}
-
-.pack-price {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    color: #facc15;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 18px;
+.shop-pack:hover .pack-image {
+    transform: translateY(-4px) scale(1.03);
 }
 
 .pack-price .coin-icon {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     margin-right: 0;
 }
 

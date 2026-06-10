@@ -1,0 +1,149 @@
+/* Shared design tokens & utilities for game pages */
+@import url("scrollbar.css");
+:root {
+    --gp-bg-deep: #030712;
+    --gp-surface: rgba(12, 18, 32, 0.88);
+    --gp-surface-soft: rgba(15, 23, 42, 0.65);
+    --gp-border: rgba(51, 65, 85, 0.7);
+    --gp-border-bright: rgba(148, 163, 184, 0.22);
+    --gp-text: #eef2ff;
+    --gp-muted: #94a3b8;
+    --gp-dim: #64748b;
+    --gp-gold: #fde68a;
+    --gp-radius-xl: 22px;
+    --gp-radius-lg: 16px;
+    --gp-radius-md: 12px;
+    --gp-shadow-panel: 0 24px 64px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --gp-blur: blur(14px);
+}
+
+/* Full-viewport page backdrop (use on body or fixed ambient layer) */
+body.game-page-body {
+    min-height: 100vh;
+    background-color: var(--gp-bg-deep);
+}
+
+.game-page-body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+        radial-gradient(ellipse 80% 55% at 20% -10%, var(--gp-bg-glow-a, rgba(99, 102, 241, 0.14)) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 85% 95%, var(--gp-bg-glow-b, rgba(44, 91, 255, 0.1)) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.4) 0%, transparent 70%);
+}
+
+.game-page-body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 20%, transparent 75%);
+}
+
+/* Ambient background orbs */
+.game-ambient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.game-ambient--fixed {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.game-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(88px);
+    opacity: 0.5;
+    animation: gp-orb-drift 10s ease-in-out infinite;
+}
+
+.game-orb--a {
+    width: 420px;
+    height: 420px;
+    top: -6%; 
+    left: -10%;
+}
+
+.game-orb--b {
+    width: 360px;
+    height: 360px;
+    top: 12%;
+    right: -8%;
+    animation-delay: -4s;
+    animation-direction: reverse;
+}
+
+@keyframes gp-orb-drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(14px, -18px) scale(1.05); }
+}
+
+/* Glass panel shell */
+.game-glass-panel {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(165deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.96));
+    border: 1px solid var(--gp-border);
+    border-radius: var(--gp-radius-xl);
+    padding: 24px;
+    backdrop-filter: var(--gp-blur);
+    box-shadow: var(--gp-shadow-panel);
+}
+
+/* Staggered list entrance */
+@keyframes gp-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gp-animate-in {
+    animation: gp-fade-up 0.45s ease forwards;
+}
+
+/* Premium CTA shimmer */
+@keyframes gp-btn-shimmer {
+    0% { transform: translateX(-120%) skewX(-12deg); }
+    100% { transform: translateX(220%) skewX(-12deg); }
+}
+
+.gp-btn-shine {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.gp-btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+    animation: gp-btn-shimmer 3.2s ease-in-out infinite;
+}

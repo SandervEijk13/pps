@@ -2,7 +2,7 @@
  * Shared site header — load on every page before page-specific CSS.
  * Render markup via scripts/header.js → #app-header
  */
-
+@import url("scrollbar.css");
 .header {
     background: #0b0e14;
     border-bottom: 1px solid #1e2a3e;
@@ -264,6 +264,92 @@
 .dropdown-icon {
     font-size: 0.7rem;
     color: #7f95cf;
+}
+
+/* Games dropdown (nav) */
+.nav-games {
+    position: relative;
+}
+
+.nav-games-trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 6px 0;
+}
+
+.nav-games-chevron {
+    font-size: 0.65rem;
+    color: #7f95cf;
+    transition: transform 0.2s ease;
+}
+
+.nav-games-trigger.is-open .nav-games-chevron {
+    transform: rotate(180deg);
+}
+
+.nav-games-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 210px;
+    background: #111827;
+    border: 1px solid #25344d;
+    border-radius: 18px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    z-index: 999;
+}
+
+.nav-games-dropdown.active {
+    display: flex;
+    animation: navGamesDropdownFade 0.18s ease forwards;
+}
+
+@keyframes navGamesDropdownFade {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.nav-games-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #d6e2ff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    transition: 0.2s ease;
+    font-size: 0.92rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.nav-games-item i {
+    color: #7fa7ff;
+    width: 18px;
+    text-align: center;
+}
+
+.nav-games-item:hover,
+.nav-games-item.nav-games-item-active {
+    background: #1a2336;
+    color: white;
+}
+
+.nav-games-item.nav-games-item-active i {
+    color: #a8c4ff;
 }
 
 @media (max-width: 900px) {

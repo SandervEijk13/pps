@@ -6,7 +6,8 @@ import {
     formatCardPrice,
     formatCoinsAmount,
     formatHeaderCoins,
-    getSellCoinsAmount
+    getSellCoinsAmount,
+    resolveTcgdexImageUrl
 } from '/scripts/card_logic.js';
 import { CrateReel, spinCrate } from '/scripts/crate-reel.js';
 import { initGameInfo } from '/scripts/game-info.js';
@@ -534,7 +535,7 @@ function appendMiniPull(container, card) {
     if (!container || !card) return;
     const img = document.createElement('img');
     img.className = 'mini-pull-thumb';
-    img.src = card.image;
+    img.src = cardImg(card);
     img.alt = card.name;
     img.title = `${card.name} — ${formatCardPrice({ price: card.price })}`;
     container.appendChild(img);
@@ -721,7 +722,7 @@ function showPullModal(card) {
         const sellCoins = getSellCoinsAmount(card.price);
 
         els.modalCardName.textContent = card.name;
-        els.modalCardImg.src = card.image;
+        els.modalCardImg.src = cardImg(card);
         els.modalCardImg.alt = card.name;
         els.modalCardRarity.textContent = card.rarityLabel || card.rarity || '';
         els.modalCardPrice.textContent = `Value: ${formatCardPrice({ price: card.price })}`;
@@ -1240,7 +1241,7 @@ function renderResultCards(container, cards = []) {
     cards.forEach((card) => {
         const tile = document.createElement('div');
         tile.className = 'result-card-tile';
-        tile.innerHTML = `<img src="${card.image}" alt="${card.name}" /><span>${card.name}</span>`;
+        tile.innerHTML = `<img src="${cardImg(card)}" alt="${card.name}" /><span>${card.name}</span>`;
         container.appendChild(tile);
     });
 }

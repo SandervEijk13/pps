@@ -1,0 +1,288 @@
+/* Toast container — bottom left */
+.notif-toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9000;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    max-width: min(380px, calc(100vw - 48px));
+    pointer-events: none;
+}
+
+.notif-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #12182a 0%, #0d1220 100%);
+    border: 1px solid #2a3a5c;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    pointer-events: auto;
+    animation: notif-slide-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    cursor: pointer;
+}
+
+.notif-toast.is-leaving {
+    animation: notif-slide-out 0.25s ease forwards;
+}
+
+@keyframes notif-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes notif-slide-out {
+    to {
+        opacity: 0;
+        transform: translateX(-24px);
+    }
+}
+
+.notif-toast-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.notif-toast-icon--level_up { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+.notif-toast-icon--trade_received { background: rgba(44, 91, 255, 0.15); color: #6b9fff; }
+.notif-toast-icon--set_completed { background: rgba(76, 175, 80, 0.15); color: #81c784; }
+.notif-toast-icon--raffle_won { background: rgba(156, 39, 176, 0.15); color: #ce93d8; }
+.notif-toast-icon--raffle_ended { background: rgba(158, 158, 158, 0.15); color: #bdbdbd; }
+.notif-toast-icon--market_sale { background: rgba(255, 152, 0, 0.15); color: #ffb74d; }
+.notif-toast-icon--default { background: rgba(255, 255, 255, 0.08); color: #aac9ff; }
+
+.notif-toast-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-toast-title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #f0f5ff;
+    margin-bottom: 2px;
+}
+
+.notif-toast-message {
+    font-size: 0.82rem;
+    color: #9eb0d4;
+    line-height: 1.4;
+}
+
+.notif-toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #6b7fa3;
+    cursor: pointer;
+    padding: 2px;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.notif-toast-close:hover {
+    color: #d2defc;
+}
+
+/* Header mailbox widget */
+.notif-widget {
+    position: relative;
+}
+
+.notif-bell-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid #1e2a3e;
+    background: rgba(255, 255, 255, 0.04);
+    color: #aac9ff;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.notif-bell-btn:hover,
+.notif-bell-btn.is-open {
+    background: rgba(44, 91, 255, 0.12);
+    border-color: #2c5bff;
+    color: #f0f5ff;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #ff4757;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(255, 71, 87, 0.4);
+}
+
+.notif-badge.is-hidden {
+    display: none;
+}
+
+.notif-mailbox {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(360px, calc(100vw - 32px));
+    max-height: 420px;
+    background: #0f1420;
+    border: 1px solid #1e2a3e;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 300;
+}
+
+.notif-mailbox.is-open {
+    display: flex;
+}
+
+.notif-mailbox-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #1e2a3e;
+}
+
+.notif-mailbox-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #f0f5ff;
+}
+
+.notif-mailbox-mark-all {
+    background: none;
+    border: none;
+    color: #6b9fff;
+    font-size: 0.78rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.notif-mailbox-mark-all:hover {
+    background: rgba(44, 91, 255, 0.1);
+}
+
+.notif-mailbox-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.notif-mailbox-empty {
+    padding: 32px 16px;
+    text-align: center;
+    color: #6b7fa3;
+    font-size: 0.88rem;
+}
+
+.notif-mailbox-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.notif-mailbox-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.notif-mailbox-item.is-unread {
+    background: rgba(44, 91, 255, 0.08);
+}
+
+.notif-mailbox-item.is-unread:hover {
+    background: rgba(44, 91, 255, 0.12);
+}
+
+.notif-mailbox-item-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.notif-mailbox-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-mailbox-item-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #e8efff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-mailbox-item-message {
+    font-size: 0.78rem;
+    color: #8fa3c7;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notif-mailbox-item-time {
+    font-size: 0.7rem;
+    color: #5a6d8f;
+    margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+    .notif-toast-container {
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .notif-mailbox {
+        position: fixed;
+        top: 74px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+    }
+}

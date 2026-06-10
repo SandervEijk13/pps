@@ -13,20 +13,18 @@ function ensureLeaderboardColumns(PDO $pdo): void
     }
 }
 
-function recordUserWager(PDO $pdo, int $userId, float $amount): void
+function recordUserWager(PDO $pdo, int $userId, float $amount, int $coinsPerTicket = 10): void
 {
     $amount = round(max(0, $amount), 2);
     if ($userId <= 0 || $amount <= 0) {
         return;
     }
 
-    ensureLeaderboardColumns($pdo);
-
     $stmt = $pdo->prepare('UPDATE users SET total_wagered = total_wagered + ? WHERE id = ?');
     $stmt->execute([$amount, $userId]);
 
     require_once __DIR__ . '/progression.php';
-    progressionOnWager($pdo, $userId, $amount);
+    progressionOnWager($pdo, $userId, $amount, $coinsPerTicket);
 }
 
 function recordUserWin(PDO $pdo, int $userId, float $amount): void
@@ -35,8 +33,6 @@ function recordUserWin(PDO $pdo, int $userId, float $amount): void
     if ($userId <= 0 || $amount <= 0) {
         return;
     }
-
-    ensureLeaderboardColumns($pdo);
 
     $stmt = $pdo->prepare('
         UPDATE users
@@ -130,6 +126,16 @@ function fetchLeaderboard(PDO $pdo, string $type, int $limit = 50): array
                 GROUP BY u.id, u.username
                 HAVING value > 0
                 ORDER BY value DESC, u.id ASC
+                LIMIT {$limit}
+            ";
+            break;
+
+        case 'level':
+            $sql = "
+                SELECT id, username, COALESCE(user_level, 1) AS value
+                FROM users
+                WHERE COALESCE(user_level, 1) > 0
+                ORDER BY user_level DESC, total_wagered DESC, id ASC
                 LIMIT {$limit}
             ";
             break;
@@ -240,6 +246,24 @@ function fetchMyLeaderboardRank(PDO $pdo, int $userId, string $type): ?array
             $rankStmt->execute([$value, $value, $userId]);
             break;
 
+        case 'level':
+            $stmt = $pdo->prepare('SELECT COALESCE(user_level, 1) AS value FROM users WHERE id = ?');
+            $stmt->execute([$userId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return null;
+            }
+            $value = (int) $row['value'];
+            $rankStmt = $pdo->prepare('
+                SELECT COUNT(*) + 1 AS rank_pos
+                FROM users
+                WHERE COALESCE(user_level, 1) > ?
+                   OR (COALESCE(user_level, 1) = ? AND total_wagered > (SELECT total_wagered FROM users WHERE id = ?))
+                   OR (COALESCE(user_level, 1) = ? AND total_wagered = (SELECT total_wagered FROM users WHERE id = ?) AND id < ?)
+            ');
+            $rankStmt->execute([$value, $value, $userId, $value, $userId, $userId]);
+            break;
+
         default:
             return null;
     }
@@ -278,6 +302,12 @@ function leaderboardTypeMeta(): array
             'label' => 'Total wagered',
             'description' => 'Coins spent on spins, bets & packs',
             'icon' => 'fa-dice',
+        ],
+        'level' => [
+            'id' => 'level',
+            'label' => 'Highest level',
+            'description' => 'Trainer level from XP and achievements',
+            'icon' => 'fa-ranking-star',
         ],
     ];
 }

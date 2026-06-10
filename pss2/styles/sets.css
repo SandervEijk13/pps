@@ -1,4 +1,5 @@
 @import url('/styles/header.css');
+@import url("scrollbar.css");
 
 * {
     margin: 0;

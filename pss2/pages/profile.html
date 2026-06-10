@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="/styles/header.css" />
   <link rel="stylesheet" href="/styles/profile.css">
+  <link rel="stylesheet" href="/styles/trade.css">
 <body>
 </head>
  
@@ -46,7 +47,7 @@
 
         <!-- VISITOR BUTTONS — toggle display via JS based on whether this is your own profile -->
       <div class="visitor-actions" id="visitorActions" style="display:none;">
-        <button class="btn-trade" onclick="alert('Trade feature coming soon!')">
+        <button class="btn-trade" id="profileTradeBtn" type="button">
           <i class="fas fa-right-left"></i> Trade
         </button>
         <button class="btn-battle" onclick="alert('Battle feature coming soon!')">
@@ -54,6 +55,8 @@
         </button>
       </div>
     </div>
+
+    
 
     <!-- Level Progress -->
     <div class="level-card" id="levelCard">
@@ -115,7 +118,8 @@
         <ul class="raffle-history-list" id="raffleHistory"></ul>
       </div>
     </div>
- 
+
+    
     <!-- Favorite Cards -->
     <div class="section-title">
       <i class="fas fa-star"></i>
@@ -187,6 +191,7 @@
  
     </div>
   </div>
+ 
 </main>
  
 <!-- ===== FOOTER ===== -->
@@ -207,4 +212,5 @@
 <script src="/scripts/header.js" defer></script>
 <script src="/scripts/login.js" defer></script>
 <script src="/scripts/profile.js"></script>
+<script type="module" src="/scripts/trade.js"></script>
 </body> 

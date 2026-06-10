@@ -26,6 +26,141 @@ export const ALLOWED_SET_IDS = [
 
 const ALLOWED_SET_IDS_SET = new Set(ALLOWED_SET_IDS);
 
+const TCGDEX_ASSETS = 'https://assets.tcgdex.net';
+
+const SERIE_PREFIXES = [
+    ['swsh', 'swsh'],
+    ['sv', 'sv'],
+    ['sm', 'sm'],
+    ['xy', 'xy'],
+    ['g1', 'xy'],
+    ['bw', 'bw'],
+    ['hgss', 'hgss'],
+    ['col', 'col'],
+    ['dp', 'dp'],
+    ['pl', 'pl'],
+    ['ex', 'ex'],
+    ['ecard', 'ecard'],
+    ['neo', 'neo'],
+    ['gym', 'gym'],
+    ['base', 'base'],
+    ['lc', 'lc'],
+    ['me', 'me'],
+].sort((a, b) => b[0].length - a[0].length);
+
+function inferSerieFromSetId(setId) {
+    const id = String(setId || '');
+    for (const [prefix, serie] of SERIE_PREFIXES) {
+        if (id.startsWith(prefix)) {
+            return serie;
+        }
+    }
+    return id.replace(/[\d.].*$/, '') || id;
+}
+
+function parseTcgdexCardId(cardId, setHint, localIdHint) {
+    if (setHint && localIdHint) {
+        const setId = typeof setHint === 'string' ? setHint : setHint.id;
+        return {
+            serie: inferSerieFromSetId(setId),
+            setId,
+            localId: String(localIdHint),
+        };
+    }
+
+    const id = String(cardId || '');
+    if (!id) {
+        return null;
+    }
+
+    const sortedSets = [...ALLOWED_SET_IDS].sort((a, b) => b.length - a.length);
+    for (const setId of sortedSets) {
+        const prefix = `${setId}-`;
+        if (id.startsWith(prefix)) {
+            return {
+                serie: inferSerieFromSetId(setId),
+                setId,
+                localId: id.slice(prefix.length),
+            };
+        }
+    }
+
+    const dash = id.lastIndexOf('-');
+    if (dash > 0) {
+        const setId = id.slice(0, dash);
+        return {
+            serie: inferSerieFromSetId(setId),
+            setId,
+            localId: id.slice(dash + 1),
+        };
+    }
+
+    return null;
+}
+
+function finalizeTcgdexAssetUrl(url, suffix) {
+    const clean = String(url).replace(/\/$/, '');
+    if (/\.(webp|png|jpe?g)(\?.*)?$/i.test(clean)) {
+        return clean;
+    }
+    if (/\/(high|low)\.(webp|png|jpe?g)$/i.test(clean)) {
+        return clean;
+    }
+    return `${clean}/${suffix}`;
+}
+
+/**
+ * Build a TCGdex card image URL: …/en/{serie}/{set}/{localId}/{quality}.{ext}
+ * Accepts SDK card objects, image base paths, full URLs, or card ids (e.g. swsh3-136).
+ */
+export function resolveTcgdexImageUrl(input, options = {}) {
+    const quality = options.quality || 'high';
+    const extension = options.extension || 'webp';
+    const suffix = `${quality}.${extension}`;
+
+    if (!input) {
+        return buildTcgdexUrlFromCardId(options.cardId, suffix, options);
+    }
+
+    if (typeof input === 'object') {
+        if (typeof input.getImageURL === 'function') {
+            return input.getImageURL(quality, extension);
+        }
+
+        return resolveTcgdexImageUrl(input.image, {
+            ...options,
+            cardId: options.cardId || input.id || input.cardId,
+            set: options.set || input.set,
+            localId: options.localId || input.localId || input.number,
+        });
+    }
+
+    const image = String(input).trim();
+    if (!image) {
+        return buildTcgdexUrlFromCardId(options.cardId, suffix, options);
+    }
+
+    if (/^https?:\/\//i.test(image)) {
+        return finalizeTcgdexAssetUrl(image, suffix);
+    }
+
+    if (image.startsWith('en/') || image.startsWith('fr/')) {
+        return finalizeTcgdexAssetUrl(`${TCGDEX_ASSETS}/${image}`, suffix);
+    }
+
+    const path = image.startsWith('/') ? image : `/${image}`;
+    return finalizeTcgdexAssetUrl(`${TCGDEX_ASSETS}${path}`, suffix);
+}
+
+function buildTcgdexUrlFromCardId(cardId, suffix, options = {}) {
+    const parsed = parseTcgdexCardId(cardId, options.set, options.localId);
+    if (!parsed) {
+        return '';
+    }
+
+    return `${TCGDEX_ASSETS}/en/${parsed.serie}/${parsed.setId}/${parsed.localId}/${suffix}`;
+}
+
 /* -------------------------
    LOADER (overlay tot content geladen is)
 --------------------------*/
@@ -279,20 +414,11 @@ function reelRarityClass(card) {
 }
 
 function getCardImage(card, setCode) {
-    if (card.getImageURL) {
-        return card.getImageURL('high', 'webp');
-    }
-
-    if (card.image) {
-        if (card.image.startsWith('http')) {
-            return card.image.includes('.webp') ? card.image : `${card.image}/high.webp`;
-        }
-        return `https://assets.tcgdex.net${card.image}/high.webp`;
-    }
-
-    const code = card.set?.id || setCode;
-    const localId = card.localId || card.number;
-    return `https://assets.tcgdex.net/en/${code}/${localId}/high.webp`;
+    return resolveTcgdexImageUrl(card, {
+        cardId: card?.id,
+        set: card?.set?.id || setCode,
+        localId: card?.localId || card?.number,
+    });
 }
 
 /* -------------------------

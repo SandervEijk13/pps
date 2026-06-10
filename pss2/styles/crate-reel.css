@@ -1,3 +1,6 @@
+@import url("scrollbar.css");
+
+
 :root {
     --reel-card-w: 200px;
     --reel-card-gap: 16px;

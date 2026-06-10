@@ -1,4 +1,5 @@
 /* ── Hero info button ───────────────────────────────────────── */
+@import url("scrollbar.css");
 
 .game-hero-wrap {
     position: relative;
@@ -99,6 +100,19 @@
     --gi-note-bg: rgba(44, 91, 255, 0.08);
     --gi-note-border: rgba(44, 91, 255, 0.2);
     --gi-code: #a8c4ff;
+}
+
+.game-info-theme--trade {
+    --gi-accent: #c4b5fd;
+    --gi-border: rgba(129, 140, 248, 0.4);
+    --gi-btn-bg: rgba(79, 70, 229, 0.22);
+    --gi-btn-bg-hover: rgba(79, 70, 229, 0.38);
+    --gi-glow: rgba(129, 140, 248, 0.32);
+    --gi-pulse: rgba(129, 140, 248, 0.22);
+    --gi-card-border: rgba(129, 140, 248, 0.28);
+    --gi-note-bg: rgba(79, 70, 229, 0.12);
+    --gi-note-border: rgba(129, 140, 248, 0.25);
+    --gi-code: #ddd6fe;
 }
 
 /* ── Modal shell ────────────────────────────────────────────── */
@@ -630,6 +644,83 @@
 
 @keyframes info-mode-pulse {
     0%, 100% { transform: scale(0.85); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 1; }
+}
+
+.info-anim--trade-swap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--gi-accent, #c4b5fd);
+    font-size: 0.85rem;
+}
+
+.info-anim-trade-arrows {
+    font-size: 0.75rem;
+    animation: info-trade-swap 1.6s ease-in-out infinite;
+}
+
+@keyframes info-trade-swap {
+    0%, 100% { transform: scaleX(1); opacity: 0.7; }
+    50% { transform: scaleX(-1); opacity: 1; }
+}
+
+.info-anim--trade-inbox {
+    position: relative;
+    font-size: 1.35rem;
+    color: var(--gi-accent, #c4b5fd);
+}
+
+.info-anim--trade-inbox > i {
+    animation: info-trade-inbox-bob 1.8s ease-in-out infinite;
+}
+
+.info-anim-trade-dot {
+    position: absolute;
+    top: -2px;
+    right: -6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f87171;
+    border: 2px solid #0f1422;
+    animation: info-trade-dot-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes info-trade-inbox-bob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-4px) rotate(-6deg); }
+}
+
+@keyframes info-trade-dot-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.75; }
+}
+
+.info-anim--trade-verdict {
+    display: flex;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+.info-anim-trade-accept {
+    color: #4ade80;
+    animation: info-trade-accept-pop 1.6s ease-in-out infinite;
+}
+
+.info-anim-trade-decline {
+    color: #f87171;
+    animation: info-trade-decline-pop 1.6s ease-in-out infinite;
+    animation-delay: 0.4s;
+}
+
+@keyframes info-trade-accept-pop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes info-trade-decline-pop {
+    0%, 100% { transform: scale(1); opacity: 0.65; }
     50% { transform: scale(1.15); opacity: 1; }
 }
 

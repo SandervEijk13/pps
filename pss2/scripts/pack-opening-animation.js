@@ -1,3 +1,5 @@
+import { resolveTcgdexImageUrl } from '/scripts/card_logic.js';
+
 const ANIMATION = {
     introHoldMs: 320,
     topRipMs: 1800,
@@ -10,18 +12,11 @@ function sleep(ms) {
 }
 
 function getCardImage(card) {
-    if (card?.getImageURL) {
-        return card.getImageURL('high', 'webp');
-    }
-
-    if (typeof card?.image === 'string') {
-        if (card.image.startsWith('http')) {
-            return card.image;
-        }
-        return `https://assets.tcgdex.net${card.image}`;
-    }
-
-    return '';
+    return resolveTcgdexImageUrl(card, {
+        cardId: card?.id || card?.cardId,
+        set: card?.set?.id,
+        localId: card?.localId || card?.number,
+    });
 }
 
 function getCardPrice(card) {

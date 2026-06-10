@@ -41,6 +41,9 @@ function formatValue(type, value) {
     if (type === 'coins' || type === 'inventory' || type === 'biggest_win' || type === 'wagered') {
         return formatHeaderCoins(value);
     }
+    if (type === 'level') {
+        return `Level ${Math.floor(Number(value) || 1)}`;
+    }
     return String(value);
 }
 

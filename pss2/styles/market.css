@@ -1,4 +1,5 @@
 @import url('/styles/header.css');
+@import url("scrollbar.css");
 
 /* ── market.css — companion to market.html ── */
 /* All base styles live in the <style> block inside market.html.
@@ -426,6 +427,24 @@ body {
     color: #ff7070;
 }
 
+.market-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.market-trade-btn {
+    background: linear-gradient(135deg, #1f9d63, #157a4c) !important;
+    box-shadow: 0 4px 14px rgba(31, 157, 99, 0.2) !important;
+}
+
+.market-trade-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #28b877, #1a8f5f) !important;
+}
+
 /* BUY BUTTON */
 .card button {
     width: 100%;
@@ -552,4 +571,17 @@ body {
     .skel-img {
         width: 105px;
     }
+}
+
+
+.seller-link {
+    color: #f3c84a;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+    
+}
+
+.seller-link:hover {
+    opacity: 0.8;
 }

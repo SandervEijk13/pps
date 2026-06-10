@@ -11,6 +11,8 @@ function bootstrapProgressionSchema(PDO $pdo): void
     ensureLeaderboardColumns($pdo);
     ensureProgressionColumns($pdo);
     ensureRaffleTables($pdo);
+    require_once __DIR__ . '/trades.php';
+    ensureTradeTables($pdo);
 
     $stmt = $pdo->query('SHOW COLUMNS FROM users');
     $cols = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
@@ -535,20 +537,22 @@ function processPendingRaffleDraws(PDO $pdo): array
     return $results;
 }
 
-function addRaffleTickets(PDO $pdo, int $userId, float $wagerAmount): int
+function addRaffleTickets(PDO $pdo, int $userId, float $wagerAmount, int $coinsPerTicket = 10): int
 {
     $wagerAmount = round(max(0, $wagerAmount), 2);
     if ($userId <= 0 || $wagerAmount <= 0) {
         return 0;
     }
 
+    $coinsPerTicket = max(1, $coinsPerTicket);
+
     $stmt = $pdo->prepare('SELECT raffle_wager_carry FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $carry = round((float) ($stmt->fetchColumn() ?: 0), 2);
 
     $pool = $carry + $wagerAmount;
-    $tickets = (int) floor($pool / 10);
-    $newCarry = round($pool - ($tickets * 10), 2);
+    $tickets = (int) floor($pool / $coinsPerTicket);
+    $newCarry = round($pool - ($tickets * $coinsPerTicket), 2);
 
     $stmt = $pdo->prepare('UPDATE users SET raffle_wager_carry = ? WHERE id = ?');
     $stmt->execute([$newCarry, $userId]);
@@ -666,9 +670,9 @@ function getRaffleStateData(PDO $pdo, ?int $userId = null): array
     ];
 }
 
-function progressionOnWager(PDO $pdo, int $userId, float $amount): void
+function progressionOnWager(PDO $pdo, int $userId, float $amount, int $coinsPerTicket = 10): void
 {
-    addRaffleTickets($pdo, $userId, $amount);
+    addRaffleTickets($pdo, $userId, $amount, $coinsPerTicket);
     checkAndApplyLevelUp($pdo, $userId);
 }
 

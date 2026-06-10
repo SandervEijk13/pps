@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Higher / Lower</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/higher-lower.css" />
+</head>
+<body>
+
+    <div id="app-header" data-active="higher-lower"></div>
+
+    <main class="hl-page">
+        <div class="hl-ambient" aria-hidden="true">
+            <span class="hl-orb hl-orb--left"></span>
+            <span class="hl-orb hl-orb--right"></span>
+        </div>
+
+        <section class="hl-hero">
+            <button type="button" id="btnHlInfo" class="hl-info-btn" aria-label="Hoe werkt Higher / Lower?">
+                <i class="fas fa-circle-info" aria-hidden="true"></i>
+            </button>
+            <div class="hl-hero-badge"><i class="fas fa-sort"></i> Higher / Lower</div>
+            <h1>Guess the card value</h1>
+            <p>Compare Pokémon card prices — each correct guess boosts your multiplier.</p>
+        </section>
+
+        <div id="hlLoginGate" class="hl-gate is-hidden">
+            <div class="hl-gate-icon"><i class="fas fa-lock"></i></div>
+            <p>Log in to play Higher / Lower.</p>
+            <a href="/pages/login.html" class="btn-hl-primary">Login</a>
+        </div>
+
+        <section id="hlMain" class="hl-layout is-hidden">
+            <div class="hl-stats-bar">
+                <div class="hl-stat">
+                    <span class="hl-stat-label">Balance</span>
+                    <span id="hlBalance" class="hl-stat-value">0</span>
+                </div>
+                <div class="hl-stat">
+                    <span class="hl-stat-label">Multiplier</span>
+                    <span id="hlMultiplier" class="hl-stat-value hl-stat-value--accent">1.00×</span>
+                </div>
+                <div class="hl-stat">
+                    <span class="hl-stat-label">Streak</span>
+                    <span id="hlStreak" class="hl-stat-value">0</span>
+                </div>
+                <div class="hl-stat">
+                    <span class="hl-stat-label">Potential win</span>
+                    <span id="hlPotential" class="hl-stat-value hl-stat-value--gold">0</span>
+                </div>
+            </div>
+
+            <div class="hl-arena">
+                <div class="hl-card-slot" id="hlCardA">
+                    <div class="hl-card-frame hl-card-frame--idle" id="hlFrameA">
+                        <img id="hlImgA" class="hl-card-img is-hidden" src="" alt="" />
+                        <div class="hl-card-overlay hl-card-overlay--hidden" id="hlOverlayA">
+                            <span id="hlNameA" class="hl-card-name"></span>
+                            <span id="hlPriceA" class="hl-card-price"></span>
+                        </div>
+                        <div class="hl-card-mystery" id="hlMysteryA">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </div>
+                    <span class="hl-card-label">Card A</span>
+                </div>
+
+                <div class="hl-vs" aria-hidden="true">
+                    <span>VS</span>
+                </div>
+
+                <div class="hl-card-slot" id="hlCardB">
+                    <div class="hl-card-frame hl-card-frame--idle hl-card-frame--hidden" id="hlFrameB">
+                        <img id="hlImgB" class="hl-card-img is-hidden" src="" alt="" />
+                        <div class="hl-card-overlay hl-card-overlay--hidden" id="hlOverlayB">
+                            <span id="hlNameB" class="hl-card-name"></span>
+                            <span id="hlPriceB" class="hl-card-price"></span>
+                        </div>
+                        <div class="hl-card-mystery" id="hlMystery">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </div>
+                    <span class="hl-card-label">Card B</span>
+                </div>
+            </div>
+
+            <div id="hlBetPanel" class="hl-bet-panel">
+                <label class="hl-bet-label" for="hlBetInput">Bet amount</label>
+                <div class="hl-bet-row">
+                    <input type="number" id="hlBetInput" class="hl-bet-input" min="10" step="1" value="50" />
+                    <button type="button" id="hlBtnHalf" class="btn-hl-chip">½</button>
+                    <button type="button" id="hlBtnDouble" class="btn-hl-chip">2×</button>
+                    <button type="button" id="hlBtnMax" class="btn-hl-chip">Max</button>
+                </div>
+                <button type="button" id="hlBtnStart" class="btn-hl-primary btn-hl-wide">
+                    <i class="fas fa-play"></i> Start game
+                </button>
+            </div>
+
+            <div id="hlPlayPanel" class="hl-play-panel is-hidden">
+                <div class="hl-guess-row">
+                    <button type="button" id="hlBtnLower" class="btn-hl-guess btn-hl-guess--lower">
+                        <i class="fas fa-arrow-down"></i> Lower
+                    </button>
+                    <button type="button" id="hlBtnHigher" class="btn-hl-guess btn-hl-guess--higher">
+                        <i class="fas fa-arrow-up"></i> Higher
+                    </button>
+                </div>
+                <div id="hlContinuePanel" class="hl-continue-panel is-hidden">
+                    <button type="button" id="hlBtnCashOut" class="btn-hl-secondary">
+                        <i class="fas fa-hand-holding-dollar"></i> Cash out
+                    </button>
+                    <button type="button" id="hlBtnContinue" class="btn-hl-primary">
+                        <i class="fas fa-forward"></i> Continue
+                    </button>
+                </div>
+            </div>
+
+            <p id="hlStatus" class="hl-status" role="status"></p>
+        </section>
+    </main>
+
+    <div id="hlInfoModal" class="hl-modal hl-info-modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="hlInfoModalTitle">
+        <div class="hl-modal-backdrop hl-info-backdrop"></div>
+        <div class="hl-info-card">
+            <button type="button" id="btnHlInfoClose" class="hl-info-close" aria-label="Sluiten">
+                <i class="fas fa-xmark"></i>
+            </button>
+            <h2 id="hlInfoModalTitle">Hoe werkt Higher / Lower?</h2>
+            <p class="hl-info-intro">Raad of de volgende Pokémon-kaart een hogere of lagere waarde heeft dan de huidige kaart.</p>
+            <ol class="hl-info-steps">
+                <li class="hl-info-step">
+                    <div class="hl-info-step-visual">
+                        <div class="hl-info-anim hl-info-anim--coins" aria-hidden="true">
+                            <i class="fas fa-coins"></i>
+                            <span class="hl-info-anim-coin-val">50</span>
+                        </div>
+                    </div>
+                    <div class="hl-info-step-text">
+                        <strong>1. Zet je inzet</strong>
+                        <span>Kies hoeveel coins je inzet (min. 10) en druk op <em>Start game</em>. Je inzet wordt direct afgeschreven. Elke 100 ingezette coins = 1 raffle ticket.</span>
+                    </div>
+                </li>
+                <li class="hl-info-step">
+                    <div class="hl-info-step-visual">
+                        <div class="hl-info-anim hl-info-anim--cards" aria-hidden="true">
+                            <span class="hl-info-mini-card hl-info-mini-card--a">12</span>
+                            <span class="hl-info-mini-card hl-info-mini-card--b">?</span>
+                        </div>
+                    </div>
+                    <div class="hl-info-step-text">
+                        <strong>2. Vergelijk de kaarten</strong>
+                        <span>Kaart A toont de waarde. Kaart B is verborgen — kies <em>Higher</em> of <em>Lower</em>.</span>
+                    </div>
+                </li>
+                <li class="hl-info-step">
+                    <div class="hl-info-step-visual">
+                        <div class="hl-info-anim hl-info-anim--multiplier" aria-hidden="true">
+                            <span class="hl-info-mult-val">1.28×</span>
+                            <i class="fas fa-arrow-trend-up"></i>
+                        </div>
+                    </div>
+                    <div class="hl-info-step-text">
+                        <strong>3. Goed = multiplier omhoog</strong>
+                        <span>Elke goede gok verhoogt je multiplier met +0.28× (bijv. 1 winst = 1.28×, 2 winsten = 1.56×).</span>
+                    </div>
+                </li>
+                <li class="hl-info-step">
+                    <div class="hl-info-step-visual">
+                        <div class="hl-info-anim hl-info-anim--choice" aria-hidden="true">
+                            <span class="hl-info-choice hl-info-choice--cash"><i class="fas fa-hand-holding-dollar"></i></span>
+                            <span class="hl-info-choice hl-info-choice--go"><i class="fas fa-forward"></i></span>
+                        </div>
+                    </div>
+                    <div class="hl-info-step-text">
+                        <strong>4. Cash out of doorgaan</strong>
+                        <span>Na een goede gok kun je uitbetalen of doorgaan voor een hogere multiplier. Fout of gelijke waarde = inzet kwijt.</span>
+                    </div>
+                </li>
+            </ol>
+            <button type="button" id="btnHlInfoGotIt" class="btn-hl-primary">Begrepen!</button>
+        </div>
+    </div>
+
+    <div id="hlResultModal" class="hl-modal is-hidden" role="dialog" aria-modal="true">
+        <div class="hl-modal-backdrop"></div>
+        <div class="hl-modal-card">
+            <div id="hlResultBadge" class="hl-result-badge">Result</div>
+            <h2 id="hlResultTitle">Game over</h2>
+            <p id="hlResultMessage"></p>
+            <button type="button" id="hlBtnCloseResult" class="btn-hl-primary">Play again</button>
+        </div>
+    </div>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script type="module" src="/scripts/higher-lower.js"></script>
+</body>
+</html>

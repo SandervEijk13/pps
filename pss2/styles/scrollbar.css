@@ -1,0 +1,42 @@
+/* ===== Custom Scrollbar (Blue & Black) ===== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #05070b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4d7eff 0%,
+    #2c5bff 50%,
+    #1636a8 100%
+  );
+  border-radius: 10px;
+  border: 2px solid #05070b;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6c9eff 0%,
+    #3e6aff 50%,
+    #2045c7 100%
+  );
+}
+
+::-webkit-scrollbar-corner {
+  background: #05070b;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2c5bff #05070b;
+}

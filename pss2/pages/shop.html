@@ -15,35 +15,41 @@
     <div id="app-header" data-active="crates"></div>
 
     <div class="shop-page">
+        <div class="game-ambient shop-ambient" aria-hidden="true">
+            <span class="game-orb game-orb--a shop-orb--gold"></span>
+            <span class="game-orb game-orb--b shop-orb--amber"></span>
+        </div>
 
-        <div class="shop-header game-hero-wrap game-info-theme--gold">
+        <section class="shop-hero game-hero-wrap game-info-theme--gold">
+            <button type="button" id="btnGameInfo" class="game-info-btn" aria-label="Hoe werkt de pack shop?">
+                <i class="fas fa-circle-info" aria-hidden="true"></i>
+            </button>
 
-    <button type="button" id="btnGameInfo" class="game-info-btn" aria-label="Hoe werkt de pack shop?">
-        <i class="fas fa-circle-info" aria-hidden="true"></i>
-    </button>
+            <div class="shop-hero-badge"><i class="fas fa-store"></i> Pack Shop</div>
+            <h1>Pokémon Pack Shop</h1>
+            <p>Koop packs met coins, open ze uit je inventory en build je collectie.</p>
+        </section>
 
-    <h1>Pokémon Pack Shop</h1>
+        <div class="shop-toolbar">
+            <button id="openInventoryBtn" class="inventory-toggle-btn" type="button">
+                <i class="fas fa-box-open"></i> Inventory
+            </button>
 
-    <div class="shop-controls">
-        <button id="openInventoryBtn" class="inventory-toggle-btn" type="button">Inventory</button>
+            <select id="priceFilter" class="price-filter" aria-label="Sort packs by price">
+                <option value="default">Default</option>
+                <option value="low-high">Price: Low → High</option>
+                <option value="high-low">Price: High → Low</option>
+            </select>
+        </div>
 
-        <select id="priceFilter" class="price-filter">
-            <option value="default">Default</option>
-            <option value="low-high">Price: Low → High</option>
-            <option value="high-low">Price: High → Low</option>
-        </select>
-
-    </div>
-
-</div>
-
-        <div id="shopGrid" class="shop-grid"></div>
-
+        <section class="shop-panel">
+            <div id="shopGrid" class="shop-grid"></div>
+        </section>
     </div>
 
     <aside class="inventory-panel" id="inventoryPanel" aria-label="Pack inventory">
         <div class="inventory-panel-header">
-            <h2>Your packs</h2>
+            <h2><i class="fas fa-layer-group"></i> Your packs</h2>
             <button id="closeInventoryBtn" class="close-inventory-btn" type="button">Close</button>
         </div>
         <div id="inventoryGrid" class="inventory-grid"></div>

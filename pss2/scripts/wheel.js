@@ -1,4 +1,4 @@
-import { formatHeaderCoins } from '/scripts/card_logic.js';
+import { formatHeaderCoins, resolveTcgdexImageUrl } from '/scripts/card_logic.js';
 import { initGameInfo } from '/scripts/game-info.js';
 
 function getApiBase() {
@@ -13,6 +13,10 @@ function getApiBase() {
 }
 
 const API = getApiBase();
+
+function cardImg(card) {
+    return resolveTcgdexImageUrl(card, { cardId: card?.id });
+}
 
 const state = {
     segments: [],
@@ -214,11 +218,14 @@ function showRewardModal(reward, bigWin) {
         els.rewardModalVisual.innerHTML = '';
         if (reward.type === 'card' || reward.type === 'card_premium' || reward.type === 'jackpot') {
             const card = reward.card;
-            if (card?.image) {
-                const img = document.createElement('img');
-                img.src = card.image;
-                img.alt = card.name || 'Card';
-                els.rewardModalVisual.appendChild(img);
+            if (card) {
+                const src = cardImg(card);
+                if (src) {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = card.name || 'Card';
+                    els.rewardModalVisual.appendChild(img);
+                }
             }
         } else if (reward.type === 'coins' || reward.type === 'jackpot') {
             const icon = document.createElement('div');
@@ -253,8 +260,9 @@ function renderPrizeList() {
         if (seg.bigWin) item.classList.add('is-big');
 
         let thumb = '';
-        if (seg.image) {
-            thumb = `<img class="wheel-prize-thumb" src="${seg.image}" alt="" />`;
+        const segImg = cardImg({ image: seg.image, id: seg.cardId });
+        if (segImg) {
+            thumb = `<img class="wheel-prize-thumb" src="${segImg}" alt="" />`;
         } else if (seg.prizeKind === 'coins') {
             thumb = '<span class="wheel-prize-icon"><i class="fas fa-coins"></i></span>';
         } else if (seg.prizeKind === 'ticket') {

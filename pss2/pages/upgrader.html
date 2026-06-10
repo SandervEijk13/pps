@@ -1,194 +1,103 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>PokeVault | Card Upgrader</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="/styles/header.css" />
     <link rel="stylesheet" href="/styles/game-font.css" />
     <link rel="stylesheet" href="/styles/game-info.css" />
     <link rel="stylesheet" href="/styles/upgrader.css" />
-
 </head>
-
-<body>
-
-
+<body class="game-page-body upgrader-body">
 
     <div id="app-header" data-active="upgrader"></div>
 
-
+    <div class="game-ambient game-ambient--fixed upgrader-ambient" aria-hidden="true">
+        <span class="game-orb game-orb--a upgrader-orb--left"></span>
+        <span class="game-orb game-orb--b upgrader-orb--right"></span>
+    </div>
 
     <main class="upgrader-page">
+        <div class="upgrader-shell">
+            <section class="upgrader-hero game-hero-wrap game-hero-wrap--left game-info-theme--green">
+                <button type="button" id="btnGameInfo" class="game-info-btn" aria-label="Hoe werkt de upgrader?">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                </button>
+                <div class="upgrader-hero-badge"><i class="fas fa-arrow-up"></i> Card Upgrader</div>
+                <h1>Bet coins, spin for a better card</h1>
+                <p>Set your stake, pick a target card — higher value means lower win chance.</p>
+            </section>
 
-        <div class="upgrader-ambient" aria-hidden="true">
-
-            <span class="upgrader-orb upgrader-orb--left"></span>
-
-            <span class="upgrader-orb upgrader-orb--right"></span>
-
-        </div>
-
-
-
-        <section class="upgrader-hero game-hero-wrap game-info-theme--green">
-
-            <button type="button" id="btnGameInfo" class="game-info-btn" aria-label="Hoe werkt de upgrader?">
-                <i class="fas fa-circle-info" aria-hidden="true"></i>
-            </button>
-
-            <div class="upgrader-hero-badge"><i class="fas fa-arrow-up"></i> Card Upgrader</div>
-
-            <h1>Bet coins, spin for a better card</h1>
-
-            <p>Set your stake, pick a target card — higher value means lower win chance.</p>
-
-        </section>
-
-
-
-        <div id="upgraderLoginGate" class="upgrader-gate is-hidden">
-
-            <div class="upgrader-gate-icon"><i class="fas fa-lock"></i></div>
-
-            <p>Log in to use the upgrader.</p>
-
-            <a href="/pages/login.html" class="btn-upgrader-primary">Login</a>
-
-        </div>
-
-
-
-        <section id="upgraderMain" class="upgrader-layout is-hidden">
-
-            <div class="upgrader-wheel-col">
-
-                <div class="upgrader-stage-wrap">
-
-                    <div class="upgrader-stage-ring" aria-hidden="true"></div>
-
-                    <div class="upgrader-stage-glow" aria-hidden="true"></div>
-
-                    <div class="upgrader-stage">
-
-                        <div class="upgrader-pointer" aria-hidden="true"></div>
-
-                        <canvas id="upgraderCanvas" width="400" height="400" aria-label="Upgrade wheel"></canvas>
-
-                        <div class="upgrader-hub"><i class="fas fa-arrow-up"></i></div>
-
-                    </div>
-
-                </div>
-
-
-
-                <div id="selectedTargetPreview" class="selected-target-preview is-hidden">
-
-                    <div class="selected-target-preview__shine" aria-hidden="true"></div>
-
-                    <img id="selectedTargetImg" src="" alt="" />
-
-                    <div class="selected-target-preview__body">
-
-                        <span class="selected-target-preview__label">Target</span>
-
-                        <strong id="selectedTargetName">—</strong>
-
-                        <span id="selectedTargetMeta">—</span>
-
-                    </div>
-
-                </div>
-
+            <div id="upgraderLoginGate" class="upgrader-gate is-hidden">
+                <div class="upgrader-gate-icon"><i class="fas fa-lock"></i></div>
+                <p>Log in to use the upgrader.</p>
+                <a href="/pages/login.html" class="btn-upgrader-primary">Login</a>
             </div>
 
-
-
-            <aside class="upgrader-panel">
-
-                <div class="upgrader-stat-row">
-
-                    <div class="upgrader-stat">
-
-                        <span class="upgrader-stat__label"><i class="fas fa-coins"></i> Balance</span>
-
-                        <strong id="balanceLabel" class="upgrader-stat__value upgrader-stat__value--coins">0</strong>
-
+            <section id="upgraderMain" class="upgrader-layout is-hidden">
+                <div class="upgrader-wheel-col">
+                    <div class="upgrader-stage-wrap">
+                        <div class="upgrader-stage-ring" aria-hidden="true"></div>
+                        <div class="upgrader-stage-glow" aria-hidden="true"></div>
+                        <div class="upgrader-stage">
+                            <div class="upgrader-pointer" aria-hidden="true"></div>
+                            <canvas id="upgraderCanvas" width="400" height="400" aria-label="Upgrade wheel"></canvas>
+                            <div class="upgrader-hub"><i class="fas fa-arrow-up"></i></div>
+                        </div>
                     </div>
 
-                    <div class="upgrader-stat upgrader-stat--chance">
-
-                        <span class="upgrader-stat__label"><i class="fas fa-percentage"></i> Win chance</span>
-
-                        <strong id="chanceLabel" class="upgrader-stat__value upgrader-stat__value--chance">—</strong>
-
+                    <div id="selectedTargetPreview" class="selected-target-preview is-hidden">
+                        <div class="selected-target-preview__shine" aria-hidden="true"></div>
+                        <img id="selectedTargetImg" src="" alt="" />
+                        <div class="selected-target-preview__body">
+                            <span class="selected-target-preview__label">Target</span>
+                            <strong id="selectedTargetName">—</strong>
+                            <span id="selectedTargetMeta">—</span>
+                        </div>
                     </div>
-
                 </div>
 
-
-
-                <div class="upgrader-bet-block">
-
-                    <label for="betInput" class="upgrader-label">Bet amount</label>
-
-                    <div class="upgrader-bet-input-wrap">
-
-                        <i class="fas fa-coins upgrader-bet-icon" aria-hidden="true"></i>
-
-                        <input type="number" id="betInput" min="10" step="5" value="50" />
-
+                <aside class="upgrader-panel">
+                    <div class="upgrader-stat-row">
+                        <div class="upgrader-stat">
+                            <span class="upgrader-stat__label"><i class="fas fa-coins"></i> Balance</span>
+                            <strong id="balanceLabel" class="upgrader-stat__value upgrader-stat__value--coins">0</strong>
+                        </div>
+                        <div class="upgrader-stat upgrader-stat--chance">
+                            <span class="upgrader-stat__label"><i class="fas fa-percentage"></i> Win chance</span>
+                            <strong id="chanceLabel" class="upgrader-stat__value upgrader-stat__value--chance">—</strong>
+                        </div>
                     </div>
 
-                    <input type="range" id="betSlider" min="10" max="500" step="5" value="50" class="upgrader-range" />
-
-                </div>
-
-
-
-                <button type="button" id="btnUpgrade" class="btn-upgrader-primary" disabled>
-
-                    <span class="btn-upgrader-primary__shine" aria-hidden="true"></span>
-
-                    <i class="fas fa-dharmachakra"></i> Spin upgrade
-
-                </button>
-
-
-
-                <p id="upgraderStatus" class="upgrader-status" role="status"></p>
-
-
-
-                <div class="upgrader-targets-wrap">
-
-                    <div class="upgrader-targets-head">
-
-                        <h3><i class="fas fa-layer-group"></i> Target cards</h3>
-
-                        <p class="upgrader-targets-hint">Worth more than your bet · Price ↑ = chance ↓</p>
-
+                    <div class="upgrader-bet-block">
+                        <label for="betInput" class="upgrader-label">Bet amount</label>
+                        <div class="upgrader-bet-input-wrap">
+                            <i class="fas fa-coins upgrader-bet-icon" aria-hidden="true"></i>
+                            <input type="number" id="betInput" min="10" step="5" value="50" />
+                        </div>
+                        <input type="range" id="betSlider" min="10" max="500" step="5" value="50" class="upgrader-range" />
                     </div>
 
-                    <div id="targetGrid" class="upgrader-target-grid"></div>
+                    <button type="button" id="btnUpgrade" class="btn-upgrader-primary" disabled>
+                        <span class="btn-upgrader-primary__shine" aria-hidden="true"></span>
+                        <i class="fas fa-dharmachakra"></i> Spin upgrade
+                    </button>
 
-                </div>
+                    <p id="upgraderStatus" class="upgrader-status" role="status"></p>
 
-            </aside>
-
-        </section>
-
+                    <div class="upgrader-targets-wrap">
+                        <div class="upgrader-targets-head">
+                            <h3><i class="fas fa-layer-group"></i> Target cards</h3>
+                            <p class="upgrader-targets-hint">Worth more than your bet · Price ↑ = chance ↓</p>
+                        </div>
+                        <div id="targetGrid" class="upgrader-target-grid"></div>
+                    </div>
+                </aside>
+            </section>
+        </div>
     </main>
-
-
 
     <div id="infoModal" class="game-info-modal game-info-theme--green is-hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
         <div class="game-info-backdrop"></div>
@@ -198,7 +107,6 @@
             </button>
             <h2 id="infoModalTitle">Hoe werkt de Upgrader?</h2>
             <p class="game-info-intro">Zet coins in, kies een betere kaart en spin voor je upgrade.</p>
-
             <ol class="game-info-steps">
                 <li class="game-info-step">
                     <div class="game-info-step-visual">
@@ -249,7 +157,6 @@
                     </div>
                 </li>
             </ol>
-
             <div class="game-info-note">
                 <i class="fas fa-calculator"></i>
                 <div>
@@ -258,46 +165,27 @@
                     <span class="game-info-note-hint">Min. 2% · max. 75%</span>
                 </div>
             </div>
-
             <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Begrepen!</button>
         </div>
     </div>
 
     <div id="resultModal" class="upgrader-modal is-hidden" role="dialog" aria-modal="true">
-
         <div class="upgrader-modal-backdrop"></div>
-
         <div id="resultModalCard" class="upgrader-modal-card">
-
             <div id="resultModalBadge" class="upgrader-modal-badge">Result</div>
-
             <div id="resultModalVisual" class="upgrader-modal-visual"></div>
-
             <h2 id="resultModalTitle">—</h2>
-
             <p id="resultModalMessage"></p>
-
             <a id="resultModalCollectionLink" href="/pages/sets.html" class="upgrader-modal-collection-link is-hidden">
                 <i class="fas fa-layer-group"></i> Bekijk je collectie
             </a>
-
             <button type="button" id="btnCloseResult" class="btn-upgrader-primary">Doorgaan</button>
-
         </div>
-
     </div>
 
-
-
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
     <script src="/scripts/header.js" defer></script>
-
     <script src="/scripts/login.js" defer></script>
-
     <script type="module" src="/scripts/upgrader.js"></script>
-
 </body>
-
 </html>
-

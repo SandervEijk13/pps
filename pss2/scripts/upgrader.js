@@ -1,4 +1,5 @@
-import { formatHeaderCoins } from '/scripts/card_logic.js';
+import { formatHeaderCoins, resolveTcgdexImageUrl } from '/scripts/card_logic.js';
+import { initGameInfo } from '/scripts/game-info.js';
 
 function getApiBase() {
     if (window.location.port === '5173') {
@@ -12,6 +13,10 @@ function getApiBase() {
 }
 
 const API = getApiBase();
+
+function cardImg(card) {
+    return resolveTcgdexImageUrl(card, { cardId: card?.id });
+}
 
 const state = {
     bet: 50,
@@ -49,10 +54,6 @@ const els = {
     resultModalMessage: document.getElementById('resultModalMessage'),
     resultModalCollectionLink: document.getElementById('resultModalCollectionLink'),
     btnCloseResult: document.getElementById('btnCloseResult'),
-    infoModal: document.getElementById('infoModal'),
-    btnUpgraderInfo: document.getElementById('btnUpgraderInfo'),
-    btnCloseInfo: document.getElementById('btnCloseInfo'),
-    btnInfoGotIt: document.getElementById('btnInfoGotIt'),
 };
 
 const ctx = els.canvas?.getContext('2d');
@@ -228,7 +229,7 @@ function updateSelectedPreview(target) {
     }
     els.selectedPreview.classList.remove('is-hidden');
     if (els.selectedImg) {
-        els.selectedImg.src = target.image || '';
+        els.selectedImg.src = cardImg(target);
         els.selectedImg.alt = target.name || 'Card';
     }
     if (els.selectedName) els.selectedName.textContent = target.name || 'Card';
@@ -255,7 +256,7 @@ function renderTargets() {
             ? `<span class="target-set">${escapeHtml(card.setName)}</span>`
             : '';
         btn.innerHTML = `
-            <img src="${escapeHtml(card.image || '')}" alt="" loading="lazy" />
+            <img src="${escapeHtml(cardImg(card))}" alt="" loading="lazy" />
             <div class="target-text">
                 <span class="target-name">${escapeHtml(card.name)}</span>
                 ${setLine}
@@ -363,9 +364,9 @@ function showResultModal(won, target, message, reward = null) {
 
     if (els.resultModalVisual) {
         els.resultModalVisual.innerHTML = '';
-        if (won && target?.image) {
+        if (won && target) {
             const img = document.createElement('img');
-            img.src = target.image;
+            img.src = cardImg(target);
             img.alt = target.name || 'Card';
             els.resultModalVisual.appendChild(img);
             const meta = document.createElement('p');
@@ -443,23 +444,8 @@ async function doUpgrade() {
     }
 }
 
-function openInfoModal() {
-    if (!els.infoModal) return;
-    els.infoModal.classList.remove('is-hidden');
-    els.infoModal.querySelectorAll('.upgrader-info-step').forEach((step, index) => {
-        step.classList.remove('is-visible');
-        window.setTimeout(() => step.classList.add('is-visible'), 70 + index * 90);
-    });
-}
-
-function closeInfoModal() {
-    els.infoModal?.classList.add('is-hidden');
-    els.infoModal?.querySelectorAll('.upgrader-info-step').forEach((step) => {
-        step.classList.remove('is-visible');
-    });
-}
-
 function bindEvents() {
+    initGameInfo();
     let betTimer = null;
     const queueBetReload = () => {
         clearTimeout(betTimer);
@@ -483,20 +469,13 @@ function bindEvents() {
     });
 
     els.btnUpgrade?.addEventListener('click', doUpgrade);
-    els.btnUpgraderInfo?.addEventListener('click', openInfoModal);
-    els.btnCloseInfo?.addEventListener('click', closeInfoModal);
-    els.btnInfoGotIt?.addEventListener('click', closeInfoModal);
-    els.infoModal?.querySelector('.upgrader-info-backdrop')?.addEventListener('click', closeInfoModal);
-
     els.btnCloseResult?.addEventListener('click', () => els.resultModal?.classList.add('is-hidden'));
     els.resultModal?.querySelector('.upgrader-modal-backdrop')?.addEventListener('click', () => {
         els.resultModal?.classList.add('is-hidden');
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key !== 'Escape') return;
-        if (!els.infoModal?.classList.contains('is-hidden')) closeInfoModal();
-        else if (!els.resultModal?.classList.contains('is-hidden')) {
+        if (e.key === 'Escape' && !els.resultModal?.classList.contains('is-hidden')) {
             els.resultModal.classList.add('is-hidden');
         }
     });

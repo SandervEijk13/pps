@@ -1,49 +1,55 @@
+@import url('/styles/game-pages.css');
+@import url("scrollbar.css");
+
 /* ── Page shell ─────────────────────────────────────────────── */
 
-body {
-    background: #030712;
-    min-height: 100vh;
+.upgrader-body {
+    --gp-bg-glow-a: rgba(34, 197, 94, 0.16);
+    --gp-bg-glow-b: rgba(16, 185, 129, 0.12);
     color: #e2e8f0;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-
 }
 
 .upgrader-page {
     position: relative;
-    max-width: 1240px;
+    z-index: 1;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 28px 20px 80px;
-    overflow: hidden;
-}
-
-.upgrader-ambient {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.upgrader-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.45;
 }
 
 .upgrader-orb--left {
-    width: 420px;
-    height: 420px;
-    top: 8%;
-    left: -8%;
-    background: radial-gradient(circle, rgba(34, 197, 94, 0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.38) 0%, transparent 70%);
 }
 
 .upgrader-orb--right {
-    width: 360px;
-    height: 360px;
-    top: 20%;
-    right: -6%;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.26) 0%, transparent 70%);
+}
+
+.upgrader-shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+    gap: 24px 32px;
+    align-items: start;
+}
+
+.upgrader-hero {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.upgrader-gate {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#upgraderMain:not(.is-hidden) {
+    display: contents;
+}
+
+#upgraderMain.is-hidden {
+    display: none;
 }
 
 /* ── Hero ───────────────────────────────────────────────────── */
@@ -51,8 +57,7 @@ body {
 .upgrader-hero {
     position: relative;
     z-index: 1;
-    text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 0;
 }
 
 .upgrader-hero-badge {
@@ -70,6 +75,12 @@ body {
     text-transform: uppercase;
     margin-bottom: 14px;
     box-shadow: 0 0 24px rgba(34, 197, 94, 0.15);
+    animation: upgrader-badge-glow 3s ease-in-out infinite;
+}
+
+@keyframes upgrader-badge-glow {
+    0%, 100% { box-shadow: 0 0 24px rgba(34, 197, 94, 0.15); }
+    50% { box-shadow: 0 0 36px rgba(74, 222, 128, 0.28); }
 }
 
 .upgrader-hero-badge i {
@@ -94,36 +105,6 @@ body {
     max-width: 480px;
     font-size: 1rem;
     line-height: 1.55;
-}
-
-.upgrader-info-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 1px solid rgba(74, 222, 128, 0.35);
-    background: rgba(22, 101, 52, 0.25);
-    color: #86efac;
-    font-size: 1.15rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-    animation: upgrader-info-btn-pulse 2.8s ease-in-out infinite;
-}
-
-.upgrader-info-btn:hover {
-    transform: scale(1.08);
-    background: rgba(22, 101, 52, 0.45);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-}
-
-@keyframes upgrader-info-btn-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.25); }
-    50% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
 }
 
 /* ── Login gate ─────────────────────────────────────────────── */
@@ -160,28 +141,43 @@ body {
 
 /* ── Layout ─────────────────────────────────────────────────── */
 
-.upgrader-layout {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
-    gap: 32px;
-    align-items: start;
-}
-
-.upgrader-layout > * {
-    min-width: 0;
-}
-
 @media (max-width: 960px) {
-    .upgrader-layout {
+    .upgrader-shell {
         grid-template-columns: 1fr;
+    }
+
+    .upgrader-hero,
+    .upgrader-gate,
+    .upgrader-wheel-col,
+    .upgrader-panel {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .game-hero-wrap--left {
+        padding-left: 0;
+        padding-top: 52px;
+        text-align: center;
+    }
+
+    .game-hero-wrap--left .game-info-btn {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        top: 0;
+    }
+
+    .game-hero-wrap--left p {
+        margin-inline: auto;
     }
 }
 
 /* ── Wheel column ───────────────────────────────────────────── */
 
 .upgrader-wheel-col {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -369,6 +365,9 @@ body {
 /* ── Side panel ─────────────────────────────────────────────── */
 
 .upgrader-panel {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: stretch;
     background: linear-gradient(165deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.98));
     border: 1px solid rgba(51, 65, 85, 0.65);
     border-radius: 20px;
@@ -672,6 +671,7 @@ body {
     text-align: left;
     overflow: hidden;
     transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+    animation: gp-fade-up 0.4s ease backwards;
 }
 
 .upgrader-target-card::before {
@@ -685,9 +685,10 @@ body {
 }
 
 .upgrader-target-card:hover {
-    border-color: rgba(100, 116, 139, 0.8);
+    border-color: rgba(74, 222, 128, 0.35);
     background: rgba(30, 41, 59, 0.6);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .upgrader-target-card:hover::before {
@@ -698,8 +699,8 @@ body {
     border-color: rgba(74, 222, 128, 0.65);
     background: linear-gradient(135deg, rgba(22, 101, 52, 0.2), rgba(2, 6, 23, 0.9));
     box-shadow:
-        0 0 0 1px rgba(74, 222, 128, 0.15),
-        0 8px 24px rgba(34, 197, 94, 0.12);
+        0 0 0 1px rgba(74, 222, 128, 0.2),
+        0 12px 32px rgba(34, 197, 94, 0.18);
 }
 
 .upgrader-target-card.is-selected::after {
@@ -929,352 +930,4 @@ body {
 .upgrader-modal .btn-upgrader-primary {
     max-width: 220px;
     margin: 0 auto;
-}
-
-/* ── Info modal ─────────────────────────────────────────────── */
-
-.upgrader-info-modal {
-    z-index: 110;
-}
-
-.upgrader-info-card {
-    position: relative;
-    max-width: 520px;
-    width: 100%;
-    max-height: min(90vh, 720px);
-    overflow-y: auto;
-    background: linear-gradient(165deg, #1e293b 0%, #0f172a 50%, #020617 100%);
-    border: 1px solid rgba(74, 222, 128, 0.2);
-    border-radius: 20px;
-    padding: 28px 24px 24px;
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
-    animation: upgrader-modal-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
-    scrollbar-width: thin;
-    scrollbar-color: rgba(74, 222, 128, 0.35) transparent;
-}
-
-.upgrader-info-close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 34px;
-    height: 34px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(51, 65, 85, 0.6);
-    color: #94a3b8;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, color 0.2s, transform 0.15s;
-}
-
-.upgrader-info-close:hover {
-    background: rgba(71, 85, 105, 0.8);
-    color: #f1f5f9;
-    transform: rotate(90deg);
-}
-
-.upgrader-info-card h2 {
-    margin: 0 36px 8px 0;
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #f8fafc;
-    letter-spacing: -0.02em;
-}
-
-.upgrader-info-intro {
-    margin: 0 0 20px;
-    color: #94a3b8;
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-.upgrader-info-steps {
-    list-style: none;
-    margin: 0 0 18px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.upgrader-info-step {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    padding: 12px;
-    border-radius: 14px;
-    background: rgba(2, 6, 23, 0.55);
-    border: 1px solid rgba(51, 65, 85, 0.55);
-    opacity: 0;
-    transform: translateX(-12px);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.upgrader-info-step.is-visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.upgrader-info-step-visual {
-    flex-shrink: 0;
-    width: 52px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.upgrader-info-step-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-}
-
-.upgrader-info-step-text strong {
-    color: #e2e8f0;
-    font-size: 0.88rem;
-}
-
-.upgrader-info-step-text span {
-    color: #94a3b8;
-    font-size: 0.8rem;
-    line-height: 1.45;
-}
-
-.upgrader-info-step-text em {
-    color: #fde68a;
-    font-style: normal;
-    font-weight: 600;
-}
-
-.info-tag {
-    display: inline-block;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-}
-
-.info-tag--win {
-    background: rgba(22, 101, 52, 0.5);
-    color: #86efac;
-}
-
-.info-tag--loss {
-    background: rgba(127, 29, 29, 0.5);
-    color: #fca5a5;
-}
-
-/* Step animations */
-.info-anim--coins {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    color: #fbbf24;
-}
-
-.info-anim--coins i {
-    font-size: 1.35rem;
-    animation: info-coin-bounce 1.4s ease-in-out infinite;
-}
-
-.info-anim-coin-val {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: #fde68a;
-    animation: info-coin-flash 1.4s ease-in-out infinite;
-}
-
-@keyframes info-coin-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-}
-
-@keyframes info-coin-flash {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
-}
-
-.info-anim--card {
-    position: relative;
-    width: 36px;
-    height: 50px;
-}
-
-.info-anim-card-face {
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    background: linear-gradient(145deg, #334155, #1e293b);
-    border: 2px solid rgba(74, 222, 128, 0.4);
-    animation: info-card-glow 2s ease-in-out infinite;
-}
-
-.info-anim-card-check {
-    position: absolute;
-    bottom: -4px;
-    right: -6px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #166534;
-    color: #bbf7d0;
-    font-size: 0.55rem;
-    line-height: 18px;
-    text-align: center;
-    animation: info-check-pop 2s ease-in-out infinite;
-}
-
-@keyframes info-card-glow {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.3);
-        transform: scale(1);
-    }
-    50% {
-        box-shadow: 0 0 12px rgba(74, 222, 128, 0.45);
-        transform: scale(1.05);
-    }
-}
-
-@keyframes info-check-pop {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-}
-
-.info-anim--wheel-wrap {
-    position: relative;
-    width: 48px;
-    height: 48px;
-}
-
-.info-anim--wheel {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: conic-gradient(#166534 0deg 130deg, #7f1d1d 130deg 360deg);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    animation: info-wheel-spin 2.5s linear infinite;
-}
-
-.info-anim-wheel-pointer {
-    position: absolute;
-    top: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 9px solid #ecfdf5;
-    z-index: 1;
-}
-
-@keyframes info-wheel-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.info-anim--outcome {
-    position: relative;
-    width: 48px;
-    height: 48px;
-}
-
-.info-outcome-win,
-.info-outcome-loss {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-}
-
-.info-outcome-win {
-    background: rgba(22, 101, 52, 0.35);
-    border: 2px solid rgba(74, 222, 128, 0.5);
-    color: #4ade80;
-    animation: info-outcome-win 2.4s ease-in-out infinite;
-}
-
-.info-outcome-loss {
-    background: rgba(127, 29, 29, 0.35);
-    border: 2px solid rgba(248, 113, 113, 0.45);
-    color: #f87171;
-    animation: info-outcome-loss 2.4s ease-in-out infinite;
-}
-
-@keyframes info-outcome-win {
-    0%, 45%, 100% { opacity: 1; transform: scale(1); }
-    50%, 95% { opacity: 0; transform: scale(0.85); }
-}
-
-@keyframes info-outcome-loss {
-    0%, 45%, 100% { opacity: 0; transform: scale(0.85); }
-    50%, 95% { opacity: 1; transform: scale(1); }
-}
-
-.upgrader-info-formula {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 14px;
-    margin-bottom: 18px;
-    border-radius: 12px;
-    background: rgba(22, 101, 52, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.2);
-}
-
-.upgrader-info-formula > i {
-    color: #4ade80;
-    font-size: 1.1rem;
-    margin-top: 2px;
-    animation: info-formula-pulse 2s ease-in-out infinite;
-}
-
-@keyframes info-formula-pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
-}
-
-.upgrader-info-formula-label {
-    display: block;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #64748b;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.upgrader-info-formula code {
-    display: block;
-    font-size: 0.88rem;
-    color: #bbf7d0;
-    font-family: ui-monospace, monospace;
-    margin-bottom: 4px;
-}
-
-.upgrader-info-formula-hint {
-    font-size: 0.75rem;
-    color: #64748b;
-}
-
-.upgrader-info-card .btn-upgrader-primary {
-    width: 100%;
-    max-width: none;
-}
-
-@media (max-width: 520px) {
-    .upgrader-info-btn {
-        top: -8px;
-        right: -4px;
-    }
 }
