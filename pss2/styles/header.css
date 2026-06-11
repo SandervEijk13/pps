@@ -3,6 +3,35 @@
  * Render markup via scripts/header.js → #app-header
  */
 @import url("scrollbar.css");
+.auth-warning-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    background: rgba(234, 179, 8, 0.1);
+    border-bottom: 1px solid rgba(234, 179, 8, 0.3);
+    color: #fbbf24;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.auth-warning-banner i {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.auth-warning-banner a {
+    color: #fde68a;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.auth-warning-banner a:hover {
+    color: #fff;
+}
+
 .header {
     background: #0b0e14;
     border-bottom: 1px solid #1e2a3e;

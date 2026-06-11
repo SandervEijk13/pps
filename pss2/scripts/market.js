@@ -11,12 +11,15 @@ const API = window.location.port === '5173'
     ? 'http://localhost/pss/api'
     : `${window.location.origin}/pss/api`;
 
+const PAGE_SIZE = 12;
+
 // ── STATE ──────────────────────────────────────────────────────────────────
 
 let marketCards = [];
 let currentUserId = null;
 let ownedCards = [];
 let activeSetId = null;
+let currentPage = 1;
 
 const cardCache = new Map();
 const setCache  = new Map();
@@ -113,6 +116,7 @@ async function renderSetFilters() {
     allBtn.className = activeSetId === null ? 'active-set-filter' : '';
     allBtn.onclick = async () => {
         activeSetId = null;
+        currentPage = 1;
         const search = document.getElementById('pokemonSearch')?.value || '';
         await renderMarketplace(search);
         await renderSetFilters();
@@ -125,6 +129,7 @@ async function renderSetFilters() {
         btn.className = activeSetId === setId ? 'active-set-filter' : '';
         btn.onclick = async () => {
             activeSetId = setId;
+            currentPage = 1;
             const search = document.getElementById('pokemonSearch')?.value || '';
             await renderMarketplace(search);
             await renderSetFilters();
@@ -137,22 +142,42 @@ async function renderSetFilters() {
 
 async function renderMarketplace(filter = '') {
     const el = document.getElementById('marketplace');
+    const paginationEl = document.getElementById('pagination');
+    if (!el) return;
+
     el.innerHTML = '';
+    if (paginationEl) paginationEl.innerHTML = '';
 
     if (!marketCards.length) {
         el.innerHTML = '<p>No cards listed in the marketplace yet.</p>';
         return;
     }
 
-    for (const item of marketCards) {
-        const card = await getCard(item.card_id);
-        if (!card) continue;
+    const normalizedFilter = filter.trim().toLowerCase();
+    const cardsWithItems = await Promise.all(
+        marketCards.map(async (item) => ({ item, card: await getCard(item.card_id) }))
+    );
 
-        if (filter && !card.name.toLowerCase().includes(filter.toLowerCase())) continue;
-        if (activeSetId && card.set?.id !== activeSetId) continue;
+    const filteredCards = cardsWithItems.filter(({ card, item }) => {
+        if (!card) return false;
+        const matchesFilter = !normalizedFilter || card.name.toLowerCase().includes(normalizedFilter);
+        const matchesSet = !activeSetId || card.set?.id === activeSetId;
+        return matchesFilter && matchesSet;
+    });
 
-        const isOwner     = item.user_id == currentUserId;
-        const alreadyOwned = ownsCard(item.card_id);
+    const totalPages = Math.max(1, Math.ceil(filteredCards.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    if (!filteredCards.length) {
+        el.innerHTML = '<p>No cards match your search.</p>';
+        return;
+    }
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageCards = filteredCards.slice(start, start + PAGE_SIZE);
+
+    for (const { item, card } of pageCards) {
+        const isOwner = item.user_id == currentUserId;
 
         const div = document.createElement('div');
         div.className = isOwner ? 'card own-card' : 'card';
@@ -229,6 +254,37 @@ async function renderMarketplace(filter = '') {
 
         el.appendChild(div);
     }
+
+    if (paginationEl && totalPages > 1) {
+        const pageLabel = document.createElement('span');
+        pageLabel.className = 'page-label';
+        pageLabel.textContent = `Page ${currentPage} of ${totalPages}`;
+        paginationEl.appendChild(pageLabel);
+
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.textContent = 'Previous';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = async () => {
+            if (currentPage > 1) {
+                currentPage -= 1;
+                await renderMarketplace(filter);
+            }
+        };
+        paginationEl.appendChild(prevBtn);
+
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.textContent = 'Next';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = async () => {
+            if (currentPage < totalPages) {
+                currentPage += 1;
+                await renderMarketplace(filter);
+            }
+        };
+        paginationEl.appendChild(nextBtn);
+    }
 }
 
 // ── SEARCH ────────────────────────────────────────────────────────────────
@@ -236,6 +292,7 @@ async function renderMarketplace(filter = '') {
 const searchInput = document.getElementById('pokemonSearch');
 if (searchInput) {
     searchInput.addEventListener('input', async (e) => {
+        currentPage = 1;
         await renderMarketplace(e.target.value.trim());
     });
 }

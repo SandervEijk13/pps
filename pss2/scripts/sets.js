@@ -62,6 +62,10 @@ let allSets = [];
 let userCollectionProgress = {};
 const setElements = new Map();
 
+function isLoggedIn() {
+    return sessionStorage.getItem('isLogged') === 'true';
+}
+
 // ---------------------- ERA ----------------------
 
 function getEraKey(setId) {
@@ -287,6 +291,11 @@ async function loadSets() {
 // ---------------------- INIT ----------------------
 
 async function init() {
+    if (!isLoggedIn()) {
+        window.location.href = '/pages/login.html';
+        return;
+    }
+
     await loadUserCollectionProgress();
 
     setSearch.addEventListener('input', (e) => {

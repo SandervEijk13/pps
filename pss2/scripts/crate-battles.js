@@ -27,6 +27,11 @@ function getApiBase() {
 }
 
 const API = getApiBase();
+
+function cardImg(card) {
+    return resolveTcgdexImageUrl(card, { cardId: card?.id });
+}
+
 const MAX_CRATES = 5;
 const PVP_ROOM_STORAGE_KEY = 'pss_pvp_room_code';
 const AI_NAMES = ['Rival Kai', 'Team Rocket Bot', 'Gym Leader AI', 'Professor Oak Jr.', 'Champion Nexus'];
@@ -116,7 +121,7 @@ function sleep(ms) {
 }
 
 function isLoggedIn() {
-    return localStorage.getItem('isLogged') === 'true' && localStorage.getItem('userId');
+    return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
 }
 
 function requireLogin(actionLabel = 'continue') {
@@ -147,7 +152,7 @@ async function readApiJson(response, fallback = 'Invalid response') {
 }
 
 async function refreshHeaderCoins() {
-    const userId = localStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
     const coinEl = document.getElementById('coin-amount');
     if (!userId || !coinEl) return;
 
@@ -379,7 +384,7 @@ function clearPvpRoomStorage() {
 
 function canCancelPvpRoom(room) {
     if (!room?.code) return false;
-    const userId = Number(localStorage.getItem('userId'));
+    const userId = Number(sessionStorage.getItem('userId'));
     const isHost = room.youAreHost || room.host?.id === userId;
     const status = room.status;
     return isHost && (status === 'waiting' || status === 'ready') && !state.busy;
@@ -409,7 +414,7 @@ function exitPvpRoomLocal() {
 
 async function handleActivePvpRoom(room) {
     if (room.status === 'opening' && !state.busy) {
-        const userId = Number(localStorage.getItem('userId'));
+        const userId = Number(sessionStorage.getItem('userId'));
         const isHost = room.youAreHost || room.host?.id === userId;
         const you = isHost ? room.host : room.guest;
         if (you?.pullsSubmitted && !getOpponentPulls(room).length) {
@@ -468,7 +473,7 @@ async function restorePvpRoom() {
 
 function currentUserPaidInRoom(room) {
     if (!room) return false;
-    const userId = Number(localStorage.getItem('userId'));
+    const userId = Number(sessionStorage.getItem('userId'));
     const isHost = room.youAreHost || room.host?.id === userId;
     if (isHost) return Boolean(room.host?.paid);
     if (room.youAreGuest || room.guest?.id === userId) return Boolean(room.guest?.paid);
@@ -548,13 +553,13 @@ function renderMiniPulls(container, pulls = []) {
 }
 
 function getOpponentPulls(room) {
-    const userId = Number(localStorage.getItem('userId'));
+    const userId = Number(sessionStorage.getItem('userId'));
     const isHost = room.youAreHost || room.host?.id === userId;
     return isHost ? (room.guest?.pulls || []) : (room.host?.pulls || []);
 }
 
 function getYourPulls(room) {
-    const userId = Number(localStorage.getItem('userId'));
+    const userId = Number(sessionStorage.getItem('userId'));
     const isHost = room.youAreHost || room.host?.id === userId;
     return isHost ? (room.host?.pulls || []) : (room.guest?.pulls || []);
 }
@@ -837,7 +842,7 @@ async function runPveBattle() {
     await refreshHeaderCoins();
 
     const opponentName = AI_NAMES[Math.floor(Math.random() * AI_NAMES.length)];
-    els.playerLabel.textContent = localStorage.getItem('username') || 'You';
+    els.playerLabel.textContent = sessionStorage.getItem('username') || 'You';
     els.opponentLabel.textContent = opponentName;
 
     const playerPulls = [];
@@ -1147,7 +1152,7 @@ async function onStartPvpClick() {
 async function runPvpBattle(room) {
     if (state.busy) return;
 
-    const userId = Number(localStorage.getItem('userId'));
+    const userId = Number(sessionStorage.getItem('userId'));
     const isHost = room.youAreHost || room.host?.id === userId;
     const you = isHost ? room.host : room.guest;
 
@@ -1172,7 +1177,7 @@ async function runPvpBattle(room) {
     resetArenaPulls();
 
     const them = isHost ? room.guest : room.host;
-    els.playerLabel.textContent = localStorage.getItem('username') || 'You';
+    els.playerLabel.textContent = sessionStorage.getItem('username') || 'You';
     els.opponentLabel.textContent = them?.username || 'Opponent';
 
     const crates = room.crates || [];
@@ -1211,7 +1216,7 @@ async function runPvpBattle(room) {
 
 function showPvpResults(room) {
     clearPvpRoomStorage();
-    const userId = Number(localStorage.getItem('userId'));
+    const userId = Number(sessionStorage.getItem('userId'));
     const isHost = room.youAreHost || room.host?.id === userId;
     const yourPulls = isHost ? (room.host?.pulls || []) : (room.guest?.pulls || []);
     const theirPulls = isHost ? (room.guest?.pulls || []) : (room.host?.pulls || []);

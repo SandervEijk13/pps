@@ -25,11 +25,11 @@ let filterMenuCloseHandler = null;
 const notifiedTradeIds = new Set();
 
 function isLoggedIn() {
-    return localStorage.getItem('isLogged') === 'true' && localStorage.getItem('userId');
+    return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
 }
 
 function currentUserId() {
-    return Number(localStorage.getItem('userId') || 0);
+    return Number(sessionStorage.getItem('userId') || 0);
 }
 
 function assertNotSelfTrade(partnerId) {

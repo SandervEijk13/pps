@@ -97,7 +97,7 @@
     }
 
     async function refreshCoins() {
-        const userId = localStorage.getItem('userId');
+        const userId = sessionStorage.getItem('userId');
         if (!userId || !coinsAmount) return;
 
         try {

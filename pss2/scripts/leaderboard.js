@@ -30,11 +30,11 @@ const els = {
 };
 
 function isLoggedIn() {
-    return localStorage.getItem('isLogged') === 'true' && localStorage.getItem('userId');
+    return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
 }
 
 function currentUserId() {
-    return parseInt(localStorage.getItem('userId') || '0', 10) || 0;
+    return parseInt(sessionStorage.getItem('userId') || '0', 10) || 0;
 }
 
 function formatValue(type, value) {

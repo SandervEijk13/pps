@@ -59,7 +59,7 @@ const els = {
 const ctx = els.canvas?.getContext('2d');
 
 function isLoggedIn() {
-    return localStorage.getItem('isLogged') === 'true' && localStorage.getItem('userId');
+    return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
 }
 
 function setStatus(msg, isError = false) {

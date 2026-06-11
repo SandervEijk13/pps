@@ -5,5 +5,17 @@ soms staats er wel geen price
 
 2. kaarten met no price kan ik wel verkopen voor 0$
 
-3. prijs verandered op veel plekken pas na een refresh en niet dynamisch
+TODO
+
+1. pokemon go heeft geen pack image voor animatie
+check of meerdere geen image hebben
+
+3. keep knop altijd werkend bij openen paketje want als er geen
+naam, set naam of prijs is doen de knoppen het ook niet (sell, keep)
+
+4. styling fixen waar hij nog afkaapt
+
+5. pagination op market pagina // toegevoegd even kijken of het werkt //
+
+Higher-Lower timer toevoegen
 

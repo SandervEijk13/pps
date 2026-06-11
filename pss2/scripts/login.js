@@ -24,7 +24,7 @@ const API = getApiBase();
 // AUTH CHECK
 // -------------------------
 function IsLogged() {
-  return localStorage.getItem("isLogged") === "true";
+  return sessionStorage.getItem("isLogged") === "true";
 }
 
 // -------------------------
@@ -58,15 +58,23 @@ async function login() {
 
   if (data.success) {
 
-    localStorage.setItem("isLogged", "true");
+    sessionStorage.setItem("isLogged", "true");
 
-    localStorage.setItem("userId", data.user.id);
+    sessionStorage.setItem("userId", data.user.id);
 
-    localStorage.setItem("username", data.user.username);
+    sessionStorage.setItem("username", data.user.username);
 
-    localStorage.removeItem("pokemon-pack-inventory");
+    sessionStorage.removeItem("pokemon-pack-inventory");
 
-    window.location.href = "/index.html";
+    const params = new URLSearchParams(window.location.search);
+    const returnPath = params.get("return");
+    const root = typeof getAppRoot === "function" ? getAppRoot() : "";
+
+    if (returnPath && returnPath.startsWith("/") && !returnPath.startsWith("//")) {
+      window.location.href = returnPath;
+    } else {
+      window.location.href = `${root}/index.html`;
+    }
 
   } else {
 
@@ -152,7 +160,7 @@ function requireLogin(action) {
 // -------------------------
 (async function loadUserCoins() {
 
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
 
   if (!userId) return;
 
@@ -236,7 +244,7 @@ function setupProfileDropdown() {
 
   // USERNAME UI
   const username =
-    localStorage.getItem("username");
+    sessionStorage.getItem("username");
 
   const userNameElement =
     document.querySelector(".user-name");
@@ -289,7 +297,7 @@ function setupProfileDropdown() {
 
       e.preventDefault();
 
-      localStorage.clear();
+      sessionStorage.clear();
 
       window.location.href = "/pages/login.html";
 

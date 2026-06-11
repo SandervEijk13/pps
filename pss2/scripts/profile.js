@@ -4,10 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const profileId =
     params.get("id") ||
-    localStorage.getItem("userId");
+    sessionStorage.getItem("userId");
 
   const loggedInUserId =
-    localStorage.getItem("userId");
+    sessionStorage.getItem("userId");
 
   const profileName = document.getElementById("profileName");
   const profileHandle = document.getElementById("profileHandle");

@@ -7,17 +7,17 @@ function hlMinBet(): float
 
 function hlMaxBet(): float
 {
-    return 1000.0;
+    return 500.0;
 }
 
 function hlMultiplierIncrement(): float
 {
-    return 0.28;
+    return 0.10;
 }
 
 function hlMaxStreak(): int
 {
-    return 15;
+    return 9999999999999999;
 }
 
 function readHlJsonBody(): array

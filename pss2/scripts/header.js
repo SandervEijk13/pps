@@ -54,7 +54,70 @@ function escapeHtml(text) {
 }
 
 function isLoggedIn() {
-    return localStorage.getItem('isLogged') === 'true' && localStorage.getItem('userId');
+    return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
+}
+
+const PUBLIC_APP_PATHS = new Set([
+    '/',
+    '/index.html',
+    '/pages/login.html',
+    '/pages/register.html',
+]);
+
+function getRelativeAppPath() {
+    const path = window.location.pathname;
+    const root = getAppRoot();
+    let rel = root && path.startsWith(root) ? path.slice(root.length) : path;
+    rel = rel || '/';
+    if (rel !== '/' && rel.endsWith('/')) {
+        rel = rel.slice(0, -1);
+    }
+    if (rel === '' || rel === '/') {
+        return '/index.html';
+    }
+    return rel;
+}
+
+function isPublicPage() {
+    const rel = getRelativeAppPath();
+    return PUBLIC_APP_PATHS.has(rel);
+}
+
+function isHomePage() {
+    const rel = getRelativeAppPath();
+    return rel === '/index.html';
+}
+
+function enforceAuthGuard() {
+    if (isLoggedIn() || isPublicPage()) {
+        return;
+    }
+
+    const returnUrl = encodeURIComponent(
+        window.location.pathname + window.location.search + window.location.hash
+    );
+    window.location.replace(`${appUrl('/pages/login.html')}?return=${returnUrl}`);
+}
+
+function renderAuthWarningBanner() {
+    if (isLoggedIn() || !isHomePage()) {
+        return;
+    }
+
+    const mount = document.getElementById('app-header');
+    if (!mount || document.getElementById('auth-warning-banner')) {
+        return;
+    }
+
+    const banner = document.createElement('div');
+    banner.id = 'auth-warning-banner';
+    banner.className = 'auth-warning-banner';
+    banner.setAttribute('role', 'status');
+    banner.innerHTML = `
+        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+        <span>You're not signed in. <a href="${escapeHtml(appUrl('/pages/login.html'))}">Log in</a> to play and save your progress.</span>
+    `;
+    mount.insertAdjacentElement('afterend', banner);
 }
 
 function buildHeaderHtml(options = {}) {
@@ -212,7 +275,7 @@ function setupHeaderProfileMenu() {
     }
 
     const userNameElement = document.querySelector('.user-name');
-    const username = localStorage.getItem('username');
+    const username = sessionStorage.getItem('username');
     if (userNameElement && username) {
         userNameElement.textContent = username;
     }
@@ -247,6 +310,7 @@ function setupHeaderProfileMenu() {
     };
     authAction.onclick = (e) => {
         e.preventDefault();
+        sessionStorage.clear();
         localStorage.clear();
         window.location.href = appUrl('/pages/login.html');
     };
@@ -257,7 +321,7 @@ async function loadHeaderWallet(showTickets = false) {
         return;
     }
 
-    const userId = localStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
     const coinEl = document.getElementById('coin-amount');
     const ticketEl = document.getElementById('ticket-amount');
 
@@ -304,7 +368,10 @@ function initAppHeader(options = {}) {
     setupHeaderGamesMenu();
     setupHeaderProfileMenu();
     loadHeaderWallet(showTickets);
+    renderAuthWarningBanner();
 }
+
+enforceAuthGuard();
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app-header')) {
@@ -314,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.getAppRoot = getAppRoot;
 window.getApiBase = getApiBase;
+window.isLoggedIn = isLoggedIn;
 window.renderAppHeader = renderAppHeader;
 window.initAppHeader = initAppHeader;
 window.setupHeaderGamesMenu = setupHeaderGamesMenu;
