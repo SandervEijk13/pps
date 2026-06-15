@@ -177,6 +177,14 @@ async function renderMarketplace(filter = '') {
     const pageCards = filteredCards.slice(start, start + PAGE_SIZE);
 
     for (const { item, card } of pageCards) {
+
+        console.log({
+    listingUser: item.user_id,
+    currentUser: currentUserId,
+    equalLoose: item.user_id == currentUserId,
+    equalStrict: item.user_id === currentUserId
+});
+
         const isOwner = item.user_id == currentUserId;
 
         const div = document.createElement('div');
@@ -205,10 +213,14 @@ async function renderMarketplace(filter = '') {
             </p>
             <p class="price">${formatPrice(card)}</p>
             <div class="market-card-actions">
-                <button class="market-buy-btn" ${isOwner ? 'disabled' : ''}>
-                    ${isOwner ? 'Your listing' : 'Buy card'}
-                </button>
-                ${!isOwner ? '<button type="button" class="market-trade-btn">Trade</button>' : ''}
+                ${
+                    isOwner
+                        ? '<button type="button" class="market-remove-btn">Remove from Market</button>'
+                        : `
+                            <button class="market-buy-btn">Buy card</button>
+                            <button type="button" class="market-trade-btn">Trade</button>
+                        `
+                }
             </div>
         `;
 
@@ -237,6 +249,42 @@ async function renderMarketplace(filter = '') {
                 alert('Server error');
             }
         };
+
+        const removeBtn = div.querySelector('.market-remove-btn');
+
+        removeBtn?.addEventListener('click', async () => {
+
+            if (!confirm('Remove this card from the marketplace?')) {
+                return;
+            }
+
+            try {
+
+                const res = await fetch(`${API}/remove_from_market.php`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        marketId: item.id
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    await loadOwnedCards();
+                    await loadMarket();
+                } else {
+                    alert(data.message || 'Failed to remove listing');
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert('Server error');
+            }
+        });
 
         const tradeBtn = div.querySelector('.market-trade-btn');
         tradeBtn?.addEventListener('click', async (e) => {
