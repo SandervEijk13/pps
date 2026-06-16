@@ -43,32 +43,42 @@ function showCardsLoader(cardsContainer, message = 'Loading cards...') {
     `;
 }
 
+const PACK_SAVED_NOTICE = 'If there is a bug/issue, refresh. The cards have already been saved in your collection.';
+
+function showPackSavedNotice(noticeEl) {
+    if (!noticeEl) return;
+    noticeEl.textContent = PACK_SAVED_NOTICE;
+    noticeEl.hidden = false;
+    noticeEl.classList.add('is-visible');
+}
+
+function hidePackSavedNotice(noticeEl) {
+    if (!noticeEl) return;
+    noticeEl.hidden = true;
+    noticeEl.classList.remove('is-visible');
+    noticeEl.textContent = '';
+}
+
 const STACK_OFFSET_X = 14;
 const STACK_OFFSET_Y = 3;
 
-function renderReview(reviewContainer, decisions = [], overlay = null) {
+function renderReview(reviewContainer, cards = [], overlay = null) {
     if (!reviewContainer) return;
 
-    const rows = decisions.map(({ card, action, success }) => {
-        const choiceLabel = action === 'sell' ? 'Sold' : 'Kept';
-        const choiceClass = action === 'sell' ? 'is-sold' : 'is-kept';
-        const statusClass = success ? choiceClass : 'is-error';
-
-        return `
-        <div class="pack-review-row ${statusClass}">
+    const rows = cards.map((card) => `
+        <div class="pack-review-row is-saved">
             <img class="pack-review-thumb" src="${getCardImage(card)}" alt="${card.name || 'Card'}" />
             <div class="pack-review-meta">
                 <span class="pack-review-name">${card.name || 'Unknown card'}</span>
                 <span class="pack-review-rarity">${card.rarity || 'Unknown'}</span>
             </div>
             <span class="pack-review-price">${formatPrice(card)}</span>
-            <span class="pack-review-choice">${choiceLabel}</span>
+            <span class="pack-review-choice">Saved</span>
         </div>
-    `;
-    }).join('');
+    `).join('');
 
     reviewContainer.innerHTML = `
-        <h3>Your picks</h3>
+        <h3>Your pack</h3>
         <div class="pack-review-list">${rows}</div>
     `;
     reviewContainer.classList.add('is-visible');
@@ -100,78 +110,66 @@ function resetCardTab(cardTab) {
     const nameEl = cardTab.querySelector('.pack-tab-name');
     const rarityEl = cardTab.querySelector('.pack-tab-rarity');
     const priceEl = cardTab.querySelector('.pack-tab-price');
-    const actionsEl = cardTab.querySelector('.pack-tab-actions');
     const hintEl = cardTab.querySelector('.pack-tab-hint');
-    const sellBtn = cardTab.querySelector('.btn-sell');
-    const keepBtn = cardTab.querySelector('.btn-keep');
 
     if (nameEl) nameEl.textContent = '—';
     if (rarityEl) rarityEl.textContent = '—';
     if (priceEl) priceEl.textContent = '—';
-    if (actionsEl) actionsEl.hidden = true;
-    if (hintEl) hintEl.hidden = false;
-    if (sellBtn) sellBtn.disabled = false;
-    if (keepBtn) keepBtn.disabled = false;
+    if (hintEl) {
+        hintEl.hidden = false;
+        hintEl.textContent = 'Click the top card to reveal';
+    }
 
     cardTab.classList.remove('is-ready');
     cardTab.setAttribute('aria-hidden', 'true');
 }
 
-function bindCardTab(cardTab, callbacks) {
-    if (!cardTab || cardTab.dataset.bound === '1') return;
+function showCardInTab(cardTab, card) {
+    if (!cardTab) return;
 
-    const sellBtn = cardTab.querySelector('.btn-sell');
-    const keepBtn = cardTab.querySelector('.btn-keep');
-    let pendingChoice = null;
+    const nameEl = cardTab.querySelector('.pack-tab-name');
+    const rarityEl = cardTab.querySelector('.pack-tab-rarity');
+    const priceEl = cardTab.querySelector('.pack-tab-price');
+    const hintEl = cardTab.querySelector('.pack-tab-hint');
 
-    const choose = async (action) => {
-        if (!pendingChoice) return;
-        sellBtn.disabled = true;
-        keepBtn.disabled = true;
-        const { card, onChosen } = pendingChoice;
-        const result = action === 'sell'
-            ? await callbacks.onSellCard?.(card)
-            : await callbacks.onKeepCard?.(card);
-        pendingChoice = null;
-        resetCardTab(cardTab);
-        onChosen({ action, success: Boolean(result?.success) });
-    };
+    if (nameEl) nameEl.textContent = card.name || 'Unknown card';
+    if (rarityEl) rarityEl.textContent = card.rarity || 'Unknown rarity';
+    if (priceEl) priceEl.textContent = formatPrice(card);
+    if (hintEl) {
+        hintEl.hidden = false;
+        hintEl.textContent = 'Click the card again to continue';
+    }
 
-    sellBtn?.addEventListener('click', () => choose('sell'));
-    keepBtn?.addEventListener('click', () => choose('keep'));
-    cardTab.dataset.bound = '1';
-
-    return (card, onChosen) => {
-        pendingChoice = { card, onChosen };
-        const nameEl = cardTab.querySelector('.pack-tab-name');
-        const rarityEl = cardTab.querySelector('.pack-tab-rarity');
-        const priceEl = cardTab.querySelector('.pack-tab-price');
-        const actionsEl = cardTab.querySelector('.pack-tab-actions');
-        const hintEl = cardTab.querySelector('.pack-tab-hint');
-
-        if (nameEl) nameEl.textContent = card.name || 'Unknown card';
-        if (rarityEl) rarityEl.textContent = card.rarity || 'Unknown rarity';
-        if (priceEl) priceEl.textContent = formatPrice(card);
-        if (actionsEl) actionsEl.hidden = false;
-        if (hintEl) hintEl.hidden = true;
-        if (sellBtn) sellBtn.disabled = false;
-        if (keepBtn) keepBtn.disabled = false;
-
-        cardTab.classList.add('is-ready');
-        cardTab.setAttribute('aria-hidden', 'false');
-    };
+    cardTab.classList.add('is-ready');
+    cardTab.setAttribute('aria-hidden', 'false');
 }
 
-function renderCards(cardsContainer, reviewContainer, cards = [], callbacks = {}, overlay = null, workspace = null, cardTab = null) {
+function renderCards(cardsContainer, reviewContainer, cards = [], overlay = null, workspace = null, cardTab = null) {
     cardsContainer.innerHTML = '';
     workspace?.classList.add('is-visible');
     cardsContainer.classList.add('is-visible');
     resetCardTab(cardTab);
-    const revealCardTab = bindCardTab(cardTab, callbacks);
 
-    const decisions = [];
+    const viewedCards = [];
     let activeIndex = 0;
     const cardElements = [];
+
+    const advanceCard = (el, card) => {
+        viewedCards.push(card);
+        el.classList.add('is-vanished');
+        el.dataset.cardState = 'done';
+        activeIndex += 1;
+        resetCardTab(cardTab);
+
+        if (activeIndex >= cards.length) {
+            workspace?.classList.remove('is-visible');
+            cardsContainer.classList.remove('is-visible');
+            renderReview(reviewContainer, viewedCards, overlay);
+            return;
+        }
+
+        updateStackLayout(cardElements, activeIndex);
+    };
 
     cards.forEach((card, index) => {
         const image = getCardImage(card);
@@ -191,26 +189,18 @@ function renderCards(cardsContainer, reviewContainer, cards = [], callbacks = {}
 
         el.dataset.cardState = 'back';
         el.addEventListener('click', () => {
-            if (index !== activeIndex || el.dataset.cardState !== 'back') return;
+            if (index !== activeIndex) return;
 
-            el.classList.add('is-flipped');
-            el.dataset.cardState = 'flipped';
-            revealCardTab?.(card, ({ action, success }) => {
-                decisions.push({ card, action, success });
-                el.classList.add('is-vanished');
-                el.dataset.cardState = 'done';
-                activeIndex += 1;
+            if (el.dataset.cardState === 'back') {
+                el.classList.add('is-flipped');
+                el.dataset.cardState = 'flipped';
+                showCardInTab(cardTab, card);
+                return;
+            }
 
-                if (activeIndex >= cards.length) {
-                    workspace?.classList.remove('is-visible');
-                    cardsContainer.classList.remove('is-visible');
-                    resetCardTab(cardTab);
-                    renderReview(reviewContainer, decisions, overlay);
-                    return;
-                }
-
-                updateStackLayout(cardElements, activeIndex);
-            });
+            if (el.dataset.cardState === 'flipped') {
+                advanceCard(el, card);
+            }
         });
 
         cardsContainer.appendChild(el);
@@ -232,9 +222,9 @@ export async function runPackOpenAnimation({
     workspace,
     cardTab,
     reviewContainer,
+    noticeEl,
     cards = [],
-    cardsPromise,
-    callbacks = {}
+    cardsPromise
 }) {
     if (!overlay || !scene || !shell || !cardsContainer) {
         throw new Error('Missing pack animation elements');
@@ -253,6 +243,7 @@ export async function runPackOpenAnimation({
         reviewContainer.classList.remove('is-visible');
         reviewContainer.innerHTML = '';
     }
+    hidePackSavedNotice(noticeEl);
     showCardsLoader(cardsContainer, 'Preparing your cards...');
 
     const cardsTask = cardsPromise || Promise.resolve(cards);
@@ -262,7 +253,8 @@ export async function runPackOpenAnimation({
     await sleep(ANIMATION.topRipMs + ANIMATION.bottomSlideMs + ANIMATION.settleMs);
 
     const finalCards = await cardsTask;
-    renderCards(cardsContainer, reviewContainer, finalCards, callbacks, overlay, workspace, cardTab);
+    showPackSavedNotice(noticeEl);
+    renderCards(cardsContainer, reviewContainer, finalCards, overlay, workspace, cardTab);
     scene.style.display = 'none';
 }
 
@@ -274,6 +266,7 @@ export function closePackOpenAnimation({
     workspace,
     cardTab,
     reviewContainer,
+    noticeEl,
     isBusy = false,
     force = false
 }) {
@@ -292,4 +285,5 @@ export function closePackOpenAnimation({
         reviewContainer.classList.remove('is-visible');
         reviewContainer.innerHTML = '';
     }
+    hidePackSavedNotice(noticeEl);
 }

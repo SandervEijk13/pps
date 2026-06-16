@@ -179,45 +179,49 @@ function buildHeaderHtml(options = {}) {
         : '';
 
     return `
-        <header class="header">
-            <div class="container">
-                <div class="header-inner">
-                    <div class="logo-area">
-                        <div class="logo-icon"><i class="fas fa-database"></i></div>
-                        <a href="${escapeHtml(appUrl('/index.html'))}"><span class="logo-text">PokeVault</span></a>
+<header class="header">
+    <div class="container">
+        <div class="header-inner">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-database"></i></div>
+                <a href="${escapeHtml(appUrl('/index.html'))}"><span class="logo-text">PokeVault</span></a>
+            </div>
+            <div class="nav-links">${navHtml}</div>
+            <div class="right-actions">
+                ${ticketsHtml}
+                <div class="coin-widget">
+                    <div class="coin-icon">
+                        <img src="${escapeHtml(appUrl('/images/pokecoin.png'))}" alt="PokeCoin" class="coin-img" />
                     </div>
-                    <div class="nav-links">${navHtml}</div>
-                    <div class="right-actions">
-                        ${ticketsHtml}
-                        <div class="coin-widget">
-                            <div class="coin-icon">
-                                <img src="${escapeHtml(appUrl('/images/pokecoin.png'))}" alt="PokeCoin" class="coin-img" />
-                            </div>
-                            <span id="coin-amount">0</span>
-                        </div>
-                        <div class="user-profile" id="userProfile">
-                            <div class="avatar-icon"><i class="fas fa-user-astronaut"></i></div>
-                            <span class="user-name">Trainer</span>
-                            <i class="fas fa-chevron-down dropdown-icon"></i>
-                            <div class="profile-dropdown" id="profileDropdown">
-                                <a href="${escapeHtml(appUrl('/pages/leaderboard.html'))}" class="dropdown-item">
-                                    <i class="fas fa-trophy"></i>
-                                    <span>Leaderboard</span>
-                                </a>
-                                <a href="#" class="dropdown-item" id="profileAction">
-                                    <i class="fas fa-user"></i>
-                                    <span id="profileActionText">Profile</span>
-                                </a>
-                                <a href="#" class="dropdown-item" id="authAction">
-                                    <i class="fas fa-right-to-bracket"></i>
-                                    <span id="authActionText">Login</span>
-                                </a>
-                            </div>
-                        </div>
+                    <span id="coin-amount">0</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="avatar-icon"><i class="fas fa-user-astronaut"></i></div>
+                    <span class="user-name">Trainer</span>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="${escapeHtml(appUrl('/pages/leaderboard.html'))}" class="dropdown-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>Leaderboard</span>
+                        </a>
+                        <a href="${escapeHtml(appUrl('/pages/trades.html'))}" class="dropdown-item">
+                            <i class="fas fa-handshake"></i>
+                            <span>Trade</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="profileAction">
+                            <i class="fas fa-user"></i>
+                            <span id="profileActionText">Profile</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="authAction">
+                            <i class="fas fa-right-to-bracket"></i>
+                            <span id="authActionText">Login</span>
+                        </a>
                     </div>
                 </div>
             </div>
-        </header>
+        </div>
+    </div>
+</header>
     `;
 }
 

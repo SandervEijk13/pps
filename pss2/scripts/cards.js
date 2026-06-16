@@ -97,7 +97,7 @@ function getOwnedCount(id) {
 
 async function sellCard(cardId) {
 
-    const res = await fetch(`${API}/sell_card.php`, {
+    const res = await fetch(`${API}/sell_cards.php`, {
         method: 'POST',
         credentials: 'include',
         headers: {

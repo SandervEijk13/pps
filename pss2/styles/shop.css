@@ -406,6 +406,29 @@ body.inventory-open .inventory-panel {
     cursor: pointer;
 }
 
+.pack-open-notice {
+    display: none;
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    z-index: 1003;
+    width: min(720px, calc(100% - 120px));
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.22);
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    color: #dbeafe;
+    font-size: 14px;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.pack-open-notice.is-visible {
+    display: block;
+}
+
 .pack-open-overlay.is-open:not(.has-review) .close-pack-overlay-btn {
     display: none;
 }
@@ -761,6 +784,14 @@ body.inventory-open .inventory-panel {
     outline: 1px solid rgba(37, 99, 235, 0.55);
 }
 
+.pack-review-row.is-saved {
+    outline: 1px solid rgba(37, 99, 235, 0.55);
+}
+
+.pack-review-row.is-saved .pack-review-choice {
+    background: #2563eb;
+}
+
 .pack-open-card-inner {
     position: relative;
     width: 100%;
@@ -801,4 +832,4 @@ body.inventory-open .inventory-panel {
     border-radius: 8px;
     object-fit: cover;
     background: #0d1018;
-}
+} 
