@@ -1,372 +1,235 @@
 /**
- * Global notifications — toasts (bottom-left) + mailbox (header).
- * Loaded by header.js when user is logged in.
+ * Shared notifications: header badge, toasts, trade/friend polling.
  */
 
-(function () {
-    const POLL_MS = 5000;
-    const TOAST_DURATION_MS = 5500;
-    const MAX_TOASTS_PER_POLL = 3;
+const NOTIF_POLL_MS = 15000;
+let notifyTimer = null;
+let tradeHandler = null;
+const notifiedTradeIds = new Set();
+const notifiedFriendIds = new Set();
 
-    const TYPE_ICONS = {
-        level_up: 'fa-arrow-up',
-        trade_received: 'fa-right-left',
-        set_completed: 'fa-layer-group',
-        raffle_won: 'fa-trophy',
-        raffle_ended: 'fa-hourglass-end',
-        market_sale: 'fa-coins',
+function getApiBase() {
+    if (typeof window.getApiBase === 'function') {
+        return window.getApiBase();
+    }
+    return `${window.location.origin}/pss/api`;
+}
+
+function isLoggedIn() {
+    if (typeof window.isLoggedIn === 'function') {
+        return window.isLoggedIn();
+    }
+    return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
+}
+
+function appUrl(path) {
+    if (typeof window.getAppRoot === 'function') {
+        return `${window.getAppRoot()}${path.startsWith('/') ? path : `/${path}`}`;
+    }
+    return path;
+}
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function ensureToastRoot() {
+    let root = document.getElementById('poke-toast-root');
+    if (!root) {
+        root = document.createElement('div');
+        root.id = 'poke-toast-root';
+        root.className = 'poke-toast-root';
+        root.setAttribute('aria-live', 'polite');
+        document.body.appendChild(root);
+    }
+    return root;
+}
+
+export function showToast(message, options = {}) {
+    const root = ensureToastRoot();
+    const toast = document.createElement('div');
+    const type = options.type || 'info';
+    toast.className = `poke-toast poke-toast--${type}`;
+    toast.innerHTML = `
+        <div class="poke-toast__icon" aria-hidden="true">
+            <i class="fas ${options.icon || defaultToastIcon(type)}"></i>
+        </div>
+        <div class="poke-toast__body">
+            <strong>${escapeHtml(message)}</strong>
+            ${options.detail ? `<span>${escapeHtml(options.detail)}</span>` : ''}
+        </div>
+        <button type="button" class="poke-toast__close" aria-label="Dismiss">&times;</button>
+    `;
+
+    const remove = () => {
+        toast.classList.add('is-leaving');
+        window.setTimeout(() => toast.remove(), 220);
     };
 
-    let pollTimer = null;
-    let lastPolledId = parseInt(localStorage.getItem('notifLastPolledId') || '0', 10);
-    let toastContainer = null;
-    let mailboxOpen = false;
+    toast.querySelector('.poke-toast__close')?.addEventListener('click', remove);
+    root.appendChild(toast);
+    window.setTimeout(remove, options.duration ?? 4500);
+}
 
-    function getApiBase() {
-        if (typeof window.getApiBase === 'function') {
-            return window.getApiBase();
-        }
-        const root = window.location.port === '5173' ? '' : '/pss';
-        return `${window.location.origin}${root}/api`;
-    }
+function defaultToastIcon(type) {
+    if (type === 'story') return 'fa-book-open';
+    if (type === 'success') return 'fa-circle-check';
+    if (type === 'warning') return 'fa-triangle-exclamation';
+    if (type === 'friend') return 'fa-user-plus';
+    if (type === 'trade') return 'fa-right-left';
+    return 'fa-bell';
+}
 
-    function appUrl(path) {
-        if (typeof window.appUrl === 'function') {
-            return window.appUrl(path);
-        }
-        const root = window.location.port === '5173' ? '' : '/pss';
-        return `${root}${path.startsWith('/') ? path : `/${path}`}`;
-    }
+export function showStoryProgress(feedback) {
+    if (!feedback) return;
+    showToast(feedback.message || 'Storybook progress +1', {
+        detail: feedback.detail || '',
+        type: 'story',
+        duration: 5200,
+    });
+}
 
-    function isLoggedIn() {
-        return localStorage.getItem('isLogged') === 'true' && localStorage.getItem('userId');
-    }
+export function registerTradeHandler(handler) {
+    tradeHandler = handler;
+}
 
-    function escapeHtml(text) {
-        return String(text)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
+function updateBadge(counts) {
+    const badge = document.getElementById('notifBadge');
+    const bell = document.getElementById('notifBell');
+    if (!badge || !bell) return;
 
-    function formatTimeAgo(iso) {
-        if (!iso) return '';
-        const diff = Date.now() - new Date(iso).getTime();
-        const mins = Math.floor(diff / 60000);
-        if (mins < 1) return 'Zojuist';
-        if (mins < 60) return `${mins}m geleden`;
-        const hours = Math.floor(mins / 60);
-        if (hours < 24) return `${hours}u geleden`;
-        const days = Math.floor(hours / 24);
-        return `${days}d geleden`;
-    }
+    const total = Number(counts?.total) || 0;
+    badge.textContent = String(total);
+    badge.hidden = total <= 0;
+    bell.classList.toggle('has-unread', total > 0);
+}
 
-    function ensureToastContainer() {
-        if (toastContainer) return toastContainer;
-        toastContainer = document.getElementById('notifToastContainer');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'notifToastContainer';
-            toastContainer.className = 'notif-toast-container';
-            toastContainer.setAttribute('aria-live', 'polite');
-            document.body.appendChild(toastContainer);
-        }
-        return toastContainer;
-    }
+function renderPanel(data) {
+    const panel = document.getElementById('notifPanel');
+    if (!panel) return;
 
-    function getIconClass(type) {
-        return TYPE_ICONS[type] || 'fa-bell';
-    }
+    const trades = Array.isArray(data.trades) ? data.trades : [];
+    const friends = Array.isArray(data.friendRequests) ? data.friendRequests : [];
+    const items = [];
 
-    function showToast(notification) {
-        const container = ensureToastContainer();
-        const icon = getIconClass(notification.type);
-        const iconMod = `notif-toast-icon--${notification.type in TYPE_ICONS ? notification.type : 'default'}`;
+    trades.forEach((trade) => {
+        items.push(`
+            <a class="notif-panel-item" href="${escapeHtml(appUrl('/pages/trades.html'))}">
+                <i class="fas fa-right-left"></i>
+                <span><strong>${escapeHtml(trade.fromUsername)}</strong> sent a trade offer</span>
+            </a>
+        `);
+    });
 
-        const el = document.createElement('div');
-        el.className = 'notif-toast';
-        el.dataset.id = String(notification.id);
-        el.innerHTML = `
-            <div class="notif-toast-icon ${iconMod}">
-                <i class="fas ${icon}"></i>
-            </div>
-            <div class="notif-toast-body">
-                <div class="notif-toast-title">${escapeHtml(notification.title)}</div>
-                <div class="notif-toast-message">${escapeHtml(notification.message)}</div>
-            </div>
-            <button type="button" class="notif-toast-close" aria-label="Sluiten">
-                <i class="fas fa-xmark"></i>
-            </button>
-        `;
+    friends.forEach((req) => {
+        items.push(`
+            <a class="notif-panel-item" href="${escapeHtml(appUrl('/pages/friends.html'))}">
+                <i class="fas fa-user-plus"></i>
+                <span><strong>${escapeHtml(req.username)}</strong> sent a friend request</span>
+            </a>
+        `);
+    });
 
-        const dismiss = () => removeToast(el);
-        el.querySelector('.notif-toast-close').addEventListener('click', (e) => {
-            e.stopPropagation();
-            dismiss();
-        });
-        el.addEventListener('click', () => {
-            handleNotificationAction(notification);
-            dismiss();
-        });
+    panel.innerHTML = items.length
+        ? items.join('')
+        : '<p class="notif-panel-empty">No new notifications.</p>';
+}
 
-        container.appendChild(el);
+async function fetchTradeDetail(tradeId) {
+    const res = await fetch(`${getApiBase()}/trades.php?action=get&id=${tradeId}`, {
+        credentials: 'include',
+    });
+    const data = await res.json();
+    return data.success ? data.trade : null;
+}
 
-        const timeout = setTimeout(dismiss, TOAST_DURATION_MS);
-        el._timeout = timeout;
-    }
+async function pollNotifications() {
+    if (!isLoggedIn()) return;
 
-    function removeToast(el) {
-        if (!el || el.classList.contains('is-leaving')) return;
-        clearTimeout(el._timeout);
-        el.classList.add('is-leaving');
-        el.addEventListener('animationend', () => el.remove(), { once: true });
-    }
-
-    async function apiGet(action, params = {}) {
-        const qs = new URLSearchParams({ action, ...params });
-        const res = await fetch(`${getApiBase()}/notifications.php?${qs}`, { credentials: 'include' });
-        return res.json();
-    }
-
-    async function apiPost(action, body = {}) {
-        const res = await fetch(`${getApiBase()}/notifications.php?action=${action}`, {
-            method: 'POST',
+    try {
+        const res = await fetch(`${getApiBase()}/notifications.php?action=summary`, {
             credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
         });
-        return res.json();
-    }
+        const data = await res.json();
+        if (!data.success) return;
 
-    function updateBadge(count) {
-        const badge = document.getElementById('notifBadge');
-        if (!badge) return;
-        if (count > 0) {
-            badge.textContent = count > 99 ? '99+' : String(count);
-            badge.classList.remove('is-hidden');
-        } else {
-            badge.classList.add('is-hidden');
-        }
-    }
+        updateBadge(data.counts || {});
+        renderPanel(data);
 
-    async function markRead(ids) {
-        if (!ids || !ids.length) return;
-        try {
-            const data = await apiPost('markRead', { ids });
-            if (data.success) {
-                updateBadge(data.unreadCount);
-                renderMailboxList();
-            }
-        } catch {
-            // silent
-        }
-    }
-
-    function handleNotificationAction(notification) {
-        markRead([notification.id]);
-
-        const payload = notification.payload || {};
-
-        switch (notification.type) {
-            case 'trade_received':
-                if (payload.tradeId && window.PokeTrade?.openTradeById) {
-                    window.PokeTrade.openTradeById(payload.tradeId);
-                } else {
-                    window.location.href = appUrl('/pages/trades.html');
+        for (const trade of data.trades || []) {
+            if (notifiedTradeIds.has(trade.id)) continue;
+            notifiedTradeIds.add(trade.id);
+            if (typeof tradeHandler === 'function') {
+                const detail = await fetchTradeDetail(trade.id);
+                if (detail) {
+                    tradeHandler(detail);
+                    break;
                 }
-                break;
-            case 'level_up':
-                window.location.href = appUrl('/pages/profile.html');
-                break;
-            case 'set_completed':
-                window.location.href = appUrl('/pages/sets.html');
-                break;
-            case 'raffle_won':
-            case 'raffle_ended':
-                window.location.href = appUrl('/pages/profile.html');
-                break;
-            case 'market_sale':
-                window.location.href = appUrl('/pages/market.html');
-                break;
-            default:
-                break;
-        }
-
-        document.dispatchEvent(new CustomEvent('pokevault:notification', { detail: notification }));
-    }
-
-    function renderMailboxItem(notification) {
-        const icon = getIconClass(notification.type);
-        const iconMod = `notif-toast-icon--${notification.type in TYPE_ICONS ? notification.type : 'default'}`;
-        const unreadClass = notification.read ? '' : ' is-unread';
-
-        return `
-            <div class="notif-mailbox-item${unreadClass}" data-id="${notification.id}">
-                <div class="notif-mailbox-item-icon ${iconMod}">
-                    <i class="fas ${icon}"></i>
-                </div>
-                <div class="notif-mailbox-item-body">
-                    <div class="notif-mailbox-item-title">${escapeHtml(notification.title)}</div>
-                    <div class="notif-mailbox-item-message">${escapeHtml(notification.message)}</div>
-                    <div class="notif-mailbox-item-time">${escapeHtml(formatTimeAgo(notification.createdAt))}</div>
-                </div>
-            </div>
-        `;
-    }
-
-    async function renderMailboxList() {
-        const list = document.getElementById('notifMailboxList');
-        if (!list) return;
-
-        try {
-            const data = await apiGet('list', { limit: 30 });
-            if (!data.success) return;
-
-            updateBadge(data.unreadCount);
-
-            if (!data.notifications.length) {
-                list.innerHTML = '<div class="notif-mailbox-empty">Geen meldingen.</div>';
-                return;
-            }
-
-            list.innerHTML = data.notifications.map(renderMailboxItem).join('');
-
-            list.querySelectorAll('.notif-mailbox-item').forEach((item) => {
-                item.addEventListener('click', () => {
-                    const id = parseInt(item.dataset.id, 10);
-                    const notification = data.notifications.find((n) => n.id === id);
-                    if (notification) {
-                        handleNotificationAction(notification);
-                        closeMailbox();
-                    }
-                });
-            });
-        } catch {
-            list.innerHTML = '<div class="notif-mailbox-empty">Kon meldingen niet laden.</div>';
-        }
-    }
-
-    function openMailbox() {
-        const mailbox = document.getElementById('notifMailbox');
-        const btn = document.getElementById('notifBellBtn');
-        if (!mailbox || !btn) return;
-        mailbox.classList.add('is-open');
-        btn.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-        mailboxOpen = true;
-        renderMailboxList();
-    }
-
-    function closeMailbox() {
-        const mailbox = document.getElementById('notifMailbox');
-        const btn = document.getElementById('notifBellBtn');
-        if (!mailbox || !btn) return;
-        mailbox.classList.remove('is-open');
-        btn.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-        mailboxOpen = false;
-    }
-
-    function setupMailboxUi() {
-        const btn = document.getElementById('notifBellBtn');
-        const mailbox = document.getElementById('notifMailbox');
-        const markAll = document.getElementById('notifMarkAllRead');
-
-        if (!btn || !mailbox) return;
-
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (mailboxOpen) {
-                closeMailbox();
             } else {
-                openMailbox();
-            }
-        });
-
-        document.addEventListener('click', () => {
-            if (mailboxOpen) closeMailbox();
-        });
-
-        mailbox.addEventListener('click', (e) => e.stopPropagation());
-
-        if (markAll) {
-            markAll.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                try {
-                    const data = await apiPost('markAllRead');
-                    if (data.success) {
-                        updateBadge(0);
-                        renderMailboxList();
-                    }
-                } catch {
-                    // silent
-                }
-            });
-        }
-    }
-
-    async function pollNotifications() {
-        if (!isLoggedIn()) return;
-
-        try {
-            const data = await apiGet('poll', { sinceId: lastPolledId });
-            if (!data.success) return;
-
-            updateBadge(data.unreadCount);
-
-            const items = data.notifications || [];
-            if (!items.length) return;
-
-            const newestId = Math.max(...items.map((n) => n.id));
-            const isCatchUp = items.length > MAX_TOASTS_PER_POLL;
-            const toToast = isCatchUp ? items.slice(-MAX_TOASTS_PER_POLL) : items;
-
-            toToast.forEach((n, i) => {
-                setTimeout(() => showToast(n), i * 200);
-            });
-
-            if (isCatchUp && !mailboxOpen) {
-                showToast({
-                    id: 0,
-                    type: 'default',
-                    title: `${items.length} nieuwe meldingen`,
-                    message: 'Open je mailbox om alles te bekijken.',
-                    payload: {},
+                showToast(`${trade.fromUsername} sent a trade offer`, {
+                    type: 'trade',
+                    detail: 'Open Trades to respond.',
                 });
             }
-
-            lastPolledId = newestId;
-            localStorage.setItem('notifLastPolledId', String(lastPolledId));
-
-            items.forEach((n) => {
-                if (n.type === 'trade_received') {
-                    document.dispatchEvent(new CustomEvent('pokevault:notification', { detail: n }));
-                    const tradeId = n.payload?.tradeId;
-                    if (tradeId && window.PokeTrade?.openTradeById) {
-                        window.PokeTrade.openTradeById(tradeId);
-                    }
-                }
-            });
-        } catch {
-            // silent
         }
+
+        for (const req of data.friendRequests || []) {
+            const key = `${req.userId}`;
+            if (notifiedFriendIds.has(key)) continue;
+            notifiedFriendIds.add(key);
+            showToast(`${req.username} sent a friend request`, {
+                type: 'friend',
+                detail: 'Open Friends to accept or decline.',
+            });
+        }
+    } catch {
+        // silent
     }
+}
 
-    function startPolling() {
-        if (pollTimer) clearInterval(pollTimer);
-        pollNotifications();
-        pollTimer = setInterval(pollNotifications, POLL_MS);
-    }
+function setupBellToggle() {
+    const bell = document.getElementById('notifBell');
+    const panel = document.getElementById('notifPanel');
+    if (!bell || !panel || bell.dataset.bound === '1') return;
+    bell.dataset.bound = '1';
 
-    function initNotifications() {
-        if (!isLoggedIn()) return;
+    bell.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const open = panel.classList.toggle('is-open');
+        bell.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) pollNotifications();
+    });
 
-        ensureToastContainer();
-        setupMailboxUi();
-        startPolling();
-    }
+    document.addEventListener('click', () => {
+        panel.classList.remove('is-open');
+        bell.setAttribute('aria-expanded', 'false');
+    });
 
-    window.initNotifications = initNotifications;
-    window.showNotificationToast = showToast;
-})();
+    panel.addEventListener('click', (event) => event.stopPropagation());
+}
+
+export function initNotifications() {
+    if (!isLoggedIn()) return;
+
+    ensureToastRoot();
+    setupBellToggle();
+
+    if (notifyTimer) clearInterval(notifyTimer);
+    pollNotifications();
+    notifyTimer = setInterval(pollNotifications, NOTIF_POLL_MS);
+}
+
+window.PokeNotifications = {
+    showToast,
+    showStoryProgress,
+    registerTradeHandler,
+    initNotifications,
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initNotifications();
+});

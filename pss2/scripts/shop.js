@@ -13,6 +13,9 @@ const API = window.location.port === '5173'
 
 const shopGrid = document.getElementById('shopGrid');
 const priceFilter = document.getElementById('priceFilter');
+const eraFilter = document.getElementById('eraFilter');
+const maxPriceFilter = document.getElementById('maxPriceFilter');
+const packSearch = document.getElementById('packSearch');
 const inventoryGrid = document.getElementById('inventoryGrid');
 const openInventoryBtn = document.getElementById('openInventoryBtn');
 const closeInventoryBtn = document.getElementById('closeInventoryBtn');
@@ -66,8 +69,82 @@ function ensurePackOverlay() {
 }
 
 let allPacks = [];
+let enrichedPacks = [];
 let isOpeningPack = false;
 let isLoadingInventory = false;
+const setNameCache = new Map();
+const autoOpenSetFromUrl = new URLSearchParams(window.location.search).get('openSet');
+let autoOpenConsumed = false;
+
+const eraLookup = {
+    base: 'Base',
+    gym: 'Gym',
+    neo: 'Neo',
+    lc: 'Legendary Collection',
+    ecard: 'E-Card',
+    ex: 'EX',
+    dp: 'Diamond & Pearl',
+    pl: 'Platinum',
+    hgss: 'HeartGold & SoulSilver',
+    col: 'Call of Legends',
+    bw: 'Black & White',
+    xy: 'XY',
+    sm: 'Sun & Moon',
+    swsh: 'Sword & Shield',
+    sv: 'Scarlet & Violet',
+    me: 'Mega Evolution',
+};
+
+function getEraKey(setId) {
+    const id = String(setId || '').toLowerCase();
+    for (const key of Object.keys(eraLookup)) {
+        if (id.startsWith(key)) return key;
+    }
+    return 'other';
+}
+
+function populateEraFilter() {
+    if (!eraFilter) return;
+    const eras = new Set(enrichedPacks.map((p) => p.eraKey).filter((k) => k && k !== 'other'));
+    const ordered = Object.keys(eraLookup).filter((k) => eras.has(k));
+    eraFilter.innerHTML = '<option value="all">Alle eras</option>';
+    ordered.forEach((key) => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = eraLookup[key];
+        eraFilter.appendChild(opt);
+    });
+}
+
+async function getSetName(setCode) {
+    if (!setCode) return 'Unknown set';
+    if (setNameCache.has(setCode)) return setNameCache.get(setCode);
+    let name = setCode;
+    try {
+        const set = await tcgdex.set.get(setCode);
+        name = set?.name || setCode;
+    } catch {
+        name = setCode;
+    }
+    setNameCache.set(setCode, name);
+    return name;
+}
+
+async function enrichPacks(packs) {
+    const result = [];
+    for (const pack of packs) {
+        const setCode = resolveSetCode(pack);
+        const setName = await getSetName(setCode);
+        result.push({
+            ...pack,
+            setCode,
+            setName,
+            eraKey: getEraKey(setCode),
+            searchText: `${setName} ${setCode} ${pack.name || ''}`.toLowerCase(),
+        });
+    }
+    return result;
+}
 
 async function readApiJson(response, fallbackMessage = 'Invalid API response') {
     const text = await response.text();
@@ -89,6 +166,8 @@ async function loadPacks() {
 
     const packs = await response.json();
     allPacks = packs;
+    enrichedPacks = await enrichPacks(packs);
+    populateEraFilter();
     renderPacks();
 }
 
@@ -163,6 +242,10 @@ async function consumeAndOpenPack(packId) {
             alert(data.message || 'Could not open pack');
             await loadInventory();
             return;
+        }
+
+        if (data.storyProgress && window.PokeNotifications) {
+            window.PokeNotifications.showStoryProgress(data.storyProgress);
         }
 
         const pack = data.pack;
@@ -334,7 +417,23 @@ async function loadInventory() {
         });
         const data = await readApiJson(res, 'Inventory API returned non-JSON');
         if (data.success) {
-            renderInventory(data.packs || []);
+            const packs = data.packs || [];
+            renderInventory(packs);
+            if (!autoOpenConsumed && autoOpenSetFromUrl) {
+                const key = String(autoOpenSetFromUrl).trim().toLowerCase();
+                const target = packs.find((pack) => {
+                    const setCode = String(pack.tcgdex_set_id || pack.set_id || '').trim().toLowerCase();
+                    const setName = String(pack.set_name || '').trim().toLowerCase();
+                    return setCode === key || setName === key;
+                });
+                if (target) {
+                    autoOpenConsumed = true;
+                    const cleanUrl = `${window.location.pathname}`;
+                    window.history.replaceState({}, '', cleanUrl);
+                    document.body.classList.add('inventory-open');
+                    setTimeout(() => consumeAndOpenPack(target.id), 50);
+                }
+            }
         } else {
             renderInventory([]);
         }
@@ -349,9 +448,22 @@ async function loadInventory() {
 async function renderPacks() {
     shopGrid.innerHTML = '';
 
-    let packs = [...allPacks];
+    let packs = [...enrichedPacks];
+    const search = packSearch?.value?.trim().toLowerCase() || '';
+    const era = eraFilter?.value || 'all';
+    const maxPrice = maxPriceFilter?.value || 'all';
 
-    // FILTERS
+    if (search) {
+        packs = packs.filter((p) => p.searchText.includes(search));
+    }
+    if (era !== 'all') {
+        packs = packs.filter((p) => p.eraKey === era);
+    }
+    if (maxPrice !== 'all') {
+        const cap = Number(maxPrice);
+        packs = packs.filter((p) => Number(p.price) <= cap);
+    }
+
     switch (priceFilter.value) {
         case 'low-high':
             packs.sort((a, b) => a.price - b.price);
@@ -361,18 +473,14 @@ async function renderPacks() {
             break;
     }
 
-    for (const pack of packs) {
-        const setCode = resolveSetCode(pack);
-        let setName = pack.name || setCode || 'Unknown set';
+    if (!packs.length) {
+        shopGrid.innerHTML = '<p class="shop-empty">No packs match these filters.</p>';
+        return;
+    }
 
-        try {
-            if (setCode) {
-                const set = await tcgdex.set.get(setCode);
-                setName = set?.name || setName;
-            }
-        } catch (error) {
-            console.warn('Could not load set details for pack:', pack, error);
-        }
+    for (const pack of packs) {
+        const setCode = pack.setCode;
+        const setName = pack.setName;
 
         const el = document.createElement('div');
         el.className = 'shop-pack';
@@ -380,6 +488,7 @@ async function renderPacks() {
         el.innerHTML = `
             <img class="pack-image" src="${pack.photo}" alt="${pack.name}">
             <div class="pack-name">${setName}</div>
+            <div class="pack-era">${eraLookup[pack.eraKey] || 'Overig'}</div>
             <div class="pack-price">
                 <img class="coin-icon" src="../images/pokecoin.png" alt="PokeCoin" />
                 <span>${pack.price}</span>
@@ -407,7 +516,14 @@ async function renderPacks() {
     }
 }
 
-priceFilter.addEventListener('change', renderPacks);
+function onFilterChange() {
+    renderPacks();
+}
+
+priceFilter?.addEventListener('change', onFilterChange);
+eraFilter?.addEventListener('change', onFilterChange);
+maxPriceFilter?.addEventListener('change', onFilterChange);
+packSearch?.addEventListener('input', onFilterChange);
 
 if (openInventoryBtn && closeInventoryBtn) {
     openInventoryBtn.addEventListener('click', () => {

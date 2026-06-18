@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Set Guess</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/set-guess.css" />
+</head>
+<body>
+
+    <div id="app-header" data-active="set-guess"></div>
+
+    <main class="sg-page">
+        <div class="sg-ambient" aria-hidden="true">
+            <span class="sg-orb sg-orb--left"></span>
+            <span class="sg-orb sg-orb--right"></span>
+        </div>
+
+        <section class="sg-hero">
+            <button type="button" id="btnSgInfo" class="sg-info-btn" aria-label="Hoe werkt Set Guess?">
+                <i class="fas fa-circle-info" aria-hidden="true"></i>
+            </button>
+            <div class="sg-hero-badge"><i class="fas fa-layer-group"></i> Set Guess</div>
+            <h1>Guess the Pokémon set</h1>
+            <p>Look at the card and choose which set it comes from. Streak = higher multiplier.</p>
+        </section>
+
+        <div id="sgLoginGate" class="sg-gate is-hidden">
+            <div class="sg-gate-icon"><i class="fas fa-lock"></i></div>
+            <p>Log in to play Set Guess.</p>
+            <a href="/pages/login.html" class="btn-sg-primary">Login</a>
+        </div>
+
+        <section id="sgMain" class="sg-layout is-hidden">
+            <div class="sg-stats-bar">
+                <div class="sg-stat">
+                    <span class="sg-stat-label">Balance</span>
+                    <span id="sgBalance" class="sg-stat-value">0</span>
+                </div>
+                <div class="sg-stat">
+                    <span class="sg-stat-label">Multiplier</span>
+                    <span id="sgMultiplier" class="sg-stat-value sg-stat-value--accent">1.00×</span>
+                </div>
+                <div class="sg-stat">
+                    <span class="sg-stat-label">Streak</span>
+                    <span id="sgStreak" class="sg-stat-value">0</span>
+                </div>
+                <div class="sg-stat">
+                    <span class="sg-stat-label">Potential win</span>
+                    <span id="sgPotential" class="sg-stat-value sg-stat-value--gold">0</span>
+                </div>
+            </div>
+
+            <div class="sg-arena">
+                <div class="sg-card-slot">
+                    <div class="sg-card-frame sg-card-frame--idle" id="sgCardFrame">
+                        <img id="sgCardImg" class="sg-card-img is-hidden" src="" alt="" />
+                        <div class="sg-card-mystery" id="sgCardMystery">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </div>
+                    <p id="sgCardHint" class="sg-card-hint">Which set goes with this card?</p>
+                    <p id="sgCardReveal" class="sg-card-reveal is-hidden"></p>
+                </div>
+
+                <div id="sgOptions" class="sg-options"></div>
+            </div>
+
+            <div id="sgBetPanel" class="sg-bet-panel">
+                <label class="sg-bet-label" for="sgBetInput">Stake</label>
+                <div class="sg-bet-row">
+                    <input type="number" id="sgBetInput" class="sg-bet-input" min="10" step="1" value="50" />
+                    <button type="button" id="sgBtnHalf" class="btn-sg-chip">½</button>
+                    <button type="button" id="sgBtnDouble" class="btn-sg-chip">2×</button>
+                    <button type="button" id="sgBtnMax" class="btn-sg-chip">Max</button>
+                </div>
+                <button type="button" id="sgBtnStart" class="btn-sg-primary btn-sg-wide">
+                    <i class="fas fa-play"></i> Start game
+                </button>
+            </div>
+
+            <div id="sgContinuePanel" class="sg-continue-panel is-hidden">
+                <button type="button" id="sgBtnCashOut" class="btn-sg-secondary">
+                    <i class="fas fa-hand-holding-dollar"></i> Cash out
+                </button>
+                <button type="button" id="sgBtnContinue" class="btn-sg-primary">
+                    <i class="fas fa-forward"></i> Next card
+                </button>
+            </div>
+
+            <p id="sgStatus" class="sg-status" role="status"></p>
+        </section>
+    </main>
+
+    <div id="sgInfoModal" class="sg-modal sg-info-modal is-hidden" role="dialog" aria-modal="true">
+        <div class="sg-modal-backdrop sg-info-backdrop"></div>
+        <div class="sg-info-card">
+            <button type="button" id="btnSgInfoClose" class="sg-info-close" aria-label="Sluiten">
+                <i class="fas fa-xmark"></i>
+            </button>
+            <h2>How does Set Guess work?</h2>
+            <p class="sg-info-intro">You see a Pokémon card and have to guess which set it comes from.</p>
+            <ol class="sg-info-steps">
+                <li class="sg-info-step">
+                    <div class="sg-info-step-visual">
+                        <div class="sg-info-anim sg-info-anim--coins" aria-hidden="true">
+                            <i class="fas fa-coins"></i>
+                            <span class="sg-info-anim-coin-val">50</span>
+                        </div>
+                    </div>
+                    <div class="sg-info-step-text">
+                        <strong>1. Place your bet</strong>
+                        <span>Select coins (min. 10) and press <em>Start game</em>.</span>
+                    </div>
+                </li>
+                <li class="sg-info-step">
+                    <div class="sg-info-step-visual">
+                        <div class="sg-info-anim sg-info-anim--sets" aria-hidden="true">
+                            <span class="sg-info-set-chip">SV</span>
+                            <span class="sg-info-set-chip">SWSH</span>
+                        </div>
+                    </div>
+                    <div class="sg-info-step-text">
+                        <strong>2. Choose the set</strong>
+                        <span>View the card and click on 1 of the 4 set names.</span>
+                    </div>
+                </li>
+                <li class="sg-info-step">
+                    <div class="sg-info-step-visual">
+                        <div class="sg-info-anim sg-info-anim--multiplier" aria-hidden="true">
+                            <span class="sg-info-mult-val">1.45×</span>
+                            <i class="fas fa-arrow-trend-up"></i>
+                        </div>
+                    </div>
+                    <div class="sg-info-step-text">
+                        <strong>3. Streak = multiplier</strong>
+                        <span>Every correct guess gives +0.15× on your winnings.</span>
+                    </div>
+                </li>
+                <li class="sg-info-step">
+                    <div class="sg-info-step-visual">
+                        <div class="sg-info-anim sg-info-anim--choice" aria-hidden="true">
+                            <span class="sg-info-choice sg-info-choice--cash"><i class="fas fa-hand-holding-dollar"></i></span>
+                            <span class="sg-info-choice sg-info-choice--go"><i class="fas fa-forward"></i></span>
+                        </div>
+                    </div>
+                    <div class="sg-info-step-text">
+                        <strong>4. Cash out or Continue</strong>
+                        <span>After a good gamble: cash out or risk for more.</span>
+                    </div>
+                </li>
+            </ol>
+            <button type="button" id="btnSgInfoGotIt" class="btn-sg-primary">Got It!</button>
+        </div>
+    </div>
+
+    <div id="sgResultModal" class="sg-modal is-hidden" role="dialog" aria-modal="true">
+        <div class="sg-modal-backdrop"></div>
+        <div class="sg-modal-card">
+            <div id="sgResultBadge" class="sg-result-badge">Result</div>
+            <h2 id="sgResultTitle">Game over</h2>
+            <p id="sgResultMessage"></p>
+            <button type="button" id="sgBtnCloseResult" class="btn-sg-primary">Play again</button>
+        </div>
+    </div>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script type="module" src="/scripts/set-guess.js"></script>
+</body>
+</html>

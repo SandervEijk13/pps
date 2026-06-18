@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 session_start();
 require_once 'db.php';
 require_once __DIR__ . '/leaderboard.php';
+require_once __DIR__ . '/storybook_lib.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([
@@ -293,11 +294,14 @@ function consumePack($pdo, $userId, $columns)
         $stmt = $pdo->prepare("DELETE FROM user_packs WHERE id = ? AND user_id = ?");
         $stmt->execute([$packId, $userId]);
 
+        bumpUserStoryStat($pdo, $userId, 'pack_opens', 1);
+
         $pdo->commit();
 
         echo json_encode([
             "success" => true,
-            "pack" => buildPackPayloadFromRow($row, $columns)
+            "pack" => buildPackPayloadFromRow($row, $columns),
+            "storyProgress" => buildStoryStatFeedback($pdo, $userId, 'pack_opens'),
         ]);
     } catch (Exception $e) {
         if ($pdo->inTransaction()) {

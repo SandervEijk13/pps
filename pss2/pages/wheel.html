@@ -25,8 +25,8 @@
                 <i class="fas fa-circle-info" aria-hidden="true"></i>
             </button>
             <div class="wheel-hero-badge"><i class="fas fa-dharmachakra"></i> Wheel of Fortune</div>
-            <h1>Spin for coins, cards & packs</h1>
-            <p>Spin for 50 coins or 1 ticket — every spin could be a jackpot.</p>
+            <h1>Spin for Pokécoins, cards & packs</h1>
+            <p>Spin for 50 Pokécoins or 1 Wheelticket — every spin could be a jackpot.</p>
         </section>
 
         <div id="wheelLoginGate" class="wheel-gate is-hidden">
@@ -49,17 +49,17 @@
             <aside class="wheel-panel">
                 <div class="wheel-actions">
                     <button type="button" id="btnSpinCoins" class="btn-wheel-primary" disabled>
-                        <i class="fas fa-coins"></i> Spin (<span id="coinCostLabel">50</span> coins)
+                        <i class="fas fa-coins"></i> Spin (<span id="coinCostLabel">50</span> Pokécoins)
                     </button>
                     <button type="button" id="btnSpinTicket" class="btn-wheel-secondary" disabled>
-                        <i class="fas fa-ticket"></i> Spin (1 ticket)
+                        <i class="fas fa-ticket"></i> Spin (1 Wheelticket)
                     </button>
                 </div>
 
                 <p id="wheelStatus" class="wheel-status" role="status"></p>
 
                 <div class="wheel-prize-panel">
-                    <h3>Alle prijzen op dit rad</h3>
+                    <h3>All prizes on this wheel</h3>
                     <div id="wheelPrizeList" class="wheel-prize-list"></div>
                 </div>
             </aside>
@@ -70,8 +70,8 @@
         <div class="game-info-backdrop"></div>
         <div class="game-info-card">
             <button type="button" id="btnCloseInfo" class="game-info-close" aria-label="Sluiten"><i class="fas fa-times"></i></button>
-            <h2 id="infoModalTitle">Hoe werkt het Wheel of Fortune?</h2>
-            <p class="game-info-intro">Draai aan het rad en win coins, kaarten of shop packs.</p>
+            <h2 id="infoModalTitle">How does the Wheel of Fortune work?</h2>
+            <p class="game-info-intro">Spin the wheel and win coins, cards, or shop packs.</p>
             <ol class="game-info-steps">
                 <li class="game-info-step">
                     <div class="game-info-step-visual">
@@ -81,8 +81,8 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>1. Kies je betaling</strong>
-                        <span>Spin voor <em>50 coins</em> of <em>1 ticket</em>. Tickets zie je in de header naast je saldo.</span>
+                        <strong>1. Choose your payment</strong>
+                        <span>Spin for <em>50 Pokécoins</em> or <em>1 Wheelticket</em>. You can see your tickets in the header next to your balance.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -93,8 +93,8 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>2. Spin het rad</strong>
-                        <span>Elk gekleurde vak heeft een eigen prijs en kans. Het rad stopt op één segment — dat is je beloning.</span>
+                        <strong>2. Spin the Wheel</strong>
+                        <span>Each colored section has its own prize and chance. The wheel stops on one segment — that is your reward.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -102,8 +102,8 @@
                         <div class="info-anim info-anim--gift" aria-hidden="true"><i class="fas fa-gift"></i></div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>3. Ontvang je prijs</strong>
-                        <span>Mogelijke prijzen: <span class="info-tag info-tag--accent">coins</span>, individuele <span class="info-tag info-tag--accent">kaarten</span>, shop <span class="info-tag info-tag--accent">packs</span> of een mega kaart.</span>
+                        <strong>3. Receive your prize</strong>
+                        <span>Possible prices: <span class="info-tag info-tag--accent">Pokécoins</span>, individual <span class="info-tag info-tag--accent">cards</span>, shop <span class="info-tag info-tag--accent">packs</span> or a mega card.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -114,19 +114,19 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>4. Naar je account</strong>
-                        <span>Coins worden direct bijgeschreven. Kaarten en packs gaan naar je collectie of inventory.</span>
+                        <strong>4. To your account</strong>
+                        <span>Coins are credited immediately. Cards and packs go to your collection or inventory.</span>
                     </div>
                 </li>
             </ol>
             <div class="game-info-note">
                 <i class="fas fa-list"></i>
                 <div>
-                    <span class="game-info-note-label">Alle prijzen</span>
-                    <span class="game-info-note-hint">Bekijk het volledige prijzenoverzicht in het paneel rechts van het rad voordat je spinnt.</span>
+                    <span class="game-info-note-label">All prices</span>
+                    <span class="game-info-note-hint">View the full prize overview in the panel to the right of the wheel before you spin.</span>
                 </div>
             </div>
-            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Begrepen!</button>
+            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Got It!</button>
         </div>
     </div>
 
@@ -140,7 +140,7 @@
             <button type="button" id="btnCloseReward" class="btn-wheel-primary">Nice!</button>
         </div>
     </div>
-
+    <script type="module" src="/scripts/trades-page.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="/scripts/header.js" defer></script>
     <script src="/scripts/login.js" defer></script>

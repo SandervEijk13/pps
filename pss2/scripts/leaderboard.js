@@ -147,8 +147,12 @@ async function loadLeaderboard() {
             renderList(entries, state.type);
         }
     } catch (e) {
-        console.error(e);
-        showError(e.message || 'Could not load leaderboard');
+        notification({
+            text: `Failed to load leaderboard: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     } finally {
         setLoading(false);
         els.tabs?.querySelectorAll('.leaderboard-tab').forEach((btn) => {

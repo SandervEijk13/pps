@@ -1,4 +1,5 @@
 import { formatHeaderCoins, resolveTcgdexImageUrl } from '/scripts/card_logic.js';
+import { registerTradeHandler } from '/scripts/notifications.js';
 
 function getApiBase() {
     if (typeof window.getApiBase === 'function') return window.getApiBase();
@@ -10,7 +11,6 @@ function getApiBase() {
 }
 
 const API = getApiBase();
-const POLL_MS = 3000;
 
 const state = {
     trade: null,
@@ -20,9 +20,7 @@ const state = {
 };
 
 let overlayEl = null;
-let notifyTimer = null;
 let filterMenuCloseHandler = null;
-const notifiedTradeIds = new Set();
 
 function isLoggedIn() {
     return sessionStorage.getItem('isLogged') === 'true' && sessionStorage.getItem('userId');
@@ -120,7 +118,7 @@ async function apiGet(action, params = {}) {
 
 function renderSelectedCards(map, removable = true, removeAttr = 'data-remove-offer') {
     const entries = Object.values(map);
-    if (!entries.length) return '<li class="trade-offer-item"><span>Geen kaarten geselecteerd</span></li>';
+    if (!entries.length) return '<li class="trade-offer-item"><span>No cards selected</span></li>';
     return entries.map((card) => `
         <li class="trade-offer-item">
             <img src="${escapeHtml(cardImageUrl(card.image, card.cardId))}" alt="">
@@ -145,7 +143,7 @@ function renderSideSummary(side, label) {
                 </div>
             </li>
         `).join('')
-        : '<li class="trade-offer-item"><span>Geen kaarten</span></li>';
+        : '<li class="trade-offer-item"><span>No cards</span></li>';
 
     const isGive = label.toLowerCase().includes('geeft');
     const icon = isGive ? 'fa-arrow-up-from-bracket' : 'fa-gift';
@@ -249,7 +247,7 @@ function renderInventoryGrid(inventory, dataAttr, emptyLabel, ownedCardIds = nul
                 const notOwned = ownedCardIds && !ownedCardIds.has(card.cardId);
                 return `
                 <div class="trade-inv-card${notOwned ? ' trade-inv-card--missing' : ''}">
-                    ${notOwned ? '<span class="trade-inv-missing-badge" title="Niet in jouw collectie"><i class="fas fa-lock"></i></span>' : ''}
+                    ${notOwned ? '<span class="trade-inv-missing-badge" title="Not in your collection"><i class="fas fa-lock"></i></span>' : ''}
                     <img src="${escapeHtml(cardImageUrl(card.image, card.cardId))}" alt="">
                     <strong>${escapeHtml(card.name)}</strong>
                     <span>Beschikbaar: ${card.available} · ${formatHeaderCoins(card.price)}</span>
@@ -296,23 +294,23 @@ function renderCreateInventoryColumn(d) {
     const isMine = d.activeInventory !== 'partner';
     const panelClass = isMine ? 'trade-inventory-panel--mine' : 'trade-inventory-panel--partner';
     const title = isMine
-        ? '<i class="fas fa-layer-group"></i> Jouw collectie'
+        ? '<i class="fas fa-layer-group"></i> Your collection'
         : `<i class="fas fa-user"></i> ${escapeHtml(d.partnerName)}`;
     const hint = isMine ? 'Klik + om aan te bieden' : 'Klik + om te vragen';
     const inventory = getActiveCreateInventory(d);
     const filtered = filterInventoryBySet(inventory, d.setFilter);
     const dataAttr = isMine ? 'data-offer-add' : 'data-request-add';
-    const emptyLabel = isMine ? 'Geen kaarten beschikbaar' : 'Geen beschikbare kaarten';
+    const emptyLabel = isMine ? 'No cards available' : 'No available cards';
     const ownedCardIds = isMine ? null : buildOwnedCardIdSet(d.myInventory);
     const grid = renderInventoryGrid(
         filtered,
         dataAttr,
-        d.setFilter ? 'Geen kaarten in deze set' : emptyLabel,
+        d.setFilter ? 'No cards in this set' : emptyLabel,
         ownedCardIds,
     );
     const switchLabel = isMine
         ? `Collectie van ${escapeHtml(d.partnerName)}`
-        : 'Jouw collectie';
+        : 'Your collection';
     const switchIcon = isMine ? 'fa-arrow-right' : 'fa-arrow-left';
 
     return `
@@ -344,7 +342,7 @@ function renderCreateModal() {
     const overlay = ensureOverlay();
     overlay.querySelector('#tradeModalTitle').textContent = 'Trade aanmaken';
     overlay.querySelector('#tradeModalSubtitle').textContent =
-        `Stel een voorstel samen voor ${d.partnerName}`;
+        `Build a proposal for ${d.partnerName}`;
 
     const offerValue = calcDraftValue(d.offerCards, d.offerCoins);
     const requestValue = calcDraftValue(d.requestCards, d.requestCoins);
@@ -629,7 +627,7 @@ async function runTradeAction(fn) {
 
 function bindTradeViewEvents(tradeId) {
     document.getElementById('acceptTradeBtn')?.addEventListener('click', () => runTradeAction(async () => {
-        if (!confirm('Trade accepteren? Items worden direct overgedragen.')) return;
+        if (!confirm('Accept trade? Items will be transferred immediately.')) return;
         const data = await apiPost('accept', { tradeId });
         state.trade = data.trade;
         state.mode = 'view';
@@ -676,12 +674,16 @@ export function openTradePartnerPicker(prefillCardId = null) {
     pickerOverlay.className = 'trade-modal-overlay';
     pickerOverlay.innerHTML = `
         <div class="trade-picker-modal">
-            <h3>Trade aanmaken</h3>
-            <p>Kies de trainer waarmee je wilt traden.</p>
-            <input type="text" id="tradePartnerUsername" placeholder="Gebruikersnaam" autocomplete="off">
+            <h3>Create trade</h3>
+            <p>Pick a friend or search by username.</p>
+            <div id="tradeFriendsList" class="trade-friends-list">
+                <p class="trade-friends-loading">Loading friends...</p>
+            </div>
+            <div class="trade-picker-divider">or search trainer</div>
+            <input type="text" id="tradePartnerUsername" placeholder="Username" autocomplete="off">
             <div class="trade-actions">
-                <button type="button" class="trade-btn trade-btn-primary" id="tradePartnerStart">Volgende</button>
-                <button type="button" class="trade-btn trade-btn-muted" id="tradePartnerCancel">Annuleren</button>
+                <button type="button" class="trade-btn trade-btn-primary" id="tradePartnerStart">Next</button>
+                <button type="button" class="trade-btn trade-btn-muted" id="tradePartnerCancel">Cancel</button>
             </div>
             <div class="trade-status-msg" id="tradePickerMsg"></div>
         </div>
@@ -691,24 +693,61 @@ export function openTradePartnerPicker(prefillCardId = null) {
     pickerOverlay.querySelector('#tradePartnerCancel').addEventListener('click', closePicker);
     pickerOverlay.addEventListener('click', (e) => { if (e.target === pickerOverlay) closePicker(); });
 
-    pickerOverlay.querySelector('#tradePartnerStart').addEventListener('click', async () => {
-        const username = pickerOverlay.querySelector('#tradePartnerUsername')?.value?.trim();
-        const msg = pickerOverlay.querySelector('#tradePickerMsg');
-        if (!username) {
-            msg.textContent = 'Vul een gebruikersnaam in';
-            msg.className = 'trade-status-msg is-error';
-            return;
-        }
+    const startTradeWith = async (userId, username) => {
         try {
-            const lookup = await apiGet('lookupUser', { username });
-            assertNotSelfTrade(lookup.user.id);
+            assertNotSelfTrade(userId);
             closePicker();
-            await loadCreateDraft(lookup.user.id, lookup.user.username);
+            await loadCreateDraft(Number(userId), username);
             if (prefillCardId) {
                 const card = state.createDraft.myInventory.find((c) => c.cardId === prefillCardId);
                 if (card) addToDraftMap(state.createDraft.offerCards, card);
                 renderCreateModal();
             }
+        } catch (e) {
+            const msg = pickerOverlay.querySelector('#tradePickerMsg');
+            if (msg) {
+                msg.textContent = e.message;
+                msg.className = 'trade-status-msg is-error';
+            }
+        }
+    };
+
+    const friendsEl = pickerOverlay.querySelector('#tradeFriendsList');
+    fetch(`${API}/friends.php?action=list`, { credentials: 'include' })
+        .then((res) => res.json())
+        .then((data) => {
+            const friends = data.success ? (data.friends || []) : [];
+            if (!friends.length) {
+                friendsEl.innerHTML = '<p class="trade-friends-empty">No friends yet. <a href="' + escapeHtml(`${appRoot()}/pages/friends.html`) + '">Invite someone</a></p>';
+                return;
+            }
+            friendsEl.innerHTML = friends.map((f) => `
+                <button type="button" class="trade-friend-chip" data-id="${f.id}" data-name="${escapeHtml(f.username)}">
+                    <span class="presence-dot presence-dot--${escapeHtml(f.presence?.status || 'offline')}" aria-hidden="true"></span>
+                    ${escapeHtml(f.username)}
+                </button>
+            `).join('');
+            friendsEl.querySelectorAll('.trade-friend-chip').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    startTradeWith(Number(btn.dataset.id), btn.dataset.name || '');
+                });
+            });
+        })
+        .catch(() => {
+            friendsEl.innerHTML = '<p class="trade-friends-empty">Could not load friends</p>';
+        });
+
+    pickerOverlay.querySelector('#tradePartnerStart').addEventListener('click', async () => {
+        const username = pickerOverlay.querySelector('#tradePartnerUsername')?.value?.trim();
+        const msg = pickerOverlay.querySelector('#tradePickerMsg');
+        if (!username) {
+            msg.textContent = 'Enter a username';
+            msg.className = 'trade-status-msg is-error';
+            return;
+        }
+        try {
+            const lookup = await apiGet('lookupUser', { username });
+            await startTradeWith(lookup.user.id, lookup.user.username);
         } catch (e) {
             msg.textContent = e.message;
             msg.className = 'trade-status-msg is-error';
@@ -728,28 +767,9 @@ function showIncomingRequestPopup(trade) {
     renderTradeView();
 }
 
-async function pollIncomingTrades() {
-    if (!isLoggedIn() || state.mode === 'create') return;
-    if (overlayEl && !overlayEl.classList.contains('is-hidden')) return;
-
-    try {
-        const data = await apiGet('pendingIncoming');
-        for (const trade of data.trades || []) {
-            if (notifiedTradeIds.has(trade.id)) continue;
-            notifiedTradeIds.add(trade.id);
-            showIncomingRequestPopup(trade);
-            break;
-        }
-    } catch {
-        // silent
-    }
-}
-
 export function initTradeNotifications() {
     if (!isLoggedIn()) return;
-    if (notifyTimer) clearInterval(notifyTimer);
-    pollIncomingTrades();
-    notifyTimer = setInterval(pollIncomingTrades, POLL_MS);
+    registerTradeHandler(showIncomingRequestPopup);
 }
 
 if (!document.querySelector('link[data-trade-css]')) {
@@ -786,21 +806,20 @@ function setupProfileTradeButton() {
         }
 
         if (String(partnerId) === String(currentUserId())) {
-            alert('Je kunt niet met jezelf traden');
+            alert('You cannot trade with yourself');
             return;
         }
 
         try {
             await openTradeWithUser(Number(partnerId), partnerName);
         } catch (e) {
-            alert(e.message || 'Trade kon niet gestart worden');
+            alert(e.message || 'Could not start trade');
         }
     });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     setupProfileTradeButton();
-    if (isLoggedIn()) {
-        initTradeNotifications();
-    }
 });
+
+initTradeNotifications();

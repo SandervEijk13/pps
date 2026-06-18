@@ -1,3 +1,4 @@
+
 /**
  * Shared “how it works” info modal — use on game pages with matching HTML ids.
  */

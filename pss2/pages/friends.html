@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeVault | Friends</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/friends.css" />
+</head>
+<body>
+    <div id="app-header" data-active=""></div>
+
+    <div class="friends-page page-shell">
+        <header class="friends-hero">
+            <p class="eyebrow"><i class="fas fa-user-group"></i> Social</p>
+            <h1>Friends</h1>
+            <p>Add trainers, accept invites, and start a trade instantly.</p>
+        </header>
+
+        <section class="friends-panel">
+            <div class="friends-invite">
+                <h2>Invite</h2>
+                <div class="friends-invite-row">
+                    <input type="text" id="friendUsername" placeholder="Username" autocomplete="off">
+                    <button type="button" id="friendInviteBtn" class="friends-btn friends-btn-primary">
+                        <i class="fas fa-paper-plane"></i> Invite
+                    </button>
+                </div>
+                <p id="friendInviteMsg" class="friends-msg" hidden></p>
+            </div>
+
+            <div class="friends-columns">
+                <div class="friends-column">
+                    <h3><i class="fas fa-inbox"></i> Incoming</h3>
+                    <ul id="incomingList" class="friends-list"></ul>
+                </div>
+                <div class="friends-column">
+                    <h3><i class="fas fa-clock"></i> Outgoing</h3>
+                    <ul id="outgoingList" class="friends-list"></ul>
+                </div>
+                <div class="friends-column friends-column--wide">
+                    <h3><i class="fas fa-user-check"></i> Friends</h3>
+                    <ul id="friendsList" class="friends-list"></ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script type="module" src="/scripts/friends.js"></script>
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+</body>
+</html>

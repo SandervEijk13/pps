@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeVault | Quests</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/quests.css" />
+</head>
+<body>
+    <div id="app-header" data-active="quests"></div>
+
+    <main class="quests-page page-shell">
+        <header class="quests-hero">
+            <p class="eyebrow"><i class="fas fa-scroll"></i> Objectives</p>
+            <h1>Quests & Milestones</h1>
+            <p>Complete daily and weekly goals, then claim coin rewards. Collection milestones are permanent.</p>
+        </header>
+
+        <section class="quests-grid" id="questsGrid">
+            <article class="quests-card">
+                <h2><i class="fas fa-calendar-day"></i> Daily Quests</h2>
+                <p class="quests-help">Actions on the same day: collect cards, battles, trades, and wagers. Hit the target, then claim.</p>
+                <div id="dailyQuestList" class="quests-list">Loading...</div>
+            </article>
+
+            <article class="quests-card">
+                <h2><i class="fas fa-calendar-week"></i> Weekly Quests</h2>
+                <p class="quests-help">Same idea, but progress counts across the whole week for bigger rewards.</p>
+                <div id="weeklyQuestList" class="quests-list">Loading...</div>
+            </article>
+
+            <article class="quests-card quests-card--wide">
+                <h2><i class="fas fa-layer-group"></i> Collection Milestones</h2>
+                <p class="quests-help">Permanent collection goals. Grow your binder to unlock milestones and claim coins.</p>
+                <div id="milestoneList" class="quests-list">Loading...</div>
+            </article>
+        </section>
+    </main>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script type="module" src="/scripts/quests.js"></script>
+</body>
+</html>

@@ -105,8 +105,8 @@
             <button type="button" id="btnCloseInfo" class="game-info-close" aria-label="Sluiten">
                 <i class="fas fa-times"></i>
             </button>
-            <h2 id="infoModalTitle">Hoe werkt de Upgrader?</h2>
-            <p class="game-info-intro">Zet coins in, kies een betere kaart en spin voor je upgrade.</p>
+            <h2 id="infoModalTitle">How does Upgrader work?</h2>
+            <p class="game-info-intro">Bet Pokécoins and choose a card and spin for your Upgrade.</p>
             <ol class="game-info-steps">
                 <li class="game-info-step">
                     <div class="game-info-step-visual">
@@ -116,11 +116,11 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>1. Kies je inzet</strong>
-                        <span>Stel in hoeveel coins je wilt inzetten (min. 10). Hogere inzet = meer doelkaarten beschikbaar.</span>
+                        <strong>1. Choose your Bet</strong>
+                        <span>Set how many coins you want to bet (min. 10). Higher bet = more target cards available.</span>
                     </div>
                 </li>
-                <li class="game-info-step">
+                <li class="game-info-step"> 
                     <div class="game-info-step-visual">
                         <div class="info-anim info-anim--card" aria-hidden="true">
                             <div class="info-anim-card-face"></div>
@@ -128,8 +128,8 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>2. Kies een doelkaart</strong>
-                        <span>Pick een kaart die <em>duurder</em> is dan je inzet. Hoe hoger de waarde, hoe lager je winstkans.</span>
+                        <strong>2. Choose a target card</strong>
+                        <span>Pick a card that is <em>more expensive</em> than your bet. The higher the value, the lower your chance of winning.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -140,8 +140,8 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>3. Spin het rad</strong>
-                        <span>Het rad heeft twee vakken: <span class="info-tag info-tag--win">WIN</span> (groen) en <span class="info-tag info-tag--loss">LOSS</span> (rood). De grootte van elk vak = je kans.</span>
+                        <strong>3. Spin the Wheel</strong>
+                        <span>The Wheel has two sides: <span class="info-tag info-tag--win">WIN</span> (Green) and <span class="info-tag info-tag--loss">LOSS</span> (Red). The Size of the sides = your chance to win.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -152,20 +152,20 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>4. Win of verlies</strong>
-                        <span><strong>Win:</strong> de kaart gaat naar je collectie. <strong>Verlies:</strong> je inzet is weg — geen coins terug.</span>
+                        <strong>4. Win or Lose</strong>
+                        <span><strong>Win:</strong> The card goes to your collection. <strong>Lose:</strong> Your stake is gone — no coins back.</span>
                     </div>
                 </li>
             </ol>
             <div class="game-info-note">
                 <i class="fas fa-calculator"></i>
                 <div>
-                    <span class="game-info-note-label">Winstkans (indicatie)</span>
-                    <code>(inzet ÷ kaartwaarde) × 90%</code>
+                    <span class="game-info-note-label">Chance of winning (indication)</span>
+                    <code>(bet ÷ card value) × 90%</code>
                     <span class="game-info-note-hint">Min. 2% · max. 75%</span>
                 </div>
             </div>
-            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Begrepen!</button>
+            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Got It!</button>
         </div>
     </div>
 
@@ -177,12 +177,12 @@
             <h2 id="resultModalTitle">—</h2>
             <p id="resultModalMessage"></p>
             <a id="resultModalCollectionLink" href="/pages/sets.html" class="upgrader-modal-collection-link is-hidden">
-                <i class="fas fa-layer-group"></i> Bekijk je collectie
+                <i class="fas fa-layer-group"></i> View your collection
             </a>
-            <button type="button" id="btnCloseResult" class="btn-upgrader-primary">Doorgaan</button>
+            <button type="button" id="btnCloseResult" class="btn-upgrader-primary">Continue</button>
         </div>
     </div>
-
+    <script type="module" src="/scripts/trades-page.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="/scripts/header.js" defer></script>
     <script src="/scripts/login.js" defer></script>

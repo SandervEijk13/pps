@@ -319,6 +319,11 @@ body {
     color: rgba(170, 201, 255, 0.7);
 }
 
+#hlFrameB.hl-card-frame--hidden .hl-card-mystery {
+    background: #030712;
+    backdrop-filter: blur(12px);
+}
+
 .hl-vs {
     flex-shrink: 0;
     width: 52px;

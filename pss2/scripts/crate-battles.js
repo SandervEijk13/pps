@@ -163,7 +163,12 @@ async function refreshHeaderCoins() {
         const data = await readApiJson(res);
         if (data.success) coinEl.textContent = formatHeaderCoins(data.coins);
     } catch (e) {
-        console.warn('Coins refresh failed', e);
+        notification({
+            text: `Failed to refresh coins: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     }
 }
 
@@ -465,7 +470,12 @@ async function restorePvpRoom() {
         setStatus(`Rejoined room ${room.code}.`);
         await handleActivePvpRoom(room);
     } catch (e) {
-        console.warn('Could not restore PvP room', e);
+        notification({
+            text: `Failed to restore PvP room: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
         exitPvpRoomLocal();
         setStatus('Your previous room is no longer available.', true);
     }
@@ -922,7 +932,13 @@ async function createPvpRoom() {
         els.pvpRoomStatus.textContent = 'Share this code. Waiting for opponent to join…';
         setStatus(`Room ${data.room.code} created! Share the code. Pay when your opponent has joined.`);
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to create PvP room: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
+
         setStatus(e.message, true);
     } finally {
         state.busy = false;
@@ -958,7 +974,13 @@ async function joinPvpRoom() {
         enterPvpRoom(data.room);
         setStatus(`Joined room ${data.room.code}. Click Pay entry below.`);
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to join PvP room: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
+        
         setStatus(e.message, true);
     } finally {
         state.busy = false;
@@ -1004,7 +1026,12 @@ async function refreshPvpRoom() {
         updatePvpUi();
         await handleActivePvpRoom(data.room);
     } catch (e) {
-        console.warn('Room poll failed', e);
+        notification({
+            text: `Failed to refresh PvP room: ${e.message}`,
+            duration: 5000,
+            type: 'warning',
+            closeable: true
+        });
     }
 }
 
@@ -1035,7 +1062,13 @@ async function cancelPvpRoom() {
         await refreshHeaderCoins();
         setStatus('Room cancelled.');
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to cancel PvP room: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
+
         setStatus(e.message, true);
     } finally {
         state.busy = false;
@@ -1115,7 +1148,13 @@ async function onPayEntryClick() {
             await runPvpBattle(room);
         }
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to pay PvP entry: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
+
         setStatus(e.message, true);
     } finally {
         state.busy = false;
@@ -1138,7 +1177,13 @@ async function onStartPvpClick() {
     try {
         await runPvpBattle(state.pvpRoom);
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to start PvP battle: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
+
         setStatus(e.message, true);
     } finally {
         state.busy = false;
@@ -1299,7 +1344,12 @@ async function startBattle() {
             return;
         }
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to start battle: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
         setStatus(e.message || 'Something went wrong', true);
         showSection('setup');
     } finally {
@@ -1455,7 +1505,13 @@ async function init() {
 
         await restorePvpRoom();
     } catch (e) {
-        console.error(e);
+        notification({
+            text: `Failed to load crates: ${e.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
+
         if (els.loaderText) els.loaderText.textContent = 'Could not load crates. Refresh the page.';
     }
 }

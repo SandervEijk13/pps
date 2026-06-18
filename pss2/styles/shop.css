@@ -80,14 +80,62 @@ body {
 }
 
 .shop-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.shop-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.shop-search-wrap {
     position: relative;
-    z-index: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+}
+
+.shop-search-wrap i {
+    position: absolute;
+    left: 12px;
+    color: #64748b;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.shop-search {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid var(--gp-border);
+    color: #e2e8f0;
+    padding: 11px 14px 11px 34px;
+    border-radius: var(--gp-radius-md);
+    font-size: 0.9rem;
+    font-family: inherit;
+    min-width: 180px;
+    outline: none;
+}
+
+.shop-search:focus {
+    border-color: rgba(251, 191, 36, 0.35);
+}
+
+.shop-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #94a3b8;
+    padding: 40px 20px;
+}
+
+.pack-era {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 6px;
 }
 
 .shop-panel {
@@ -832,4 +880,4 @@ body.inventory-open .inventory-panel {
     border-radius: 8px;
     object-fit: cover;
     background: #0d1018;
-} 
+}

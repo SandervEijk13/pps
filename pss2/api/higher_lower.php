@@ -333,6 +333,7 @@ function guessHl(PDO $pdo): void
     }
 
     $streak = (int) ($game['streak'] ?? 0) + 1;
+    $storyProgress = bumpUserStoryStatWithFeedback($pdo, $userId, 'higher_lower_correct', 1);
     if ($streak >= hlMaxStreak()) {
         $bet = (float) $game['bet'];
         $multiplier = hlMultiplierForStreak($streak);
@@ -369,6 +370,7 @@ function guessHl(PDO $pdo): void
             'priceA' => $priceA,
             'priceB' => $priceB,
             'message' => 'Max streak reached — auto cashed out!',
+            'storyProgress' => $storyProgress,
             'game' => null,
         ]);
         return;
@@ -404,6 +406,7 @@ function guessHl(PDO $pdo): void
         'priceA' => $priceA,
         'priceB' => $priceB,
         'message' => 'Correct!',
+        'storyProgress' => $storyProgress,
         'game' => hlGameToClient($_SESSION['hl_game']),
     ]);
 }
@@ -484,6 +487,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 session_start();
 require 'db.php';
 require_once __DIR__ . '/crates.php';
+require_once __DIR__ . '/storybook_lib.php';
 
 $action = $_GET['action'] ?? '';
 

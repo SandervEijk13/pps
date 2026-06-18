@@ -31,7 +31,13 @@
         </div>
         <div class="profile-name" id="profileName">Loading...</div>
         <div class="profile-handle" id="profileHandle">Loading...</div>
+        <div class="profile-title-list" id="profileTitleList"></div>
+        <div class="profile-cosmetic-badges" id="profileCosmeticBadges"></div>
       </div>
+    </div>
+    <div class="profile-action-strip" id="profileActionStrip">
+      <a href="/pages/storybook.html" class="profile-quick-link"><i class="fas fa-book-open"></i> Storybook</a>
+      <a href="/pages/profile-customization.html" class="profile-quick-link"><i class="fas fa-wand-magic-sparkles"></i> Customize Profile</a>
     </div>
  
     <!-- Coins Box -->
@@ -50,10 +56,12 @@
         <button class="btn-trade" id="profileTradeBtn" type="button">
           <i class="fas fa-right-left"></i> Trade
         </button>
-        <button class="btn-battle" onclick="alert('Battle feature coming soon!')">
-          <i class="fas fa-bolt"></i> Battle
-        </button>
       </div>
+    </div>
+
+    <div class="collection-compare-card" id="collectionCompareCard" hidden>
+      <h3><i class="fas fa-layer-group"></i> Collection Comparison</h3>
+      <div class="collection-compare-stats" id="collectionCompareStats"></div>
     </div>
 
     
@@ -67,7 +75,7 @@
         </div>
         <div class="level-xp-wrap">
           <div class="level-xp-meta">
-            <span>XP (ingezet)</span>
+            <span>XP (wagered)</span>
             <span id="levelXpText">0 / 500</span>
           </div>
           <div class="level-xp-bar">
@@ -76,7 +84,7 @@
         </div>
       </div>
       <div class="level-reqs-title">
-        <i class="fas fa-list-check"></i> Vereisten voor level <span id="nextLevelNum">2</span>
+        <i class="fas fa-list-check"></i> Requirements for level <span id="nextLevelNum">2</span>
       </div>
       <ul class="level-reqs-list" id="levelReqsList"></ul>
     </div>
@@ -87,8 +95,8 @@
         <div class="raffle-title">
           <i class="fas fa-ticket"></i>
           <div>
-            <h2>Uurlijkse Raffle</h2>
-            <p>Elke 10 ingezette coins = 1 ticket. Meer tickets = hogere kans.</p>
+            <h2>Hourly Raffle</h2>
+            <p>Every 10 wagered coins = 1 ticket. More tickets = higher chance.</p>
           </div>
         </div>
         <div class="raffle-timer" id="raffleTimer">--:--</div>
@@ -100,21 +108,21 @@
         </div>
         <div class="raffle-stats">
           <div class="raffle-stat">
-            <span class="raffle-stat-label">Jouw tickets</span>
+            <span class="raffle-stat-label">Your tickets</span>
             <span class="raffle-stat-value" id="raffleMyTickets">0</span>
           </div>
           <div class="raffle-stat">
-            <span class="raffle-stat-label">Jouw kans</span>
+            <span class="raffle-stat-label">Your chance</span>
             <span class="raffle-stat-value" id="raffleMyChance">0%</span>
           </div>
           <div class="raffle-stat">
-            <span class="raffle-stat-label">Totaal pool</span>
+            <span class="raffle-stat-label">Total pool</span>
             <span class="raffle-stat-value" id="rafflePool">0</span>
           </div>
         </div>
       </div>
       <div class="raffle-history">
-        <div class="raffle-history-title">Recente winnaars</div>
+        <div class="raffle-history-title">Recent winners</div>
         <ul class="raffle-history-list" id="raffleHistory"></ul>
       </div>
     </div>

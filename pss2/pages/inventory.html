@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Inventory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/inventory.css" />
+</head>
+<body>
+    <div id="app-header" data-active="inventory"></div>
+
+    <main class="inventory-page">
+        <section class="inventory-hero">
+            <div class="inventory-badge"><i class="fas fa-box-open"></i> Pack Inventory</div>
+            <h1>Your saved packs</h1>
+            <p>See all packs grouped by set, with quantity and preview image.</p>
+        </section>
+
+        <section class="inventory-panel">
+            <div class="inventory-panel-head">
+                <h2>Inventory</h2>
+                <span id="inventoryTotal" class="inventory-total">0 packs</span>
+            </div>
+            <div id="inventoryGroupedGrid" class="inventory-grid">
+                <p class="inventory-empty">Loading inventory...</p>
+            </div>
+            <a href="/pages/shop.html" class="inventory-link">Go to Pack Shop</a>
+        </section>
+    </main>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script type="module" src="/scripts/inventory.js"></script>
+</body>
+</html>

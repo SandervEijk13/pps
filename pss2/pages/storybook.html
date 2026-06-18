@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Storybook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/storybook.css" />
+</head>
+<body>
+    <div id="app-header" data-active="collection"></div>
+
+    <main class="storybook-page">
+        <section class="storybook-hero">
+            <div class="storybook-hero-glow"></div>
+            <h1><i class="fas fa-book-open"></i> Card Storybook</h1>
+            <p>Unlock hoofdstukken per set, claim rewards en bouw jouw legend.</p>
+            <div id="storyEventSpotlight" class="story-event-spotlight is-hidden"></div>
+        </section>
+
+        <section class="storybook-help">
+            <h2><i class="fas fa-circle-info"></i> Hoe werkt Storybook?</h2>
+            <ol>
+                <li><strong>1. Verzamel kaarten per set</strong> - je completion % stijgt automatisch.</li>
+                <li><strong>2. Unlock chapters</strong> - bij 25%, 50%, 75% en 100% gaan chapters open.</li>
+                <li><strong>3. Claim rewards</strong> - open een set en klik op <em>Claim</em> bij beschikbare chapters.</li>
+                <li><strong>4. Pak bonus unlocks</strong> - sommige chapters geven extra cosmetics naast coins.</li>
+            </ol>
+        </section>
+
+        <section class="storybook-grid" id="storybookGrid"></section>
+    </main>
+
+    <div class="story-modal is-hidden" id="storySetModal" role="dialog" aria-modal="true">
+        <div class="story-modal-backdrop" id="storyModalClose"></div>
+        <article class="story-modal-card">
+            <button type="button" class="story-close-btn" id="storyModalCloseBtn" aria-label="Close">
+                <i class="fas fa-xmark"></i>
+            </button>
+            <img id="storySetCover" class="story-set-cover is-hidden" src="" alt="" />
+            <h2 id="storySetTitle">Set</h2>
+            <p id="storySetProgress">0/0</p>
+            <div id="storyNextChapterGuide"></div>
+            <div id="storyChapterList" class="story-chapter-list"></div>
+        </article>
+    </div>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script src="/scripts/storybook.js"></script>
+</body>
+</html>

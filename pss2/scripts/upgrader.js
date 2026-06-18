@@ -1,6 +1,7 @@
 import { formatHeaderCoins, resolveTcgdexImageUrl } from '/scripts/card_logic.js';
 import { initGameInfo } from '/scripts/game-info.js';
 
+
 function getApiBase() {
     if (window.location.port === '5173') {
         return 'http://localhost/pss/api';
@@ -434,7 +435,12 @@ async function doUpgrade() {
         state.segments = [];
         await loadState(false);
     } catch (e) {
-        console.error(e);
+        notification({
+            text: e.message || 'Upgrade failed',
+            duration: 5000,
+            type: 'error',
+            closeable: true,
+        });
         setStatus(e.message, true);
         await loadState(true);
     } finally {
@@ -499,7 +505,12 @@ async function init() {
         await loadState(false);
         setStatus('Choose a bet and target card.');
     } catch (e) {
-        console.error(e);
+        notification({
+            text: e.message || 'Could not load upgrader',
+            duration: 5000,
+            type: 'error',
+            closeable: true,
+        });
         setStatus(e.message, true);
     }
 }

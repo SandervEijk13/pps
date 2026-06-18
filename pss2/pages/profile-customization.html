@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Profile Customization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/profile-customization.css" />
+</head>
+<body>
+    <div id="app-header" data-active="collection"></div>
+
+    <main class="pc-page">
+        <section class="pc-hero">
+            <h1><i class="fas fa-wand-magic-sparkles"></i> Profile Customization</h1>
+            <p>Equip titles, badges, banners en animated frames.</p>
+        </section>
+
+        <section class="pc-preview-card" id="pcPreviewCard">
+            <div class="pc-banner" id="pcBannerFx"></div>
+            <div class="pc-avatar-wrap" id="pcFrameFx">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+            <h2 id="pcPreviewName">Trainer</h2>
+            <p id="pcPreviewTitle">No title equipped</p>
+            <div class="pc-badges" id="pcBadgeSlots"></div>
+        </section>
+
+        <section class="pc-layout">
+            <article class="pc-panel">
+                <h3>Equip Slots</h3>
+                <div class="pc-slots" id="pcSlots"></div>
+            </article>
+            <article class="pc-panel">
+                <h3>Unlocked Cosmetics</h3>
+                <div class="pc-inventory" id="pcInventory"></div>
+            </article>
+        </section>
+    </main>
+
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+    <script src="/scripts/profile-customization.js"></script>
+</body>
+</html>

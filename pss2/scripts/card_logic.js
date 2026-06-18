@@ -1,6 +1,7 @@
 import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
 
+
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
 
@@ -134,6 +135,8 @@ export function resolveTcgdexImageUrl(input, options = {}) {
             localId: options.localId || input.localId || input.number,
         });
     }
+
+    
 
     const image = String(input).trim();
     if (!image) {
@@ -843,7 +846,12 @@ async function loadObtainableCardsFromAllowedSets(onProgress, deterministic = fa
                 }
             }
         } catch (e) {
-            console.warn('Set overgeslagen:', setId, e);
+            notification({
+                text: 'Set overgeslagen',
+                duration: 5000,
+                type: 'warning',
+                closeable: true,
+            });
         }
 
         await delay(SET_LOAD_DELAY_MS);

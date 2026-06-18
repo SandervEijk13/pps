@@ -19,13 +19,36 @@
     <p class="hero-text">Browse the exact Pokémon TCG sets from your spreadsheet in a clean and focused layout.</p>
   </header>
 
-  <section class="sets-panel">
-    <div class="panel-heading">
-      <h2>Chosen Sets</h2>
-      <p>Click a set to open a dedicated cards page with every card from that set.</p>
-    </div>
+    <section class="sets-panel">
+        <div class="panel-heading">
+            <h2>Chosen Sets</h2>
+            <p>Click a set to open a dedicated cards page with every card from that set.</p>
+        </div>
 
-    <div id="eraFilters" class="filter-bar"></div>
+        <div id="collectionStats" class="collection-stats" hidden>
+            <article class="collection-stat-card">
+                <span class="collection-stat-label">Total completion</span>
+                <strong id="statGlobalPct" class="collection-stat-value">0%</strong>
+                <span id="statGlobalCount" class="collection-stat-sub">0/0 kaarten</span>
+            </article>
+            <article class="collection-stat-card">
+                <span class="collection-stat-label">Most completed set</span>
+                <strong id="statBestSetName" class="collection-stat-value">—</strong>
+                <span id="statBestSetPct" class="collection-stat-sub">0%</span>
+            </article>
+            <article class="collection-stat-card">
+                <span class="collection-stat-label">Collection value</span>
+                <strong id="statCollectionValue" class="collection-stat-value">0</strong>
+                <span class="collection-stat-sub">estimated coins (selling value)</span>
+            </article>
+            <article class="collection-stat-card">
+                <span class="collection-stat-label">Unique cards</span>
+                <strong id="statUniqueCards" class="collection-stat-value">0</strong>
+                <span id="statTotalCopies" class="collection-stat-sub">0 copies total</span>
+            </article>
+        </div>
+
+        <div id="eraFilters" class="filter-bar"></div>
     <div class="search-wrapper">
       <i class="fas fa-search search-icon"></i>
       <input
@@ -43,5 +66,6 @@
 <script src="/scripts/header.js" defer></script>
 <script src="/scripts/login.js" defer></script>
 
+<script src="/scripts/notifications.js" defer></script>
 </body>
 </html>

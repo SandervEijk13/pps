@@ -300,6 +300,10 @@ async function submitGuess(direction) {
             return;
         }
 
+        if (data.won && data.storyProgress && window.PokeNotifications) {
+            window.PokeNotifications.showStoryProgress(data.storyProgress);
+        }
+
         state.coins = data.coins;
 
         const revealed = {

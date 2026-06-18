@@ -13,10 +13,19 @@ const API = window.location.port === '5173'
 const cardsGrid = document.getElementById('cardsGrid');
 const setTitle = document.getElementById('setTitle');
 const setInfo = document.getElementById('setInfo');
+const setCompletionBar = document.getElementById('setCompletionBar');
+const setCompletionPct = document.getElementById('setCompletionPct');
+const setCompletionCount = document.getElementById('setCompletionCount');
+const setCompletionFill = document.getElementById('setCompletionFill');
+const bulkSellDuplicatesBtn = document.getElementById('bulkSellDuplicatesBtn');
 
 let ownedCards = [];
+let ownedAmounts = new Map();
 let currentCards = [];
 let currentSetCode = '';
+let currentSetId = '';
+let favoriteCardIds = new Set();
+let wishlistCardIds = new Set();
 
 // DEBUG RELOAD DETECTION
 window.addEventListener('beforeunload', () => {
@@ -33,9 +42,39 @@ async function loadOwnedCards() {
 
     const data = res.ok ? await res.json() : [];
 
-    ownedCards = data.flatMap(c =>
-        Array(Number(c.card_amount)).fill(c.card_id)
-    );
+    ownedAmounts = new Map();
+    for (const row of data) {
+        const id = row.card_id;
+        const amt = Number(row.card_amount) || 0;
+        if (!id || amt <= 0) continue;
+        ownedAmounts.set(id, (ownedAmounts.get(id) || 0) + amt);
+    }
+
+    ownedCards = [];
+    for (const [cardId, amount] of ownedAmounts.entries()) {
+        ownedCards.push(...Array(amount).fill(cardId));
+    }
+}
+
+async function loadWishlistCards() {
+    try {
+        const res = await fetch(`${API}/wishlist.php?action=get`, { credentials: 'include' });
+        const data = res.ok ? await res.json() : { items: [] };
+        const rows = Array.isArray(data.items) ? data.items : [];
+        wishlistCardIds = new Set(rows.map((row) => String(row.card_id || '')));
+    } catch {
+        wishlistCardIds = new Set();
+    }
+}
+
+async function loadFavoriteCards() {
+    try {
+        const res = await fetch(`${API}/favorite.php?action=get`, { credentials: 'include' });
+        const rows = res.ok ? await res.json() : [];
+        favoriteCardIds = new Set((Array.isArray(rows) ? rows : []).map((row) => String(row.card_id || '')));
+    } catch {
+        favoriteCardIds = new Set();
+    }
 }
 
 // ---------------- IMAGE ----------------
@@ -89,13 +128,12 @@ function priceText(card) {
 // ---------------- OWNED COUNT ----------------
 
 function getOwnedCount(id) {
-
-    return ownedCards.filter(x => x === id).length;
+    return ownedAmounts.get(id) || 0;
 }
 
 // ---------------- SELL ----------------
 
-async function sellCard(cardId) {
+async function sellCard(cardId, cardValue = 0) {
 
     const res = await fetch(`${API}/sell_cards.php`, {
         method: 'POST',
@@ -103,10 +141,102 @@ async function sellCard(cardId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ cardId })
+        body: JSON.stringify({ cardId, cardValue })
     });
 
     return await res.json();
+}
+
+function countDuplicatesInSet() {
+    let total = 0;
+    const setPrefix = currentSetId ? `${currentSetId.toLowerCase()}-` : '';
+
+    for (const [cardId, amount] of ownedAmounts.entries()) {
+        if (amount <= 1) continue;
+        if (setPrefix && !cardId.toLowerCase().startsWith(setPrefix)) continue;
+        total += amount - 1;
+    }
+
+    return total;
+}
+
+function buildBulkSellItems() {
+    const priceById = new Map(currentCards.map((c) => [c.id, c]));
+    const items = [];
+
+    for (const [cardId, amount] of ownedAmounts.entries()) {
+        if (amount <= 1) continue;
+        if (currentSetId && !cardId.toLowerCase().startsWith(`${currentSetId.toLowerCase()}-`)) {
+            continue;
+        }
+
+        const card = priceById.get(cardId);
+        const cardValue = card ? (getCardPrice(card) || 0.5) : 0.5;
+
+        items.push({
+            cardId,
+            qty: amount - 1,
+            cardValue,
+        });
+    }
+
+    return items;
+}
+
+function estimateBulkSellCoins(items) {
+    return items.reduce((sum, item) => sum + item.cardValue * 0.8 * item.qty, 0);
+}
+
+async function readSellResponse(res) {
+    const text = await res.text();
+    try {
+        return JSON.parse(text);
+    } catch {
+        throw new Error(`Ongeldige server response: ${text.slice(0, 120)}`);
+    }
+}
+
+async function bulkSellDuplicates() {
+    const items = buildBulkSellItems();
+    const duplicateCount = items.reduce((sum, item) => sum + item.qty, 0);
+
+    if (duplicateCount <= 0) {
+        alert('No duplicate cards in this set.');
+        return;
+    }
+
+    const estCoins = estimateBulkSellCoins(items);
+    const ok = confirm(
+        `${duplicateCount} duplicate cards for ~${estCoins.toFixed(0)} coins?\n` +
+        'Je houdt altijd 1 exemplaar per kaart.'
+    );
+    if (!ok) return;
+
+    bulkSellDuplicatesBtn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/sell_cards.php?action=bulkDuplicates`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ setId: currentSetId, items }),
+        });
+
+        const data = await readSellResponse(res);
+        if (!data.success) {
+            alert(data.message || 'Bulk sell failed');
+            return;
+        }
+
+        await loadOwnedCards();
+        alert(`${data.cardsSold} cards sold (+${Number(data.coinsAdded || 0).toFixed(0)} coins)`);
+        rerender();
+    } catch (err) {
+        console.error(err);
+        alert(err.message || 'Bulk sell failed');
+    } finally {
+        bulkSellDuplicatesBtn.disabled = false;
+    }
 }
 
 // ---------------- SEND TO MARKET ----------------
@@ -159,7 +289,7 @@ function renderCard(card) {
 
     el.innerHTML = `
         <div class="card-thumb-wrap">
-            ${ownedCount ? '' : '<span class="card-missing-badge"><i class="fas fa-lock" aria-hidden="true"></i> Niet in bezit</span>'}
+            ${ownedCount ? '' : '<span class="card-missing-badge"><i class="fas fa-lock" aria-hidden="true"></i> Not owned</span>'}
             <div class="card-thumb">
                 <img src="${imageUrl(card)}" width="120" alt="">
             </div>
@@ -195,6 +325,18 @@ function renderCard(card) {
             class="trade">
             Trade
         </button>
+
+        <button
+            type="button"
+            class="favorite ${favoriteCardIds.has(card.id) ? 'is-active' : ''}">
+            ${favoriteCardIds.has(card.id) ? 'Remove Favourite' : 'Add Favourite'}
+        </button>
+
+        <button
+            type="button"
+            class="wishlist ${wishlistCardIds.has(card.id) ? 'is-active' : ''}">
+            ${wishlistCardIds.has(card.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+        </button>
     `;
 
     // ---------------- SELL BUTTON ----------------
@@ -212,14 +354,21 @@ function renderCard(card) {
 
             sellBtn.disabled = true;
 
-            const res = await sellCard(card.id);
+            const res = await sellCard(card.id, getCardPrice(card));
 
             if (res.success) {
 
-                const i = ownedCards.indexOf(card.id);
+                const next = (ownedAmounts.get(card.id) || 1) - 1;
+                if (next > 0) ownedAmounts.set(card.id, next);
+                else ownedAmounts.delete(card.id);
 
-                if (i !== -1) {
-                    ownedCards.splice(i, 1);
+                ownedCards = [];
+                for (const [cardId, amount] of ownedAmounts.entries()) {
+                    ownedCards.push(...Array(amount).fill(cardId));
+                }
+
+                if (res.coinsAdded > 0) {
+                    console.log(`+${res.coinsAdded} coins`);
                 }
 
                 rerender();
@@ -274,6 +423,62 @@ function renderCard(card) {
         openTradePartnerPicker(card.id);
     });
 
+    const favoriteBtn = el.querySelector('.favorite');
+    favoriteBtn?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        favoriteBtn.disabled = true;
+        const isActive = favoriteCardIds.has(card.id);
+        try {
+            const res = await fetch(`${API}/favorite.php?action=${isActive ? 'remove' : 'add'}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cardId: card.id }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                alert(data.message || 'Could not update favourite.');
+                return;
+            }
+            if (isActive) favoriteCardIds.delete(card.id);
+            else favoriteCardIds.add(card.id);
+            favoriteBtn.classList.toggle('is-active', !isActive);
+            favoriteBtn.textContent = !isActive ? 'Remove Favourite' : 'Add Favourite';
+        } catch {
+            alert('Could not update favourite.');
+        } finally {
+            favoriteBtn.disabled = false;
+        }
+    });
+
+    const wishlistBtn = el.querySelector('.wishlist');
+    wishlistBtn?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        wishlistBtn.disabled = true;
+        const isActive = wishlistCardIds.has(card.id);
+        try {
+            const res = await fetch(`${API}/wishlist.php?action=${isActive ? 'remove' : 'add'}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cardId: card.id }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                alert(data.message || 'Could not update wishlist.');
+                return;
+            }
+            if (isActive) wishlistCardIds.delete(card.id);
+            else wishlistCardIds.add(card.id);
+            wishlistBtn.classList.toggle('is-active', !isActive);
+            wishlistBtn.textContent = !isActive ? 'Remove from Wishlist' : 'Add to Wishlist';
+        } catch {
+            alert('Could not update wishlist.');
+        } finally {
+            wishlistBtn.disabled = false;
+        }
+    });
+
     cardsGrid.appendChild(el);
 }
 
@@ -325,7 +530,7 @@ function updateCardUI(cardId) {
             if (thumbWrap && !badge) {
                 badge = document.createElement('span');
                 badge.className = 'card-missing-badge';
-                badge.innerHTML = '<i class="fas fa-lock" aria-hidden="true"></i> Niet in bezit';
+                badge.innerHTML = '<i class="fas fa-lock" aria-hidden="true"></i> Not owned';
                 thumbWrap.prepend(badge);
             }
         } else {
@@ -347,8 +552,25 @@ function updateSetInfo() {
         ownedSet.has(c.id)
     ).length;
 
-    setInfo.textContent =
-        `${ownedCount}/${currentCards.length} collected`;
+    const total = currentCards.length;
+    const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
+
+    setInfo.textContent = `${ownedCount}/${total} unique cards · ${pct}% complete`;
+
+    if (setCompletionBar) {
+        setCompletionBar.hidden = total === 0;
+        if (setCompletionPct) setCompletionPct.textContent = `${pct}%`;
+        if (setCompletionCount) setCompletionCount.textContent = `${ownedCount}/${total}`;
+        if (setCompletionFill) setCompletionFill.style.width = `${pct}%`;
+    }
+
+    if (bulkSellDuplicatesBtn) {
+        const dupes = countDuplicatesInSet();
+        bulkSellDuplicatesBtn.hidden = dupes <= 0;
+        bulkSellDuplicatesBtn.title = dupes > 0
+            ? `Sell ${dupes} duplicate cards (keeps 1 per card)`
+            : '';
+    }
 }
 
 // ---------------- LOAD SET ----------------
@@ -359,9 +581,12 @@ async function loadSet() {
 
     if (!setId) return;
 
+    currentSetId = setId;
     setTitle.textContent = 'Loading...';
 
     await loadOwnedCards();
+    await loadFavoriteCards();
+    await loadWishlistCards();
 
     const set = await tcgdex.fetch('sets', setId);
 
@@ -379,6 +604,8 @@ async function loadSet() {
 
     rerender();
 }
+
+bulkSellDuplicatesBtn?.addEventListener('click', bulkSellDuplicates);
 
 // ---------------- START ----------------
 

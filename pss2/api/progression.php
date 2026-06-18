@@ -13,6 +13,12 @@ function bootstrapProgressionSchema(PDO $pdo): void
     ensureRaffleTables($pdo);
     require_once __DIR__ . '/trades.php';
     ensureTradeTables($pdo);
+    require_once __DIR__ . '/achievements_lib.php';
+    ensureAchievementTables($pdo);
+    require_once __DIR__ . '/profile_features_lib.php';
+    ensureProfileFeatureTables($pdo);
+    require_once __DIR__ . '/friends_lib.php';
+    ensureFriendTables($pdo);
 
     $stmt = $pdo->query('SHOW COLUMNS FROM users');
     $cols = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'Field');

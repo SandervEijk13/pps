@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const profileName = document.getElementById("profileName");
   const profileHandle = document.getElementById("profileHandle");
+  const profileTitleList = document.getElementById("profileTitleList");
+  const profileCosmeticBadges = document.getElementById("profileCosmeticBadges");
   const profileCoins = document.getElementById("profileCoins");
   const visitorActions = document.getElementById("visitorActions");
   const profileLevelTitle = document.getElementById("profileLevelTitle");
@@ -25,6 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const raffleMyChance = document.getElementById("raffleMyChance");
   const rafflePool = document.getElementById("rafflePool");
   const raffleHistory = document.getElementById("raffleHistory");
+  const profileHeaderCard = document.querySelector(".profile-header-card");
+  const profileAvatar = document.querySelector(".profile-avatar-wrap");
+  const profileActionStrip = document.getElementById("profileActionStrip");
 
   const API = typeof getApiBase === "function"
     ? getApiBase()
@@ -35,10 +40,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const isOwnProfile = String(profileId) === String(loggedInUserId);
 
+  if (profileActionStrip) {
+    profileActionStrip.hidden = !isOwnProfile;
+  }
+
   loadProfile();
+  loadAchievements();
   loadLevel();
   loadRaffle(isOwnProfile);
   loadFavorites();
+  loadProfileCosmeticsShowcase();
+  if (!isOwnProfile && loggedInUserId) {
+    loadCollectionCompare();
+  }
+
+  async function loadCollectionCompare() {
+    const card = document.getElementById('collectionCompareCard');
+    const statsEl = document.getElementById('collectionCompareStats');
+    if (!card || !statsEl || !profileId) return;
+
+    try {
+      const response = await fetch(
+        `${API}/collection_compare.php?userId=${profileId}`,
+        { credentials: 'include' }
+      );
+      const data = await response.json();
+      if (!data.success || !data.comparison) {
+        card.hidden = true;
+        return;
+      }
+
+      const c = data.comparison;
+      const name = data.target?.username || 'this trainer';
+      statsEl.innerHTML = `
+        <div class="compare-stat"><strong>${formatNumber(c.shared)}</strong><span>cards in common</span></div>
+        <div class="compare-stat"><strong>${formatNumber(c.targetOnly)}</strong><span>only ${escapeHtml(name)} has</span></div>
+        <div class="compare-stat"><strong>${formatNumber(c.viewerOnly)}</strong><span>only you have</span></div>
+      `;
+      card.hidden = false;
+    } catch (err) {
+      console.error('Failed to load collection comparison:', err);
+      card.hidden = true;
+    }
+  }
 
   async function loadProfile() {
 
@@ -125,6 +169,90 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  async function loadAchievements() {
+    if (!profileId || !profileTitleList) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API}/achievements.php?action=get&id=${profileId}`,
+        { credentials: "include" }
+      );
+      const data = await response.json();
+
+      if (!data.success || !Array.isArray(data.achievements)) {
+        profileTitleList.innerHTML = "";
+        return;
+      }
+
+      const visible = data.achievements.slice(0, 6);
+      profileTitleList.innerHTML = visible.map((achievement) => {
+        const activeClass = achievement.isActive ? " is-active" : "";
+        const icon = escapeHtml(achievement.icon || "fa-award");
+        const title = escapeHtml(achievement.title || achievement.name || "Title");
+        return `
+          <span class="profile-title-chip${activeClass}" title="${escapeHtml(achievement.description || title)}">
+            <i class="fas ${icon}"></i>
+            ${title}
+          </span>
+        `;
+      }).join("");
+    } catch (err) {
+      console.error("Failed to load achievements:", err);
+      profileTitleList.innerHTML = "";
+    }
+  }
+
+  async function loadProfileCosmeticsShowcase() {
+    if (!profileId) return;
+    try {
+      const response = await fetch(
+        `${API}/profile_cosmetics.php?action=showcase&id=${profileId}`,
+        { credentials: "include" }
+      );
+      const data = await response.json();
+      if (!data.success) return;
+      const loadout = data.loadout || {};
+      const items = Array.isArray(data.items) ? data.items : [];
+      const itemMap = new Map(items.map((item) => [item.cosmetic_key, item]));
+
+      const frame = loadout.frame ? itemMap.get(loadout.frame) : null;
+      const banner = loadout.banner ? itemMap.get(loadout.banner) : null;
+      const title = loadout.title ? itemMap.get(loadout.title) : null;
+      const badges = (loadout.badges || []).map((key) => itemMap.get(key)).filter(Boolean);
+
+      if (profileHeaderCard) {
+        profileHeaderCard.classList.remove("fx-pulse", "fx-shimmer", "fx-glow", "fx-cosmic");
+      }
+      if (profileAvatar) {
+        profileAvatar.classList.remove("fx-pulse", "fx-shimmer", "fx-glow", "fx-cosmic");
+      }
+      applyAnimClass(profileHeaderCard, banner?.animation);
+      applyAnimClass(profileAvatar, frame?.animation);
+
+      if (title) {
+        profileLevelTitle.textContent = title.name;
+      }
+
+      if (profileCosmeticBadges) {
+        profileCosmeticBadges.innerHTML = badges.map((badge) => {
+          const animClass = badge.animation && badge.animation !== "none"
+            ? `fx-${escapeHtml(badge.animation)}`
+            : "";
+          return `<span class="profile-cosmetic-badge ${animClass}">${escapeHtml(badge.name)}</span>`;
+        }).join("");
+      }
+    } catch (err) {
+      console.error("Failed to load cosmetic showcase:", err);
+    }
+  }
+
+  function applyAnimClass(node, animation) {
+    if (!node || !animation || animation === "none") return;
+    node.classList.add(`fx-${animation}`);
+  }
+
   async function loadRaffle(ownProfile = isOwnProfile) {
     if (!rafflePrize) {
       return;
@@ -134,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "#raffleCard .raffle-stat:first-child .raffle-stat-label"
     );
     if (ticketLabel) {
-      ticketLabel.textContent = ownProfile ? "Jouw tickets" : "Tickets";
+      ticketLabel.textContent = ownProfile ? "Your tickets" : "Tickets";
     }
 
     try {
@@ -171,10 +299,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }, 1000);
 
-      if (!raffle.history.length) {
-        raffleHistory.innerHTML = `<li class="raffle-history-empty">Nog geen winnaars deze sessie.</li>`;
+      const shortHistory = Array.isArray(raffle.history) ? raffle.history.slice(0, 3) : [];
+      if (!shortHistory.length) {
+        raffleHistory.innerHTML = `<li class="raffle-history-empty">No winners yet this session.</li>`;
       } else {
-        raffleHistory.innerHTML = raffle.history.map((item) => `
+        raffleHistory.innerHTML = shortHistory.map((item) => `
           <li>
             <span class="raffle-winner">${escapeHtml(item.winnerName)}</span>
             <span class="raffle-win-prize">${escapeHtml(item.prizeLabel)}</span>

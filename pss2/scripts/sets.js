@@ -1,6 +1,6 @@
 import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
-import { ALLOWED_SET_IDS } from './card_logic.js';
+import { ALLOWED_SET_IDS, formatHeaderCoins } from './card_logic.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
@@ -12,6 +12,20 @@ const API = window.location.port === '5173'
 const setsGrid = document.getElementById('setsGrid');
 const eraFilters = document.getElementById('eraFilters');
 const setSearch = document.getElementById('setSearch');
+const collectionStats = document.getElementById('collectionStats');
+const statGlobalPct = document.getElementById('statGlobalPct');
+const statGlobalCount = document.getElementById('statGlobalCount');
+const statBestSetName = document.getElementById('statBestSetName');
+const statBestSetPct = document.getElementById('statBestSetPct');
+const statCollectionValue = document.getElementById('statCollectionValue');
+const statUniqueCards = document.getElementById('statUniqueCards');
+const statTotalCopies = document.getElementById('statTotalCopies');
+
+let economyStats = {
+    uniqueCards: 0,
+    totalCopies: 0,
+    estimatedCoins: 0,
+};
 
 const allowedSetIdsMap = new Map(
     ALLOWED_SET_IDS.map((id, index) => [id, index])
@@ -83,28 +97,80 @@ async function loadUserCollectionProgress() {
     });
 
     const data = res.ok ? await res.json() : [];
-
-    // only count unique cards
-    const ownedCards = [...new Set(
-        data.map(c => c.card_id)
-    )];
+    const ownedUnique = new Set();
 
     userCollectionProgress = {};
 
-    for (const cardId of ownedCards) {
-        try {
-            const card = await tcgdex.card.get(cardId);
-            const setId = card?.set?.id;
+    for (const row of data) {
+        const cardId = row.card_id;
+        if (!cardId || ownedUnique.has(cardId)) continue;
+        ownedUnique.add(cardId);
 
-            if (!setId) continue;
+        const dash = cardId.lastIndexOf('-');
+        const setId = dash > 0 ? cardId.slice(0, dash) : cardId;
+        if (!setId) continue;
 
-            userCollectionProgress[setId] =
-                (userCollectionProgress[setId] || 0) + 1;
+        userCollectionProgress[setId] = (userCollectionProgress[setId] || 0) + 1;
+    }
+}
 
-        } catch (e) {
-            // ignore missing cards
+async function loadEconomyStats() {
+    try {
+        const res = await fetch(`${API}/collection_stats.php`, { credentials: 'include' });
+        const data = res.ok ? await res.json() : null;
+        if (data?.success && data.stats) {
+            economyStats = data.stats;
+        }
+    } catch (error) {
+        console.warn('Could not load collection stats:', error);
+    }
+}
+
+function renderCollectionStats() {
+    if (!collectionStats || !allSets.length) return;
+
+    let totalOwned = 0;
+    let totalCards = 0;
+    let bestSet = null;
+    let bestPct = -1;
+
+    for (const set of allSets) {
+        const owned = userCollectionProgress[set.id] || 0;
+        const total = set.cardCount?.total || 0;
+        totalOwned += owned;
+        totalCards += total;
+
+        const pct = total > 0 ? (owned / total) * 100 : 0;
+        if (pct > bestPct || (pct === bestPct && owned > (bestSet?.owned || 0))) {
+            bestPct = pct;
+            bestSet = {
+                name: set.name,
+                owned,
+                total,
+                pct: Math.round(pct),
+            };
         }
     }
+
+    const globalPct = totalCards > 0 ? Math.round((totalOwned / totalCards) * 100) : 0;
+
+    if (statGlobalPct) statGlobalPct.textContent = `${globalPct}%`;
+    if (statGlobalCount) statGlobalCount.textContent = `${totalOwned}/${totalCards} unieke kaarten`;
+    if (statBestSetName) statBestSetName.textContent = bestSet?.name || '—';
+    if (statBestSetPct) {
+        statBestSetPct.textContent = bestSet
+            ? `${bestSet.pct}% · ${bestSet.owned}/${bestSet.total}`
+            : '0%';
+    }
+    if (statCollectionValue) {
+        statCollectionValue.textContent = formatHeaderCoins(economyStats.estimatedCoins || 0);
+    }
+    if (statUniqueCards) statUniqueCards.textContent = String(economyStats.uniqueCards || totalOwned);
+    if (statTotalCopies) {
+        statTotalCopies.textContent = `${economyStats.totalCopies || 0} total copies`;
+    }
+
+    collectionStats.hidden = false;
 }
 
 // ---------------------- LOGO ----------------------
@@ -255,6 +321,7 @@ async function loadSets() {
                 <div class="set-name">${set.name}</div>
 
                 <div class="set-progress">
+                    <span class="set-progress-pct">${percentage}%</span>
                     ${ownedCards}/${totalCards}
                 </div>
 
@@ -278,6 +345,7 @@ async function loadSets() {
         });
 
         renderSets();
+        renderCollectionStats();
 
     } catch (err) {
 
@@ -296,7 +364,10 @@ async function init() {
         return;
     }
 
-    await loadUserCollectionProgress();
+    await Promise.all([
+        loadUserCollectionProgress(),
+        loadEconomyStats(),
+    ]);
 
     setSearch.addEventListener('input', (e) => {
         currentSearch = e.target.value;

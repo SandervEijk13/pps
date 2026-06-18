@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeVault | Roadmap</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/game-font.css" />
+    <link rel="stylesheet" href="/styles/roadmap.css" />
+</head>
+<body>
+    <div id="app-header" data-active="roadmap"></div>
+
+    <main class="roadmap-page">
+        <section class="roadmap-hero">
+            <div class="roadmap-badge"><i class="fas fa-map-signs"></i> Product Roadmap</div>
+            <h1>The PokeVault Road Trip</h1>
+            <p> New games, economy systems, social depth, and platform upgrades.</p>
+        </section>
+
+        <section class="roadmap-map" aria-label="Roadmap map with milestones">
+            <div class="map-hud">
+                <span><i class="fas fa-flag-checkered"></i> Start: Core games</span>
+                <span><i class="fas fa-forward"></i> Next: Stop 1</span>
+                <span><i class="fas fa-hourglass-half"></i> Later: Stops 2-4</span>
+            </div>
+            <svg class="road-svg" viewBox="0 0 1000 1400" preserveAspectRatio="none" aria-hidden="true">
+                <path class="road-main" d="M500 60 C 760 120, 760 250, 500 310 C 240 370, 240 500, 500 560 C 760 620, 760 760, 500 820 C 240 880, 240 1020, 500 1080 C 760 1140, 760 1270, 500 1330" />
+                <path class="road-center" d="M500 60 C 760 120, 760 250, 500 310 C 240 370, 240 500, 500 560 C 760 620, 760 760, 500 820 C 240 880, 240 1020, 500 1080 C 760 1140, 760 1270, 500 1330" />
+            </svg>
+
+            <article class="road-stop stop-1 left">
+                <span class="road-step">01</span>
+                <h3>New Core Games</h3>
+                <span class="road-stop-status status-next">Next</span>
+                <ul>
+                    <li>Set completion reward tracks ✔</li>
+                    <li>Deck Battles PVP with owned cards</li>
+                    <li>Co-op Boss Raids and team rewards</li>
+                    <li>Draft Arena runs with escalating rewards</li>
+                </ul>
+            </article>
+
+            <article class="road-stop stop-2 right">
+                <span class="road-step">02</span>
+                <h3>Economy Expansion</h3>
+                <span class="road-stop-status status-later">Later</span>
+                <ul>
+                    <li>Card Crafting from duplicates</li>
+                    <li>Marketplace v2 (bid/ask + history)</li>
+                    <li>Tournament Ladder (ranked seasons + MMR)</li>
+                    <li>Season Pass (free + premium)</li>
+                </ul>
+            </article>
+
+            <article class="road-stop stop-3 left">
+                <span class="road-step">03</span>
+                <h3>Social & Competitive</h3>
+                <span class="road-stop-status status-later">Later</span>
+                <ul>
+                    <li>Guilds / Clans with shared quests</li>
+                    <li>Profile 2.0 with custom showcases</li>
+                    <li>Spectator mode for live battles</li>
+                    <li>Trust and moderation systems</li>
+                </ul>
+            </article>
+
+            <article class="road-stop stop-4 right">
+                <span class="road-step">04</span>
+                <h3>Platform Upgrades</h3>
+                <span class="road-stop-status status-later">Later</span>
+                <ul>
+                    <li>Realtime WebSocket event infrastructure</li>
+                    <li>Economy analytics + balancing console</li>
+                    <li>Anti-cheat and audit tooling</li>
+                    <li>Mobile companion app</li>
+                </ul>
+            </article>
+        </section>
+    </main>
+  <script src="/scripts/notifications.js" defer></script>
+    <script src="/scripts/header.js" defer></script>
+    <script src="/scripts/login.js" defer></script>
+</body>
+</html>

@@ -78,8 +78,12 @@ async function login() {
 
   } else {
 
-    alert(data.message || "Login failed");
-
+    notification({
+      text: data.message || "Login failed",
+      duration: 5000,
+      type: 'error',
+      closeable: true
+    });
   }
 }
 
@@ -118,13 +122,23 @@ async function register() {
 
   if (data.success) {
 
-    alert("Account created! You can now login.");
+    notification({
+      text: "Registration successful! Please log in.",
+      duration: 5000,
+      type: 'success',
+      closeable: true
+    });
 
     window.location.href = "login.html";
 
   } else {
 
-    alert(data.message || "Register failed");
+    notification({
+      text: data.message || "Register failed",
+      duration: 5000,
+      type: 'error',
+      closeable: true
+    });
 
   }
 }
@@ -183,9 +197,12 @@ function requireLogin(action) {
     }
 
   } catch (err) {
-
-    console.error("Failed to load coins:", err);
-
+    notification({
+      text: `Failed to load user coins: ${err.message}`,
+      duration: 5000,
+      type: 'error',
+      closeable: true
+    });
   }
 
 })();

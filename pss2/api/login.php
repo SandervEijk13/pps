@@ -87,6 +87,9 @@ session_regenerate_id(true);
 
 $_SESSION['user_id'] = (int) $user['id'];
 
+require_once __DIR__ . '/user_activity_lib.php';
+touchUserActivity($pdo, (int) $user['id']);
+
 echo json_encode([
     "success" => true,
     "message" => "Login successful",

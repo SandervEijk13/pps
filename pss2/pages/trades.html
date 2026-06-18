@@ -1,4 +1,4 @@
-0<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
@@ -26,21 +26,21 @@
       </button>
 
       <div class="trades-hero-badge"><i class="fas fa-right-left"></i> Trades</div>
-      <h1>Ruil kaarten met andere trainers</h1>
-      <p>Stuur trade-verzoeken en reageer op inkomende aanbiedingen met accepteren of weigeren.</p>
+      <h1>Exchange cards with other trainers</h1>
+      <p>Send trade requests and respond to incoming offers by accepting or declining.</p>
     </section>
 
     <div class="trades-stats" id="tradesStats" aria-live="polite">
       <div class="trades-stat-card">
-        <span class="trades-stat-label">Inkomend</span>
+        <span class="trades-stat-label">Incomming</span>
         <strong class="trades-stat-value" id="statIncoming">0</strong>
       </div>
       <div class="trades-stat-card">
-        <span class="trades-stat-label">Verstuurd</span>
+        <span class="trades-stat-label">Sent</span>
         <strong class="trades-stat-value" id="statOutgoing">0</strong>
       </div>
       <div class="trades-stat-card">
-        <span class="trades-stat-label">Totaal open</span>
+        <span class="trades-stat-label">Total open</span>
         <strong class="trades-stat-value" id="statActive">0</strong>
       </div>
     </div>
@@ -49,7 +49,7 @@
       <div class="trades-toolbar">
         <h2 class="trades-panel-title"><i class="fas fa-list"></i> Open trades</h2>
         <button type="button" class="trades-btn trades-btn-primary" id="newTradeBtn">
-          <i class="fas fa-plus"></i> Nieuwe trade
+          <i class="fas fa-plus"></i> New trade
         </button>
       </div>
 
@@ -61,8 +61,8 @@
 
       <div id="tradesEmpty" class="trades-empty is-hidden">
         <div class="trades-empty-icon" aria-hidden="true"><i class="fas fa-handshake"></i></div>
-        <strong>Geen open trades</strong>
-        <p>Start een nieuwe trade via de knop hierboven, of via een profiel of de marketplace.</p>
+        <strong>No open trades</strong>
+        <p>Start a new trade via the button above, or via a profile or the marketplace.</p>
       </div>
 
       <p id="tradesError" class="trades-error is-hidden"></p>
@@ -73,8 +73,8 @@
     <div class="game-info-backdrop"></div>
     <div class="game-info-card">
       <button type="button" id="btnCloseInfo" class="game-info-close" aria-label="Sluiten"><i class="fas fa-times"></i></button>
-      <h2 id="infoModalTitle">Hoe werken Trades?</h2>
-      <p class="game-info-intro">Ruil veilig kaarten en coins met andere spelers — alles via een duidelijk verzoek.</p>
+      <h2 id="infoModalTitle">How do Trades work?</h2>
+      <p class="game-info-intro">Safely trade cards and Pokécoins with other players all via a clear request.</p>
       <ol class="game-info-steps">
         <li class="game-info-step">
           <div class="game-info-step-visual">
@@ -85,9 +85,10 @@
             </div>
           </div>
           <div class="game-info-step-text">
-            <strong>1. Stel een trade samen</strong>
-            <span>Kies een speler, selecteer wat jij geeft en wat je van hen wilt ontvangen (kaarten en/of coins).
-              (kaarten met een slotje heb jij niet maar de ander speler wel!)
+            <strong>1. Put together a trade</strong>
+            <span>Choose a player, select what you give and what you want to receive from them (cards and/or Pokécoins).
+              <br>
+              <b class="white">(You don't have cards with a lock, but the other player does!)</b>
             </span>
           </div>
         </li>
@@ -99,8 +100,8 @@
             </div>
           </div>
           <div class="game-info-step-text">
-            <strong>2. Verzoek verstuurd</strong>
-            <span>De andere speler krijgt een popup en ziet het verzoek ook op deze Trades-pagina.</span>
+            <strong>2. Request sent</strong>
+            <span>The other player receives a popup and also sees the request on this Trades page.</span>
           </div>
         </li>
         <li class="game-info-step">
@@ -111,8 +112,8 @@
             </div>
           </div>
           <div class="game-info-step-text">
-            <strong>3. Accepteren of weigeren</strong>
-            <span>De ontvanger beslist. Bij accepteren worden kaarten en coins direct overgedragen.</span>
+            <strong>3. Accept or decline</strong>
+            <span>The recipient decides. Upon acceptance, cards and coins are transferred immediately.</span>
           </div>
         </li>
         <li class="game-info-step">
@@ -123,8 +124,8 @@
             </div>
           </div>
           <div class="game-info-step-text">
-            <strong>4. Klaar!</strong>
-            <span>Na acceptatie staan de kaarten meteen in jullie collecties. Geweigerde trades worden afgesloten.</span>
+            <strong>4. Finished!</strong>
+            <span>Upon acceptance, the cards will appear in your collections immediately. Rejected trades will be closed.</span>
           </div>
         </li>
       </ol>
@@ -132,13 +133,13 @@
         <i class="fas fa-lightbulb"></i>
         <div>
           <span class="game-info-note-label">Tip</span>
-          <span class="game-info-note-hint">Je kunt ook traden via iemands profiel, de marketplace of je eigen collectie.</span>
+          <span class="game-info-note-hint">You can also trade via someone's profile or the marketplace.</span>
         </div>
       </div>
-      <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Begrepen!</button>
+      <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Got It!</button>
     </div>
   </div>
-
+  <script src="/scripts/notifications.js"></script>
   <script src="/scripts/header.js" defer></script>
   <script src="/scripts/login.js" defer></script>
   <script type="module" src="/scripts/trades-page.js"></script>

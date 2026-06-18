@@ -1,0 +1,133 @@
+.quests-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 48px;
+}
+
+.quests-hero {
+    margin-bottom: 24px;
+}
+
+.quests-hero .eyebrow {
+    color: #93c5fd;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.quests-hero h1 {
+    margin: 8px 0;
+    color: #f8fafc;
+}
+
+.quests-hero p {
+    color: #94a3b8;
+    max-width: 640px;
+}
+
+.quests-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.quests-card {
+    background: #0f1422;
+    border: 1px solid #202a42;
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.quests-card--wide {
+    grid-column: 1 / -1;
+}
+
+.quests-card h2 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: #dbeafe;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quests-help {
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    color: #8ea4cf;
+    line-height: 1.45;
+}
+
+.quests-list {
+    display: grid;
+    gap: 8px;
+}
+
+.quest-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: #121a2b;
+    border: 1px solid #1f2a42;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.quest-main {
+    display: grid;
+    gap: 2px;
+}
+
+.quest-main strong {
+    font-size: 0.82rem;
+    color: #d7e2f7;
+}
+
+.quest-main span {
+    font-size: 0.74rem;
+    color: #88a0cc;
+}
+
+.quest-pill {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid #33405f;
+    color: #9db3dc;
+    white-space: nowrap;
+}
+
+.quest-pill.is-claimed {
+    border-color: rgba(74, 222, 128, 0.4);
+    color: #86efac;
+}
+
+.quest-btn {
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    background: rgba(37, 99, 235, 0.22);
+    color: #dbeafe;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.quest-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quest-empty {
+    color: #7b8eb6;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+@media (max-width: 860px) {
+    .quests-grid {
+        grid-template-columns: 1fr;
+    }
+}

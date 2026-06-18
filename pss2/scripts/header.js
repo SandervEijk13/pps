@@ -18,11 +18,13 @@ const HEADER_NAV = [
 
 const HEADER_GAMES = [
     { id: 'higher-lower', href: '/pages/higher-lower.html', icon: 'fa-sort', label: 'Higher / Lower' },
+    { id: 'set-guess', href: '/pages/set-guess.html', icon: 'fa-layer-group', label: 'Set Guess' },
     { id: 'wheel', href: '/pages/wheel.html', icon: 'fa-dharmachakra', label: 'Wheel of Fortune' },
     { id: 'upgrader', href: '/pages/upgrader.html', icon: 'fa-arrow-up', label: 'Upgrader' },
 ];
 
-const GAMES_ACTIVE_IDS = new Set(['games', 'higher-lower', 'wheel', 'upgrader']);
+const GAMES_ACTIVE_IDS = new Set(['games', 'higher-lower', 'set-guess', 'wheel', 'upgrader']);
+
 
 function getAppRoot() {
     if (window.location.port === '5173') {
@@ -189,6 +191,15 @@ function buildHeaderHtml(options = {}) {
             <div class="nav-links">${navHtml}</div>
             <div class="right-actions">
                 ${ticketsHtml}
+                <div class="notif-wrap" id="notifWrap">
+                    <button type="button" class="notif-bell" id="notifBell" aria-label="Notifications" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" id="notifBadge" hidden>0</span>
+                    </button>
+                    <div class="notif-panel" id="notifPanel" aria-label="Notifications panel">
+                        <p class="notif-panel-empty">Loading...</p>
+                    </div>
+                </div>
                 <div class="coin-widget">
                     <div class="coin-icon">
                         <img src="${escapeHtml(appUrl('/images/pokecoin.png'))}" alt="PokeCoin" class="coin-img" />
@@ -200,6 +211,10 @@ function buildHeaderHtml(options = {}) {
                     <span class="user-name">Trainer</span>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                     <div class="profile-dropdown" id="profileDropdown">
+                        <a href="#" class="dropdown-item" id="profileAction">
+                            <i class="fas fa-user"></i>
+                            <span id="profileActionText">Profile</span>
+                        </a>
                         <a href="${escapeHtml(appUrl('/pages/leaderboard.html'))}" class="dropdown-item">
                             <i class="fas fa-trophy"></i>
                             <span>Leaderboard</span>
@@ -208,10 +223,37 @@ function buildHeaderHtml(options = {}) {
                             <i class="fas fa-handshake"></i>
                             <span>Trade</span>
                         </a>
-                        <a href="#" class="dropdown-item" id="profileAction">
-                            <i class="fas fa-user"></i>
-                            <span id="profileActionText">Profile</span>
+                        <a href="${escapeHtml(appUrl('/pages/friends.html'))}" class="dropdown-item">
+                            <i class="fas fa-user-group"></i>
+                            <span>Friends</span>
                         </a>
+                        <a href="${escapeHtml(appUrl('/pages/quests.html'))}" class="dropdown-item">
+                            <i class="fas fa-scroll"></i>
+                            <span>Quests</span>
+                        </a>
+                        <a href="${escapeHtml(appUrl('/pages/roadmap.html'))}" class="dropdown-item">
+                            <i class="fas fa-map-signs"></i>
+                            <span>Roadmap</span>
+                        </a>
+                        <a href="${escapeHtml(appUrl('/pages/storybook.html'))}" class="dropdown-item">
+                            <i class="fas fa-book-open"></i>
+                            <span>Storybook</span>
+                        </a>
+                        <a href="${escapeHtml(appUrl('/pages/profile-customization.html'))}" class="dropdown-item">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            <span>Customize</span>
+                        </a>
+                        <div class="dropdown-item dropdown-item--inventory" id="inventoryHoverItem" tabindex="0">
+                            <i class="fas fa-box-open"></i>
+                            <span>Inventory</span>
+                            <i class="fas fa-chevron-right inventory-hover-chevron"></i>
+                            <div class="inventory-hover-panel" id="inventoryHoverPanel" aria-label="Pack inventory preview">
+                                <p class="inventory-hover-title">Your packs</p>
+                                <div class="inventory-hover-list" id="inventoryHoverList">Hover to load...</div>
+                                <span class="inventory-hover-hint">Click for full inventory page</span>
+                            </div>
+                        </div>
+
                         <a href="#" class="dropdown-item" id="authAction">
                             <i class="fas fa-right-to-bracket"></i>
                             <span id="authActionText">Login</span>
@@ -273,6 +315,8 @@ function setupHeaderProfileMenu() {
     const profileActionText = document.getElementById('profileActionText');
     const authAction = document.getElementById('authAction');
     const authActionText = document.getElementById('authActionText');
+    const inventoryHoverItem = document.getElementById('inventoryHoverItem');
+    const inventoryHoverList = document.getElementById('inventoryHoverList');
 
     if (!profileAction || !profileActionText || !authAction || !authActionText) {
         return;
@@ -297,6 +341,9 @@ function setupHeaderProfileMenu() {
     if (!isLoggedIn()) {
         profileActionText.textContent = 'Login';
         authActionText.textContent = 'Login';
+        if (inventoryHoverItem) {
+            inventoryHoverItem.style.display = 'none';
+        }
         const goLogin = (e) => {
             e.preventDefault();
             window.location.href = appUrl('/pages/login.html');
@@ -308,6 +355,92 @@ function setupHeaderProfileMenu() {
 
     profileActionText.textContent = 'Profile';
     authActionText.textContent = 'Logout';
+    if (inventoryHoverItem) {
+        let inventoryLoaded = false;
+        let inventoryLoading = false;
+        let groupedInventory = [];
+
+        const getBaseSetCode = (setCode = '') => {
+            const match = String(setCode || '').match(/^[a-zA-Z]+/);
+            return match ? match[0].toLowerCase() : '';
+        };
+
+        const getPackImage = (setCode = '') => {
+            const normalized = String(setCode || '').trim().toLowerCase();
+            const base = getBaseSetCode(normalized);
+            if (!normalized || !base) {
+                return appUrl('/images/packs_top/base/base1.png');
+            }
+            return appUrl(`/images/packs_top/${base}/${normalized}.png`);
+        };
+
+        const groupPacks = (packs = []) => {
+            const counts = new Map();
+            for (const pack of packs) {
+                const setName = String(pack?.set_name || pack?.tcgdex_set_id || pack?.set_id || 'Unknown set');
+                const setCode = String(pack?.tcgdex_set_id || pack?.set_id || '').trim().toLowerCase();
+                const key = `${setName}__${setCode}`;
+                if (!counts.has(key)) {
+                    counts.set(key, { name: setName, setCode, qty: 0 });
+                }
+                const entry = counts.get(key);
+                entry.qty += 1;
+            }
+            return Array.from(counts.values())
+                .sort((a, b) => b.qty - a.qty || a.name.localeCompare(b.name));
+        };
+
+        const renderInventory = (targetEl, grouped = [], limit = null) => {
+            if (!targetEl) return;
+            if (!grouped.length) {
+                targetEl.innerHTML = '<span class="inventory-hover-empty">No packs in inventory.</span>';
+                return;
+            }
+            const source = limit ? grouped.slice(0, limit) : grouped;
+            targetEl.innerHTML = source.map((entry) => (
+                `<span class="inventory-hover-pack">
+                    <img class="inventory-hover-pack-img" src="${escapeHtml(getPackImage(entry.setCode))}" alt="${escapeHtml(entry.name)}" onerror="this.onerror=null;this.src='${escapeHtml(appUrl('/images/packs_top/base/base1.png'))}';">
+                    <strong>${escapeHtml(entry.name)}</strong>
+                    <em>x${entry.qty}</em>
+                </span>`
+            )).join('');
+        };
+
+        const loadInventoryPreview = async () => {
+            if (inventoryLoaded || inventoryLoading) return;
+            inventoryLoading = true;
+            if (inventoryHoverList) {
+                inventoryHoverList.textContent = 'Loading packs...';
+            }
+            try {
+                const res = await fetch(`${getApiBase()}/user_packs.php?action=list`, {
+                    credentials: 'include',
+                });
+                const data = await res.json();
+                if (data.success) {
+                    groupedInventory = groupPacks(data.packs || []);
+                    renderInventory(inventoryHoverList, groupedInventory, 6);
+                    inventoryLoaded = true;
+                } else if (inventoryHoverList) {
+                    inventoryHoverList.textContent = data.message || 'Could not load inventory.';
+                }
+            } catch (error) {
+                if (inventoryHoverList) {
+                    inventoryHoverList.textContent = 'Could not load inventory.';
+                }
+            } finally {
+                inventoryLoading = false;
+            }
+        };
+
+        inventoryHoverItem.addEventListener('mouseenter', loadInventoryPreview);
+        inventoryHoverItem.addEventListener('focusin', loadInventoryPreview);
+        inventoryHoverItem.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            window.location.href = appUrl('/pages/inventory.html');
+        });
+    }
     profileAction.onclick = (e) => {
         e.preventDefault();
         window.location.href = appUrl('/pages/profile.html');
@@ -318,6 +451,30 @@ function setupHeaderProfileMenu() {
         localStorage.clear();
         window.location.href = appUrl('/pages/login.html');
     };
+}
+
+function loadNotificationsScript() {
+    if (document.querySelector('script[data-notifications]')) {
+        return;
+    }
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = appUrl('/scripts/notifications.js');
+    script.dataset.notifications = '1';
+    document.head.appendChild(script);
+}
+
+function setupActivityHeartbeat() {
+    if (!isLoggedIn()) {
+        return;
+    }
+
+    const ping = () => {
+        fetch(`${getApiBase()}/activity.php?action=ping`, { credentials: 'include' }).catch(() => {});
+    };
+
+    ping();
+    window.setInterval(ping, 120000);
 }
 
 async function loadHeaderWallet(showTickets = false) {
@@ -371,6 +528,8 @@ function initAppHeader(options = {}) {
     renderAppHeader({ ...options, active, showTickets });
     setupHeaderGamesMenu();
     setupHeaderProfileMenu();
+    setupActivityHeartbeat();
+    loadNotificationsScript();
     loadHeaderWallet(showTickets);
     renderAuthWarningBanner();
 }

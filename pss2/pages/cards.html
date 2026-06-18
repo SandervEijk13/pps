@@ -23,9 +23,23 @@
         <div>
           <h2 id="setTitle">Loading set...</h2>
           <p id="setInfo">Please wait while the set cards load.</p>
+          <div class="set-completion-bar" id="setCompletionBar" hidden>
+            <div class="set-completion-meta">
+              <span id="setCompletionPct">0%</span>
+              <span id="setCompletionCount">0/0</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="setCompletionFill" style="width:0%"></div>
+            </div>
+          </div>
         </div>
-        <div class="nav-links">
-          <a href="/pages/sets.html">← Back to sets</a>
+        <div class="panel-actions">
+          <button type="button" id="bulkSellDuplicatesBtn" class="bulk-sell-btn" hidden>
+            <i class="fas fa-clone"></i> Sell Duplicates
+          </button>
+          <div class="nav-links">
+            <a href="/pages/sets.html">← Back to sets</a>
+          </div>
         </div>
       </div>
 
@@ -36,5 +50,6 @@
   <script type="module" src="/scripts/cards.js"></script>
   <script src="/scripts/header.js" defer></script>
   <script src="/scripts/login.js" defer></script>
+  <script src="/scripts/notifications.js" defer></script>
 </body>
 </html>

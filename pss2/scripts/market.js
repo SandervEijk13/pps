@@ -243,10 +243,20 @@ async function renderMarketplace(filter = '') {
                     await loadOwnedCards();
                     await loadMarket();
                 } else {
-                    alert(data.error || 'Purchase failed');
+                    notification({
+                        text: data.error || 'Purchase failed',
+                        duration: 5000,
+                        type: 'error',
+                        closeable: true
+                    });
                 }
             } catch {
-                alert('Server error');
+                notification({
+                    text: 'Server error',
+                    duration: 5000,
+                    type: 'error',
+                    closeable: true
+                });
             }
         };
 
@@ -277,12 +287,22 @@ async function renderMarketplace(filter = '') {
                     await loadOwnedCards();
                     await loadMarket();
                 } else {
-                    alert(data.message || 'Failed to remove listing');
+                    notification({
+                        text: data.message || 'Failed to remove listing',
+                        duration: 5000,
+                        type: 'error',
+                        closeable: true
+                    });
                 }
 
             } catch (err) {
-                console.error(err);
-                alert('Server error');
+                
+                notification({
+                    text: 'Server error' || err.message,
+                    duration: 5000,
+                    type: 'error',
+                    closeable: true
+                });
             }
         });
 
@@ -290,13 +310,23 @@ async function renderMarketplace(filter = '') {
         tradeBtn?.addEventListener('click', async (e) => {
             e.preventDefault();
             if (Number(item.user_id) === Number(currentUserId)) {
-                alert('Je kunt niet met jezelf traden');
+                notification({
+                    text: 'Je kunt niet met jezelf traden',
+                    duration: 5000,
+                    type: 'error',
+                    closeable: true
+                });
                 return;
             }
             try {
                 await openTradeWithUserFromMarket(Number(item.user_id), item.username);
             } catch (err) {
-                alert(err.message || 'Trade kon niet gestart worden');
+                notification({
+                    text: err.message || 'Trade kon niet gestart worden',
+                    duration: 5000,
+                    type: 'error',
+                    closeable: true
+                });
             }
         });
 
@@ -355,6 +385,11 @@ initGameInfo();
         await loadOwnedCards();
         await loadMarket();
     } catch (err) {
-        console.error(err);
+        notification({
+            text: `Failed to load marketplace: ${err.message}`,
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     }
 })();
