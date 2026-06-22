@@ -1,6 +1,7 @@
 import { formatHeaderCoins } from '/scripts/card_logic.js';
 import { openTradeById, openTradePartnerPicker } from '/scripts/trade.js';
 import { initGameInfo } from '/scripts/game-info.js';
+import { notification } from '/scripts/notifications.js';
 
 function getApiBase() {
     if (typeof window.getApiBase === 'function') return window.getApiBase();
@@ -42,9 +43,9 @@ function renderTradeItem(trade, index) {
 
     let roleBadge = '';
     if (trade.canRespond) {
-        roleBadge = '<span class="trades-list-item__badge is-incoming">Inkomend</span>';
+        roleBadge = '<span class="trades-list-item__badge is-incoming">Incoming</span>';
     } else if (trade.myRole === 'initiator' && trade.status === 'pending') {
-        roleBadge = '<span class="trades-list-item__badge is-outgoing">Verstuurd</span>';
+        roleBadge = '<span class="trades-list-item__badge is-outgoing">Sent</span>';
     } else {
         roleBadge = `<span class="trades-list-item__badge is-status">${escapeHtml(status)}</span>`;
     }

@@ -3,6 +3,7 @@ import MemoryCache from '@cachex/memory';
 import { openPack, formatHeaderCoins } from '/scripts/card_logic.js';
 import { runPackOpenAnimation, closePackOpenAnimation } from '/scripts/pack-opening-animation.js';
 import { initGameInfo } from '/scripts/game-info.js';
+import { notification } from '/scripts/notifications.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
@@ -208,16 +209,31 @@ async function buyPack(pack, setCode, setName) {
 
         const data = await readApiJson(buyRes, 'Buy pack API returned non-JSON');
         if (!data.success) {
-            alert(data.message || 'Could not buy this pack');
+            notification({
+                text: `Failed to buy pack: ${data.message}`,
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
             return;
         }
 
         await refreshCoins();
         await loadInventory();
-        alert('Pack bought and added to your inventory.');
+        notification({
+            text: 'Pack bought and added to your inventory.',
+            duration: 5000,
+            type: 'success',
+            closeable: true
+        });
     } catch (error) {
         console.error('Pack purchase failed:', error);
-        alert('Could not buy this pack right now.');
+        notification({
+            text: 'Could not buy this pack right now.',
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     } finally {
         isOpeningPack = false;
     }
@@ -239,7 +255,12 @@ async function consumeAndOpenPack(packId) {
         const data = await readApiJson(res, 'Open pack API returned non-JSON');
 
         if (!data.success) {
-            alert(data.message || 'Could not open pack');
+            notification({
+                text: `Failed to open pack: ${data.message}`,
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
             await loadInventory();
             return;
         }
@@ -251,7 +272,12 @@ async function consumeAndOpenPack(packId) {
         const pack = data.pack;
         const setCode = pack.tcgdex_set_id || pack.set_id;
         if (!setCode) {
-            alert('This saved pack has no set code.');
+            notification({
+                text: 'This saved pack has no set code.',
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
             await loadInventory();
             return;
         }
@@ -288,7 +314,12 @@ async function consumeAndOpenPack(packId) {
             noticeEl: overlayRefs.noticeEl,
             force: true
         });
-        alert('Could not open this pack right now.');
+        notification({
+            text: 'Could not open this pack right now.',
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     } finally {
         isOpeningPack = false;
     }
@@ -506,7 +537,12 @@ async function renderPacks() {
                     await buyPack(pack, setCode, setName);
                 } catch (error) {
                     console.error('Pack purchase/open failed:', error);
-                    alert('Could not buy this pack. Please try again.');
+                    notification({
+                        text: 'Could not buy this pack. Please try again.',
+                        duration: 5000,
+                        type: 'error',
+                        closeable: true
+                    });
                 } finally {
                     buyBtn.disabled = false;
                 }

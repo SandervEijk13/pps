@@ -3,6 +3,7 @@ import MemoryCache from '@cachex/memory';
 import { resolveTcgdexImageUrl } from '/scripts/card_logic.js';
 import { initGameInfo } from '/scripts/game-info.js';
 import { openTradeWithUserFromMarket } from '/scripts/trade.js';
+import { notification } from '/scripts/notifications.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());

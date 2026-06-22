@@ -21,6 +21,26 @@ function getApiBase() {
 const API = getApiBase();
 
 // -------------------------
+// MESSAGE DISPLAY
+// -------------------------
+function showMessage(text, type = 'error') {
+  const container = document.getElementById('messageContainer');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message message-${type}`;
+  messageDiv.textContent = text;
+  container.appendChild(messageDiv);
+
+  setTimeout(() => {
+    if (container.contains(messageDiv)) {
+      messageDiv.remove();
+    }
+  }, 5000);
+}
+
+// -------------------------
 // AUTH CHECK
 // -------------------------
 function IsLogged() {
@@ -77,13 +97,7 @@ async function login() {
     }
 
   } else {
-
-    notification({
-      text: data.message || "Login failed",
-      duration: 5000,
-      type: 'error',
-      closeable: true
-    });
+    showMessage(data.message || "Login failed", 'error');
   }
 }
 
@@ -121,25 +135,12 @@ async function register() {
   const data = await res.json();
 
   if (data.success) {
-
-    notification({
-      text: "Registration successful! Please log in.",
-      duration: 5000,
-      type: 'success',
-      closeable: true
-    });
-
-    window.location.href = "login.html";
-
+    showMessage("Registration successful! Please log in.", 'success');
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 2000);
   } else {
-
-    notification({
-      text: data.message || "Register failed",
-      duration: 5000,
-      type: 'error',
-      closeable: true
-    });
-
+    showMessage(data.message || "Register failed", 'error');
   }
 }
 
@@ -197,12 +198,7 @@ function requireLogin(action) {
     }
 
   } catch (err) {
-    notification({
-      text: `Failed to load user coins: ${err.message}`,
-      duration: 5000,
-      type: 'error',
-      closeable: true
-    });
+    console.log('Failed to load user coins:', err);
   }
 
 })();

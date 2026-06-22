@@ -27,7 +27,7 @@
 
             <div class="shop-hero-badge"><i class="fas fa-store"></i> Pack Shop</div>
             <h1>Pokémon Pack Shop</h1>
-            <p>Buy packs of coins, open them from your inventory, and build your collection.</p>
+            <p>Koop packs met coins, open ze uit je inventory en build je collectie.</p>
         </section>
 
         <div class="shop-toolbar">
@@ -38,15 +38,15 @@
             <div class="shop-filters">
                 <div class="shop-search-wrap">
                     <i class="fas fa-search" aria-hidden="true"></i>
-                    <input type="search" id="packSearch" class="shop-search" placeholder="Zoek set..." aria-label="Zoek packs">
+                    <input type="search" id="packSearch" class="shop-search" placeholder="Search set..." aria-label="Search packs">
                 </div>
 
                 <select id="eraFilter" class="price-filter" aria-label="Filter op era">
-                    <option value="all">All eras</option>
+                    <option value="all">Alle eras</option>
                 </select>
 
                 <select id="maxPriceFilter" class="price-filter" aria-label="Max prijs">
-                    <option value="all">All prices</option>
+                    <option value="all">Alle prijzen</option>
                     <option value="500">Max 500</option>
                     <option value="1000">Max 1.000</option>
                     <option value="2500">Max 2.500</option>
@@ -54,9 +54,9 @@
                 </select>
 
                 <select id="priceFilter" class="price-filter" aria-label="Sorteer op prijs">
-                    <option value="default">Standard</option>
-                    <option value="low-high">Price: low → high</option>
-                    <option value="high-low">Prijs: high → low</option>
+                    <option value="default">Standaard</option>
+                    <option value="low-high">Prijs: laag → hoog</option>
+                    <option value="high-low">Prijs: hoog → laag</option>
                 </select>
             </div>
         </div>
@@ -102,8 +102,8 @@
         <div class="game-info-backdrop"></div>
         <div class="game-info-card">
             <button type="button" id="btnCloseInfo" class="game-info-close" aria-label="Sluiten"><i class="fas fa-times"></i></button>
-            <h2 id="infoModalTitle">How does the Pack Shop work?</h2>
-            <p class="game-info-intro">Buy Pokémon packs with Pokécoins, open them, and build your collection.</p>
+            <h2 id="infoModalTitle">Hoe werkt de Pack Shop?</h2>
+            <p class="game-info-intro">Koop Pokémon packs met coins, open ze en bouw je collectie op.</p>
             <ol class="game-info-steps">
                 <li class="game-info-step">
                     <div class="game-info-step-visual">
@@ -113,8 +113,8 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>1. Buy a pack</strong>
-                        <span>Browse the shop and buy packs with your coins. Filter by price to quickly find something within your budget.</span>
+                        <strong>1. Koop een pack</strong>
+                        <span>Browse de shop en koop packs met je coins. Filter op prijs om snel iets in je budget te vinden.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -122,8 +122,8 @@
                         <div class="info-anim info-anim--pack" aria-hidden="true"></div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>2. Open from inventory</strong>
-                        <span>Purchased packs go to your <em>Inventory</em>. Open them whenever you want via the inventory button.</span>
+                        <strong>2. Open uit inventory</strong>
+                        <span>Gekochte packs gaan naar je <em>Inventory</em>. Open ze wanneer je wilt via de inventory-knop.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -133,8 +133,8 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>3. View your pulls</strong>
-                        <span>Each pack reveals cards one by one with an open animation. Click through your pulls.</span>
+                        <strong>3. Bekijk je pulls</strong>
+                        <span>Elke pack onthult kaarten één voor één met een open-animatie. Klik door je pulls heen.</span>
                     </div>
                 </li>
                 <li class="game-info-step">
@@ -145,25 +145,25 @@
                         </div>
                     </div>
                     <div class="game-info-step-text">
-                        <strong>4. Saved automatically</strong>
-                        <span>All cards from a pack are immediately added to your collection. Take your time looking through them and check your review at the end.</span>
+                        <strong>4. Automatisch opgeslagen</strong>
+                        <span>Alle kaarten uit een pack worden direct in je collectie gezet. Bekijk ze rustig door en check je review aan het einde.</span>
                     </div>
                 </li>
             </ol>
             <div class="game-info-note">
                 <i class="fas fa-layer-group"></i>
                 <div>
-                    <span class="game-info-note-label">Collection</span>
-                    <span class="game-info-note-hint">You can find saved maps under Collection in the navigation.</span>
+                    <span class="game-info-note-label">Collectie</span>
+                    <span class="game-info-note-hint">Bewaarde kaarten vind je terug onder Collection in de navigatie.</span>
                 </div>
             </div>
-            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Got It!</button>
+            <button type="button" id="btnInfoGotIt" class="btn-game-info-gotit">Begrepen!</button>
         </div>
     </div>
 
+    <script type="module" src="/scripts/notifications.js"></script>
     <script type="module" src="/scripts/shop.js"></script>
     <script type="module" src="/scripts/header.js" defer></script>
-    <script type="module" src="/scripts/notifications.js" defer></script>
     <script src="/scripts/login.js" defer></script>
 
 </body>

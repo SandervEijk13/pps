@@ -1,5 +1,6 @@
 import { formatHeaderCoins, resolveTcgdexImageUrl } from '/scripts/card_logic.js';
 import { initGameInfo } from '/scripts/game-info.js';
+import { notification } from '/scripts/notifications.js';
 
 function getApiBase() {
     if (window.location.port === '5173') {

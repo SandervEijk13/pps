@@ -1,3 +1,5 @@
+import { notification } from '/scripts/notifications.js';
+
 const API = typeof getApiBase === 'function'
     ? getApiBase()
     : `${window.location.origin}/pss/api`;
@@ -33,7 +35,12 @@ async function loadQuests() {
         renderQuestList(weeklyQuestListEl, data.quests?.weekly?.quests || [], 'weekly');
         renderMilestones(data.collectionMilestones || []);
     } catch (err) {
-        console.error('Failed to load quests:', err);
+        notification({
+            text: 'Could not load quests: ' + (err.message || 'unknown error'),
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     }
 }
 
@@ -125,7 +132,12 @@ async function claimQuest(periodType, questKey) {
         });
         const data = await response.json();
         if (!data.success) {
-            alert(data.message || 'Could not claim quest.');
+            notification({
+                text: 'Could not claim quest: ' + (data.message || 'unknown error'),
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
             return;
         }
         if (typeof window.loadHeaderWallet === 'function') {
@@ -133,7 +145,12 @@ async function claimQuest(periodType, questKey) {
         }
         await loadQuests();
     } catch (err) {
-        console.error('Quest claim failed:', err);
+        notification({
+            text: 'Could not claim quest: ' + (err.message || 'unknown error'),
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     }
 }
 
@@ -147,7 +164,12 @@ async function claimMilestone(milestoneKey) {
         });
         const data = await response.json();
         if (!data.success) {
-            alert(data.message || 'Could not claim milestone.');
+            notification({
+                text: 'Milestone claim failed: ' + (data.message || 'unknown error'),
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
             return;
         }
         if (typeof window.loadHeaderWallet === 'function') {
@@ -155,7 +177,12 @@ async function claimMilestone(milestoneKey) {
         }
         await loadQuests();
     } catch (err) {
-        console.error('Milestone claim failed:', err);
+        notification({
+            text: 'Milestone claim failed: ' + (err.message || 'unknown error'),
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     }
 }
 

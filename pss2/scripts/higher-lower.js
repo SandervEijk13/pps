@@ -1,4 +1,5 @@
 import { formatHeaderCoins } from '/scripts/card_logic.js';
+import { notification } from '/scripts/notifications.js';
 
 function getApiBase() {
     if (window.location.port === '5173') {

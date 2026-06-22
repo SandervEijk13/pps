@@ -1,6 +1,7 @@
 import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
 import { ALLOWED_SET_IDS, formatHeaderCoins } from './card_logic.js';
+import { notification } from '/scripts/notifications.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());

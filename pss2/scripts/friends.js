@@ -1,4 +1,5 @@
 import { openTradeWithUser } from '/scripts/trade.js';
+import { notification } from '/scripts/notifications.js';
 
 const API = window.location.port === '5173'
     ? 'http://localhost/pss/api'

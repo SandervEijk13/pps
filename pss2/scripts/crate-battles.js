@@ -11,6 +11,7 @@ import {
 } from '/scripts/card_logic.js';
 import { CrateReel, spinCrate } from '/scripts/crate-reel.js';
 import { initGameInfo } from '/scripts/game-info.js';
+import { notification } from '/scripts/notifications.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());

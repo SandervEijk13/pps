@@ -2,6 +2,7 @@ import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
 import { resolveTcgdexImageUrl } from '/scripts/card_logic.js';
 import { openTradePartnerPicker } from '/scripts/trade.js';
+import { notification } from '/scripts/notifications.js';
 
 const tcgdex = new TCGdex('en');
 tcgdex.setCache(new MemoryCache());
@@ -201,7 +202,12 @@ async function bulkSellDuplicates() {
     const duplicateCount = items.reduce((sum, item) => sum + item.qty, 0);
 
     if (duplicateCount <= 0) {
-        alert('No duplicate cards in this set.');
+        notification({
+            text: 'No duplicates to sell in this set.',
+            duration: 5000,
+            type: 'warning',
+            closeable: true
+        });
         return;
     }
 
@@ -224,16 +230,31 @@ async function bulkSellDuplicates() {
 
         const data = await readSellResponse(res);
         if (!data.success) {
-            alert(data.message || 'Bulk sell failed');
+            notification({
+                text: 'bulk sell failed: ' + (data.message || 'unknown error'),
+                duration: 5000,
+                type: 'warning',
+                closeable: true
+            });
             return;
         }
 
         await loadOwnedCards();
-        alert(`${data.cardsSold} cards sold (+${Number(data.coinsAdded || 0).toFixed(0)} coins)`);
+        notification({
+            text: `${data.cardsSold} cards sold (+${Number(data.coinsAdded || 0).toFixed(0)} coins)`,
+            duration: 5000,
+            type: 'success',
+            closeable: true
+        });
         rerender();
     } catch (err) {
         console.error(err);
-        alert(err.message || 'Bulk sell failed');
+        notification({
+            text: 'Bulk sell failed',
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
     } finally {
         bulkSellDuplicatesBtn.disabled = false;
     }
@@ -263,7 +284,12 @@ async function sendToMarket(card) {
 
     if (!data.success) {
 
-        alert(data.message || "Failed");
+        notification({
+            text: 'Failed to send card to market: ' + (data.message || 'unknown error'),
+            duration: 5000,
+            type: 'error',
+            closeable: true
+        });
 
         return;
     }
@@ -376,7 +402,12 @@ function renderCard(card) {
 
             } catch (err) {
 
-            console.error(err);
+            notification({
+                text: 'Sell failed: ' + (err.message || 'unknown error'),
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
 
             } finally {
 
@@ -408,7 +439,12 @@ function renderCard(card) {
 
         } catch (err) {
 
-            console.error(err);
+            notification({
+                text: 'Failed to send card to market: ' + (err.message || 'unknown error'),
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
 
         } finally {
 
@@ -437,7 +473,12 @@ function renderCard(card) {
             });
             const data = await res.json();
             if (!data.success) {
-                alert(data.message || 'Could not update favourite.');
+                notification({
+                    text: 'Could not update favourite: ' + (data.message || 'unknown error'),
+                    duration: 5000,
+                    type: 'error',
+                    closeable: true
+                });
                 return;
             }
             if (isActive) favoriteCardIds.delete(card.id);
@@ -445,7 +486,12 @@ function renderCard(card) {
             favoriteBtn.classList.toggle('is-active', !isActive);
             favoriteBtn.textContent = !isActive ? 'Remove Favourite' : 'Add Favourite';
         } catch {
-            alert('Could not update favourite.');
+            notification({
+                text: 'Could not update favourite.',
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
         } finally {
             favoriteBtn.disabled = false;
         }
@@ -465,7 +511,12 @@ function renderCard(card) {
             });
             const data = await res.json();
             if (!data.success) {
-                alert(data.message || 'Could not update wishlist.');
+                notification({
+                    text: 'Could not update wishlist: ' + (data.message || 'unknown error'),
+                    duration: 5000,
+                    type: 'error',
+                    closeable: true
+                });
                 return;
             }
             if (isActive) wishlistCardIds.delete(card.id);
@@ -473,7 +524,12 @@ function renderCard(card) {
             wishlistBtn.classList.toggle('is-active', !isActive);
             wishlistBtn.textContent = !isActive ? 'Remove from Wishlist' : 'Add to Wishlist';
         } catch {
-            alert('Could not update wishlist.');
+            notification({
+                text: 'Could not update wishlist.',
+                duration: 5000,
+                type: 'error',
+                closeable: true
+            });
         } finally {
             wishlistBtn.disabled = false;
         }

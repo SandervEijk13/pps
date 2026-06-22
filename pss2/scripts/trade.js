@@ -1,5 +1,6 @@
 import { formatHeaderCoins, resolveTcgdexImageUrl } from '/scripts/card_logic.js';
-import { registerTradeHandler } from '/scripts/notifications.js';
+import { registerTradeHandler, notification } from '/scripts/notifications.js';
+
 
 function getApiBase() {
     if (typeof window.getApiBase === 'function') return window.getApiBase();
@@ -528,7 +529,13 @@ function bindCreateEvents() {
                 requestCoins: d.requestCoins,
             });
             closeTradeModal();
-            alert(data.message || 'Trade verzoek verstuurd!');
+            notification({
+                text: 'Trade offer sent!',
+                type: 'success',
+                duration: 5000,
+                closeable: true,
+            });
+
             document.dispatchEvent(new CustomEvent('pokevault:trade-submitted'));
         } catch (e) {
             setStatus(e.message, 'error');
@@ -806,14 +813,24 @@ function setupProfileTradeButton() {
         }
 
         if (String(partnerId) === String(currentUserId())) {
-            alert('You cannot trade with yourself');
+            notification({
+                text: 'You cannot trade with yourself',
+                type: 'error',
+                duration: 5000,
+                closeable: true,
+            });
             return;
         }
 
         try {
             await openTradeWithUser(Number(partnerId), partnerName);
         } catch (e) {
-            alert(e.message || 'Could not start trade');
+            notification({
+                text: e.message,
+                type: 'error',
+                duration: 5000,
+                closeable: true,
+            });
         }
     });
 }

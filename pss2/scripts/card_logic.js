@@ -1,5 +1,6 @@
 import TCGdex from '@tcgdex/sdk';
 import MemoryCache from '@cachex/memory';
+import { notification } from '/scripts/notifications.js';
 
 
 const tcgdex = new TCGdex('en');
