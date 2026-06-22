@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 15, 2026 at 09:21 AM
+-- Generation Time: Jun 22, 2026 at 06:31 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -440,6 +440,77 @@ INSERT INTO `battle_crate_items` (`id`, `crate_id`, `card_id`, `name`, `image`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cosmetics`
+--
+
+CREATE TABLE `cosmetics` (
+  `cosmetic_key` varchar(64) NOT NULL,
+  `type` enum('title','banner','frame','badge','cardback') NOT NULL,
+  `name` varchar(80) NOT NULL,
+  `description` varchar(180) NOT NULL DEFAULT '',
+  `rarity` enum('common','rare','epic','legendary') NOT NULL DEFAULT 'common',
+  `animation` enum('none','pulse','shimmer','glow','cosmic') NOT NULL DEFAULT 'none',
+  `source_type` enum('starter','storybook','achievement','event') NOT NULL DEFAULT 'starter',
+  `source_ref` varchar(80) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cosmetics`
+--
+
+INSERT INTO `cosmetics` (`cosmetic_key`, `type`, `name`, `description`, `rarity`, `animation`, `source_type`, `source_ref`) VALUES
+('badge_archive_key', 'badge', 'Archive Key', 'Unlock via Storybook chapter quests.', 'epic', 'glow', 'storybook', 'chapter_1'),
+('badge_aurora_stamp', 'badge', 'Aurora Stamp', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_1'),
+('badge_chapter_mark', 'badge', 'Chapter Mark', 'Unlock via Storybook chapter quests.', 'rare', 'none', 'storybook', 'chapter_1'),
+('badge_event_ember', 'badge', 'Ember Sigil', 'Limited event badge with animated glow.', 'legendary', 'cosmic', 'event', 'summer_2026'),
+('badge_first_story', 'badge', 'Story Seeker', 'Claim your first Storybook chapter.', 'rare', 'shimmer', 'storybook', 'chapter_1'),
+('badge_lore_pin', 'badge', 'Lore Pin', 'Unlock via Storybook chapter quests.', 'rare', 'shimmer', 'storybook', 'chapter_1'),
+('badge_relic_token', 'badge', 'Relic Token', 'Unlock via Storybook chapter quests.', 'epic', 'pulse', 'storybook', 'chapter_1'),
+('badge_set_scout', 'badge', 'Set Scout', 'Unlock via Storybook chapter quests.', 'rare', 'pulse', 'storybook', 'chapter_1'),
+('badge_story_spark', 'badge', 'Story Spark', 'Unlock via Storybook chapter quests.', 'common', 'none', 'storybook', 'chapter_1'),
+('badge_void_emblem', 'badge', 'Void Emblem', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_1'),
+('banner_azure_ember', 'banner', 'Azure Ember', 'Unlock via Storybook chapter quests.', 'epic', 'glow', 'storybook', 'chapter_4'),
+('banner_chronicle', 'banner', 'Chronicle Banner', 'Animated banner from full set completion.', 'epic', 'shimmer', 'storybook', 'chapter_4'),
+('banner_chronicle_flux', 'banner', 'Chronicle Flux', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_4'),
+('banner_holo_wave', 'banner', 'Holo Wave', 'Unlock via Storybook chapter quests.', 'epic', 'shimmer', 'storybook', 'chapter_4'),
+('banner_midnight_arc', 'banner', 'Midnight Arc', 'Unlock via Storybook chapter quests.', 'rare', 'pulse', 'storybook', 'chapter_4'),
+('banner_nebula_trace', 'banner', 'Nebula Trace', 'Unlock via Storybook chapter quests.', 'rare', 'shimmer', 'storybook', 'chapter_4'),
+('banner_ocean_blue', 'banner', 'Ocean Blue', 'Classic PokeVault blue profile banner.', 'common', 'none', 'starter', 'starter'),
+('banner_starlit_tide', 'banner', 'Starlit Tide', 'Unlock via Storybook chapter quests.', 'rare', 'none', 'storybook', 'chapter_4'),
+('banner_vault_rain', 'banner', 'Vault Rain', 'Unlock via Storybook chapter quests.', 'epic', 'glow', 'storybook', 'chapter_4'),
+('banner_void_prism', 'banner', 'Void Prism', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_4'),
+('cardback_cosmic_archive', 'cardback', 'Cosmic Archive', 'Unlock via Storybook secret chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_5'),
+('cardback_crimson_sigil', 'cardback', 'Crimson Sigil', 'Unlock via Storybook secret chapter quests.', 'epic', 'glow', 'storybook', 'chapter_5'),
+('cardback_frost_shard', 'cardback', 'Frost Shard', 'Unlock via Storybook secret chapter quests.', 'epic', 'shimmer', 'storybook', 'chapter_5'),
+('cardback_inked_glyph', 'cardback', 'Inked Glyph', 'Unlock via Storybook secret chapter quests.', 'rare', 'none', 'storybook', 'chapter_5'),
+('cardback_prism_engine', 'cardback', 'Prism Engine', 'Unlock via Storybook secret chapter quests.', 'rare', 'shimmer', 'storybook', 'chapter_5'),
+('cardback_relic_grid', 'cardback', 'Relic Grid', 'Unlock via Storybook secret chapter quests.', 'rare', 'pulse', 'storybook', 'chapter_5'),
+('cardback_starforge', 'cardback', 'Starforge', 'Unlock via Storybook secret chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_5'),
+('cardback_vault_blueprint', 'cardback', 'Vault Blueprint', 'Unlock via Storybook secret chapter quests.', 'common', 'none', 'storybook', 'chapter_5'),
+('frame_aurora_gate', 'frame', 'Aurora Gate', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_3'),
+('frame_chrome_edge', 'frame', 'Chrome Edge', 'Unlock via Storybook chapter quests.', 'common', 'none', 'storybook', 'chapter_3'),
+('frame_eclipse_prism', 'frame', 'Eclipse Prism', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_3'),
+('frame_flux_crown', 'frame', 'Flux Crown', 'Unlock via Storybook chapter quests.', 'epic', 'pulse', 'storybook', 'chapter_3'),
+('frame_glacier_ring', 'frame', 'Glacier Ring', 'Unlock via Storybook chapter quests.', 'rare', 'shimmer', 'storybook', 'chapter_3'),
+('frame_ion_loop', 'frame', 'Ion Loop', 'Unlock via Storybook chapter quests.', 'rare', 'pulse', 'storybook', 'chapter_3'),
+('frame_mythic_cosmos', 'frame', 'Mythic Cosmos', 'Event-exclusive cosmic frame.', 'legendary', 'cosmic', 'event', 'summer_2026'),
+('frame_neon_blue', 'frame', 'Neon Frame', 'Glowing profile frame with subtle pulse.', 'rare', 'pulse', 'starter', 'starter'),
+('frame_obsidian_flare', 'frame', 'Obsidian Flare', 'Unlock via Storybook chapter quests.', 'epic', 'glow', 'storybook', 'chapter_3'),
+('frame_storybound', 'frame', 'Storybound', 'Unlock via Storybook chapter quests.', 'rare', 'none', 'storybook', 'chapter_3'),
+('title_archive_hunter', 'title', 'Archive Hunter', 'Unlock via Storybook chapter quests.', 'rare', 'pulse', 'storybook', 'chapter_2'),
+('title_chapter_breaker', 'title', 'Chapter Breaker', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_2'),
+('title_era_whisperer', 'title', 'Era Whisperer', 'Unlock via Storybook chapter quests.', 'rare', 'pulse', 'storybook', 'chapter_2'),
+('title_lorekeeper', 'title', 'Lorekeeper', 'Unlock via Storybook chapter quests.', 'epic', 'glow', 'storybook', 'chapter_2'),
+('title_relic_scholar', 'title', 'Relic Scholar', 'Unlock via Storybook chapter quests.', 'epic', 'glow', 'storybook', 'chapter_2'),
+('title_rookie_collector', 'title', 'Rookie Collector', 'Starter title for every trainer.', 'common', 'none', 'starter', 'starter'),
+('title_set_historian', 'title', 'Set Historian', 'Unlocked by completing story chapters.', 'epic', 'glow', 'storybook', 'chapter_4'),
+('title_set_nomad', 'title', 'Set Nomad', 'Unlock via Storybook chapter quests.', 'rare', 'shimmer', 'storybook', 'chapter_2'),
+('title_storyforge', 'title', 'Storyforge Adept', 'Unlock via Storybook chapter quests.', 'common', 'none', 'storybook', 'chapter_2'),
+('title_vault_oracle', 'title', 'Vault Oracle', 'Unlock via Storybook chapter quests.', 'legendary', 'cosmic', 'storybook', 'chapter_2');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `crate_battle_rooms`
 --
 
@@ -486,7 +557,12 @@ INSERT INTO `favorites` (`id`, `user_id`, `card_id`, `created_at`) VALUES
 (46, 24, 'base1-6', '2026-06-03 09:37:10'),
 (48, 24, 'base1-15', '2026-06-03 09:37:12'),
 (51, 24, 'base1-23', '2026-06-03 09:37:53'),
-(53, 24, 'ex6-105', '2026-06-09 07:12:15');
+(53, 24, 'ex6-105', '2026-06-09 07:12:15'),
+(54, 29, 'base3-2', '2026-06-17 09:59:51'),
+(55, 29, 'base3-1', '2026-06-17 09:59:54'),
+(57, 29, 'base3-3', '2026-06-17 09:59:56'),
+(59, 29, 'base3-8', '2026-06-17 10:00:02'),
+(60, 29, 'base3-11', '2026-06-17 10:00:03');
 
 -- --------------------------------------------------------
 
@@ -507,11 +583,6 @@ CREATE TABLE `marketplace` (
 --
 
 INSERT INTO `marketplace` (`id`, `user_id`, `market_price`, `card_id`, `created_at`) VALUES
-(80, 24, '31.54', 'base1-3', '2026-05-28 07:12:51'),
-(81, 24, '31.54', 'base1-3', '2026-05-28 07:12:52'),
-(83, 24, '31.54', 'base1-3', '2026-05-28 07:12:53'),
-(84, 24, '31.54', 'base1-3', '2026-05-28 07:12:53'),
-(85, 24, '31.54', 'base1-3', '2026-05-28 07:12:54'),
 (86, 24, '31.54', 'base1-3', '2026-05-28 07:18:54'),
 (87, 24, '31.54', 'base1-3', '2026-05-28 07:18:54'),
 (88, 24, '31.54', 'base1-3', '2026-05-28 07:18:55'),
@@ -533,7 +604,8 @@ INSERT INTO `marketplace` (`id`, `user_id`, `market_price`, `card_id`, `created_
 (120, 24, '28.32', 'base1-3', '2026-06-10 06:38:07'),
 (121, 24, '69.80', 'base1-6', '2026-06-10 07:09:33'),
 (122, 24, '6.48', 'sm9-168', '2026-06-11 08:51:55'),
-(123, 24, '102.56', 'bw7-151', '2026-06-15 07:01:10');
+(123, 24, '102.56', 'bw7-151', '2026-06-15 07:01:10'),
+(124, 29, '30.84', 'base3-1', '2026-06-17 10:05:40');
 
 -- --------------------------------------------------------
 
@@ -690,19 +762,33 @@ CREATE TABLE `raffles` (
 
 INSERT INTO `raffles` (`id`, `hour_key`, `prize_type`, `prize_amount`, `winner_user_id`, `drawn_at`, `created_at`) VALUES
 (1, '2026-06-09-08', 'coins', '82.00', 25, '2026-06-09 11:07:12', '2026-06-09 10:11:11'),
-(2, '2026-06-09-09', 'coins', '98.00', NULL, '2026-06-10 09:12:12', '2026-06-09 11:07:12'),
+(2, '2026-06-09-09', 'coins', '98.00', NULL, '2026-06-22 08:27:45', '2026-06-09 11:07:12'),
 (3, '2026-06-09-10', 'wheel_ticket', '1.00', 24, '2026-06-09 13:16:58', '2026-06-09 12:15:29'),
-(4, '2026-06-09-11', 'coins', '32.00', NULL, '2026-06-10 09:12:12', '2026-06-09 13:16:58'),
+(4, '2026-06-09-11', 'coins', '32.00', NULL, '2026-06-22 08:27:45', '2026-06-09 13:16:58'),
 (5, '2026-06-09-12', 'coins', '47.00', 24, '2026-06-10 09:09:45', '2026-06-09 14:17:54'),
 (6, '2026-06-10-06', 'coins', '33.00', 24, '2026-06-10 09:09:45', '2026-06-10 08:10:52'),
-(7, '2026-06-10-07', 'coins', '72.00', NULL, NULL, '2026-06-10 09:09:45'),
-(8, '2026-06-10-08', 'coins', '98.00', NULL, NULL, '2026-06-10 10:00:50'),
-(9, '2026-06-10-11', 'coins', '71.00', NULL, NULL, '2026-06-10 13:16:21'),
-(10, '2026-06-11-08', 'coins', '48.00', NULL, NULL, '2026-06-11 10:53:16'),
-(11, '2026-06-15-06', 'wheel_ticket', '1.00', NULL, NULL, '2026-06-15 08:56:08'),
-(12, '2026-06-15-07', 'wheel_ticket', '1.00', NULL, NULL, '2026-06-15 09:00:09'),
-(13, '2026-06-15-08', 'wheel_ticket', '1.00', NULL, NULL, '2026-06-15 10:05:49'),
-(14, '2026-06-15-09', 'wheel_ticket', '1.00', NULL, NULL, '2026-06-15 11:16:30');
+(7, '2026-06-10-07', 'coins', '72.00', 25, '2026-06-15 12:03:31', '2026-06-10 09:09:45'),
+(8, '2026-06-10-08', 'coins', '98.00', 24, '2026-06-15 12:03:31', '2026-06-10 10:00:50'),
+(9, '2026-06-10-11', 'coins', '71.00', 24, '2026-06-15 12:03:31', '2026-06-10 13:16:21'),
+(10, '2026-06-11-08', 'coins', '48.00', 24, '2026-06-15 12:03:31', '2026-06-11 10:53:16'),
+(11, '2026-06-15-06', 'wheel_ticket', '1.00', 24, '2026-06-15 12:03:31', '2026-06-15 08:56:08'),
+(12, '2026-06-15-07', 'wheel_ticket', '1.00', 24, '2026-06-15 12:03:31', '2026-06-15 09:00:09'),
+(13, '2026-06-15-08', 'wheel_ticket', '1.00', 29, '2026-06-15 12:03:31', '2026-06-15 10:05:49'),
+(14, '2026-06-15-09', 'wheel_ticket', '1.00', 29, '2026-06-15 12:03:31', '2026-06-15 11:16:30'),
+(15, '2026-06-15-10', 'coins', '56.00', NULL, '2026-06-22 08:27:45', '2026-06-15 12:03:31'),
+(16, '2026-06-16-06', 'coins', '86.00', 24, '2026-06-16 09:37:42', '2026-06-16 08:27:18'),
+(17, '2026-06-16-07', 'wheel_ticket', '1.00', 24, '2026-06-17 11:25:14', '2026-06-16 09:37:42'),
+(18, '2026-06-16-08', 'coins', '84.00', 24, '2026-06-17 11:25:14', '2026-06-16 10:06:20'),
+(19, '2026-06-17-07', 'coins', '57.00', 29, '2026-06-17 11:25:14', '2026-06-17 09:08:10'),
+(20, '2026-06-17-08', 'coins', '98.00', 29, '2026-06-17 11:25:14', '2026-06-17 10:22:19'),
+(21, '2026-06-17-09', 'wheel_ticket', '1.00', 29, '2026-06-17 12:00:08', '2026-06-17 11:25:14'),
+(22, '2026-06-17-10', 'wheel_ticket', '1.00', 24, '2026-06-17 13:16:43', '2026-06-17 12:00:08'),
+(23, '2026-06-17-11', 'wheel_ticket', '1.00', NULL, '2026-06-22 08:27:45', '2026-06-17 13:16:43'),
+(24, '2026-06-17-12', 'wheel_ticket', '1.00', NULL, '2026-06-22 08:27:45', '2026-06-17 14:14:30'),
+(25, '2026-06-18-06', 'coins', '86.00', 29, '2026-06-18 11:19:24', '2026-06-18 08:09:13'),
+(26, '2026-06-18-09', 'wheel_ticket', '1.00', 24, '2026-06-22 08:27:45', '2026-06-18 11:13:26'),
+(27, '2026-06-18-10', 'coins', '59.00', 24, '2026-06-22 08:27:45', '2026-06-18 12:29:48'),
+(28, '2026-06-22-06', 'wheel_ticket', '1.00', NULL, NULL, '2026-06-22 08:15:07');
 
 -- --------------------------------------------------------
 
@@ -736,7 +822,265 @@ INSERT INTO `raffle_entries` (`id`, `raffle_id`, `user_id`, `tickets`) VALUES
 (60, 12, 24, 30),
 (69, 13, 24, 2),
 (71, 13, 29, 23),
-(78, 14, 29, 11);
+(78, 14, 29, 11),
+(81, 16, 24, 9),
+(90, 17, 24, 11),
+(91, 18, 29, 1),
+(92, 18, 24, 3),
+(95, 19, 29, 1),
+(96, 20, 29, 2),
+(98, 21, 29, 266),
+(154, 22, 29, 1),
+(155, 22, 24, 73),
+(159, 25, 29, 3),
+(161, 26, 24, 2),
+(163, 27, 24, 5),
+(164, 28, 24, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `set_story_chapters`
+--
+
+CREATE TABLE `set_story_chapters` (
+  `id` int NOT NULL,
+  `set_id` varchar(64) NOT NULL,
+  `chapter_no` tinyint NOT NULL,
+  `title` varchar(120) NOT NULL,
+  `body` text NOT NULL,
+  `unlock_pct` tinyint NOT NULL DEFAULT '25',
+  `reward_coins` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `reward_cosmetic_key` varchar(64) DEFAULT NULL,
+  `is_secret` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `set_story_chapters`
+--
+
+INSERT INTO `set_story_chapters` (`id`, `set_id`, `chapter_no`, `title`, `body`, `unlock_pct`, `reward_coins`, `reward_cosmetic_key`, `is_secret`, `created_at`) VALUES
+(1, 'ex14', 1, 'Origins of Crystal Guardians', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(2, 'ex14', 2, 'Crystal Guardians Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(3, 'ex14', 3, 'Echoes of Crystal Guardians', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(4, 'ex14', 4, 'Crystal Guardians Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(5, 'ex14', 5, 'Crystal Guardians Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(6, 'base4', 1, 'Origins of Base Set 2', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(7, 'base4', 2, 'Base Set 2 Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(8, 'base4', 3, 'Echoes of Base Set 2', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(9, 'base4', 4, 'Base Set 2 Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(10, 'base4', 5, 'Base Set 2 Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(11, 'bw1', 1, 'Origins of Black & White', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(12, 'bw1', 2, 'Black & White Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(13, 'bw1', 3, 'Echoes of Black & White', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(14, 'bw1', 4, 'Black & White Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(15, 'bw1', 5, 'Black & White Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(16, 'base1', 1, 'Origins of Base Set', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(17, 'base1', 2, 'Base Set Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(18, 'base1', 3, 'Echoes of Base Set', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(19, 'base1', 4, 'Base Set Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(20, 'base1', 5, 'Base Set Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(21, 'ex13', 1, 'Origins of Holon Phantoms', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(22, 'ex13', 2, 'Holon Phantoms Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(23, 'ex13', 3, 'Echoes of Holon Phantoms', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(24, 'ex13', 4, 'Holon Phantoms Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(25, 'ex13', 5, 'Holon Phantoms Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(26, 'bw3', 1, 'Origins of Noble Victories', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(27, 'bw3', 2, 'Noble Victories Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(28, 'bw3', 3, 'Echoes of Noble Victories', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(29, 'bw3', 4, 'Noble Victories Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(30, 'bw3', 5, 'Noble Victories Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(31, 'dp1', 1, 'Origins of Diamond & Pearl', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(32, 'dp1', 2, 'Diamond & Pearl Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(33, 'dp1', 3, 'Echoes of Diamond & Pearl', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(34, 'dp1', 4, 'Diamond & Pearl Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(35, 'dp1', 5, 'Diamond & Pearl Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(36, 'bw8', 1, 'Origins of Plasma Storm', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(37, 'bw8', 2, 'Plasma Storm Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(38, 'bw8', 3, 'Echoes of Plasma Storm', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(39, 'bw8', 4, 'Plasma Storm Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(40, 'bw8', 5, 'Plasma Storm Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(41, 'bw7', 1, 'Origins of Boundaries Crossed', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(42, 'bw7', 2, 'Boundaries Crossed Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(43, 'bw7', 3, 'Echoes of Boundaries Crossed', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(44, 'bw7', 4, 'Boundaries Crossed Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(45, 'bw7', 5, 'Boundaries Crossed Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(46, 'col1', 1, 'Origins of Call of Legends', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(47, 'col1', 2, 'Call of Legends Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(48, 'col1', 3, 'Echoes of Call of Legends', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(49, 'col1', 4, 'Call of Legends Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(50, 'col1', 5, 'Call of Legends Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(51, 'bw5', 1, 'Origins of Dark Explorers', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(52, 'bw5', 2, 'Dark Explorers Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(53, 'bw5', 3, 'Echoes of Dark Explorers', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(54, 'bw5', 4, 'Dark Explorers Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(55, 'bw5', 5, 'Dark Explorers Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(56, 'ex11', 1, 'Origins of Delta Species', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(57, 'ex11', 2, 'Delta Species Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(58, 'ex11', 3, 'Echoes of Delta Species', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(59, 'ex11', 4, 'Delta Species Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(60, 'ex11', 5, 'Delta Species Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(61, 'ex8', 1, 'Origins of Deoxys', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(62, 'ex8', 2, 'Deoxys Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(63, 'ex8', 3, 'Echoes of Deoxys', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(64, 'ex8', 4, 'Deoxys Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(65, 'ex8', 5, 'Deoxys Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(66, 'ex3', 1, 'Origins of Dragon', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(67, 'ex3', 2, 'Dragon Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(68, 'ex3', 3, 'Echoes of Dragon', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(69, 'ex3', 4, 'Dragon Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(70, 'ex3', 5, 'Dragon Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(71, 'ex15', 1, 'Origins of Dragon Frontiers', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(72, 'ex15', 2, 'Dragon Frontiers Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(73, 'ex15', 3, 'Echoes of Dragon Frontiers', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(74, 'ex15', 4, 'Dragon Frontiers Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(75, 'ex15', 5, 'Dragon Frontiers Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(76, 'bw6', 1, 'Origins of Dragons Exalted', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(77, 'bw6', 2, 'Dragons Exalted Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(78, 'bw6', 3, 'Echoes of Dragons Exalted', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(79, 'bw6', 4, 'Dragons Exalted Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(80, 'bw6', 5, 'Dragons Exalted Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(81, 'ex9', 1, 'Origins of Emerald', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(82, 'ex9', 2, 'Emerald Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(83, 'ex9', 3, 'Echoes of Emerald', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(84, 'ex9', 4, 'Emerald Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(85, 'ex9', 5, 'Emerald Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(86, 'bw2', 1, 'Origins of Emerging Powers', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(87, 'bw2', 2, 'Emerging Powers Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(88, 'bw2', 3, 'Echoes of Emerging Powers', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(89, 'bw2', 4, 'Emerging Powers Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(90, 'bw2', 5, 'Emerging Powers Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(91, 'ecard1', 1, 'Origins of Expedition Base Set', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(92, 'ecard1', 2, 'Expedition Base Set Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(93, 'ecard1', 3, 'Echoes of Expedition Base Set', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(94, 'ecard1', 4, 'Expedition Base Set Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(95, 'ecard1', 5, 'Expedition Base Set Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(96, 'ex6', 1, 'Origins of FireRed & LeafGreen', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(97, 'ex6', 2, 'FireRed & LeafGreen Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(98, 'ex6', 3, 'Echoes of FireRed & LeafGreen', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(99, 'ex6', 4, 'FireRed & LeafGreen Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(100, 'ex6', 5, 'FireRed & LeafGreen Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(101, 'base3', 1, 'Origins of Fossil', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(102, 'base3', 2, 'Fossil Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(103, 'base3', 3, 'Echoes of Fossil', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(104, 'base3', 4, 'Fossil Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(105, 'base3', 5, 'Fossil Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(106, 'g1', 1, 'Origins of Generations', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(107, 'g1', 2, 'Generations Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(108, 'g1', 3, 'Echoes of Generations', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(109, 'g1', 4, 'Generations Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(110, 'g1', 5, 'Generations Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(111, 'gym2', 1, 'Origins of Gym Challenge', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(112, 'gym2', 2, 'Gym Challenge Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(113, 'gym2', 3, 'Echoes of Gym Challenge', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(114, 'gym2', 4, 'Gym Challenge Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(115, 'gym2', 5, 'Gym Challenge Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(116, 'gym1', 1, 'Origins of Gym Heroes', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(117, 'gym1', 2, 'Gym Heroes Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(118, 'gym1', 3, 'Echoes of Gym Heroes', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(119, 'gym1', 4, 'Gym Heroes Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(120, 'gym1', 5, 'Gym Heroes Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(121, 'hgss1', 1, 'Origins of HeartGold SoulSilver', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(122, 'hgss1', 2, 'HeartGold SoulSilver Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(123, 'hgss1', 3, 'Echoes of HeartGold SoulSilver', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(124, 'hgss1', 4, 'HeartGold SoulSilver Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(125, 'hgss1', 5, 'HeartGold SoulSilver Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(126, 'ex5', 1, 'Origins of Hidden Legends', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(127, 'ex5', 2, 'Hidden Legends Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(128, 'ex5', 3, 'Echoes of Hidden Legends', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(129, 'ex5', 4, 'Hidden Legends Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(130, 'ex5', 5, 'Hidden Legends Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(131, 'base2', 1, 'Origins of Jungle', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(132, 'base2', 2, 'Jungle Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(133, 'base2', 3, 'Echoes of Jungle', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(134, 'base2', 4, 'Jungle Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(135, 'base2', 5, 'Jungle Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(136, 'ex12', 1, 'Origins of Legend Maker', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(137, 'ex12', 2, 'Legend Maker Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(138, 'ex12', 3, 'Echoes of Legend Maker', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(139, 'ex12', 4, 'Legend Maker Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(140, 'ex12', 5, 'Legend Maker Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(141, 'bw11', 1, 'Origins of Legendary Treasures', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(142, 'bw11', 2, 'Legendary Treasures Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(143, 'bw11', 3, 'Echoes of Legendary Treasures', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(144, 'bw11', 4, 'Legendary Treasures Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(145, 'bw11', 5, 'Legendary Treasures Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(146, 'dp6', 1, 'Origins of Legends Awakened', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(147, 'dp6', 2, 'Legends Awakened Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(148, 'dp6', 3, 'Echoes of Legends Awakened', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(149, 'dp6', 4, 'Legends Awakened Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(150, 'dp6', 5, 'Legends Awakened Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(151, 'dp5', 1, 'Origins of Majestic Dawn', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(152, 'dp5', 2, 'Majestic Dawn Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(153, 'dp5', 3, 'Echoes of Majestic Dawn', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(154, 'dp5', 4, 'Majestic Dawn Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(155, 'dp5', 5, 'Majestic Dawn Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(156, 'dp2', 1, 'Origins of Mysterious Treasures', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(157, 'dp2', 2, 'Mysterious Treasures Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(158, 'dp2', 3, 'Echoes of Mysterious Treasures', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(159, 'dp2', 4, 'Mysterious Treasures Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(160, 'dp2', 5, 'Mysterious Treasures Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(161, 'bw4', 1, 'Origins of Next Destinies', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(162, 'bw4', 2, 'Next Destinies Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(163, 'bw4', 3, 'Echoes of Next Destinies', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(164, 'bw4', 4, 'Next Destinies Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(165, 'bw4', 5, 'Next Destinies Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(166, 'bw10', 1, 'Origins of Plasma Blast', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(167, 'bw10', 2, 'Plasma Blast Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(168, 'bw10', 3, 'Echoes of Plasma Blast', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(169, 'bw10', 4, 'Plasma Blast Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(170, 'bw10', 5, 'Plasma Blast Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(171, 'bw9', 1, 'Origins of Plasma Freeze', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(172, 'bw9', 2, 'Plasma Freeze Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(173, 'bw9', 3, 'Echoes of Plasma Freeze', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(174, 'bw9', 4, 'Plasma Freeze Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(175, 'bw9', 5, 'Plasma Freeze Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(176, 'ex16', 1, 'Origins of Power Keepers', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(177, 'ex16', 2, 'Power Keepers Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(178, 'ex16', 3, 'Echoes of Power Keepers', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(179, 'ex16', 4, 'Power Keepers Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(180, 'ex16', 5, 'Power Keepers Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(181, 'ex1', 1, 'Origins of Ruby & Sapphire', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(182, 'ex1', 2, 'Ruby & Sapphire Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(183, 'ex1', 3, 'Echoes of Ruby & Sapphire', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(184, 'ex1', 4, 'Ruby & Sapphire Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(185, 'ex1', 5, 'Ruby & Sapphire Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(186, 'ex2', 1, 'Origins of Sandstorm', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(187, 'ex2', 2, 'Sandstorm Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(188, 'ex2', 3, 'Echoes of Sandstorm', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(189, 'ex2', 4, 'Sandstorm Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(190, 'ex2', 5, 'Sandstorm Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(191, 'dp3', 1, 'Origins of Secret Wonders', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(192, 'dp3', 2, 'Secret Wonders Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(193, 'dp3', 3, 'Echoes of Secret Wonders', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(194, 'dp3', 4, 'Secret Wonders Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(195, 'dp3', 5, 'Secret Wonders Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(196, 'dp7', 1, 'Origins of Stormfront', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(197, 'dp7', 2, 'Stormfront Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(198, 'dp7', 3, 'Echoes of Stormfront', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(199, 'dp7', 4, 'Stormfront Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(200, 'dp7', 5, 'Stormfront Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(201, 'ex4', 1, 'Origins of Team Magma vs Team Aqua', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(202, 'ex4', 2, 'Team Magma vs Team Aqua Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(203, 'ex4', 3, 'Echoes of Team Magma vs Team Aqua', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(204, 'ex4', 4, 'Team Magma vs Team Aqua Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(205, 'ex4', 5, 'Team Magma vs Team Aqua Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(206, 'base5', 1, 'Origins of Team Rocket', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(207, 'base5', 2, 'Team Rocket Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(208, 'base5', 3, 'Echoes of Team Rocket', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(209, 'base5', 4, 'Team Rocket Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(210, 'base5', 5, 'Team Rocket Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(211, 'ex7', 1, 'Origins of Team Rocket Returns', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(212, 'ex7', 2, 'Team Rocket Returns Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(213, 'ex7', 3, 'Echoes of Team Rocket Returns', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(214, 'ex7', 4, 'Team Rocket Returns Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(215, 'ex7', 5, 'Team Rocket Returns Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19'),
+(216, 'ex10', 1, 'Origins of Unseen Forces', 'Every set starts with a spark. Build momentum by collecting your first quarter.', 25, '30.00', 'badge_first_story', 0, '2026-06-17 11:03:19'),
+(217, 'ex10', 2, 'Unseen Forces Rising', 'Your binder fills up and rare pulls start to appear. Keep the streak alive.', 50, '45.00', NULL, 0, '2026-06-17 11:03:19'),
+(218, 'ex10', 3, 'Echoes of Unseen Forces', 'You are deep in the set now. Track missing cards and close the gaps.', 75, '60.00', NULL, 0, '2026-06-17 11:03:19'),
+(219, 'ex10', 4, 'Unseen Forces Chronicle', 'Set completed. Your collection becomes part of the PokeVault story archive.', 100, '120.00', 'title_set_historian', 0, '2026-06-17 11:03:19'),
+(220, 'ex10', 5, 'Unseen Forces Secret Archive', 'A hidden chapter unlocked only by true completionists.', 100, '150.00', 'banner_chronicle', 1, '2026-06-17 11:03:19');
 
 -- --------------------------------------------------------
 
@@ -769,7 +1113,7 @@ INSERT INTO `trades` (`id`, `initiator_id`, `receiver_id`, `status`, `initiator_
 (4, 24, 25, 'cancelled', '0.00', '0.00', 0, 0, '2026-06-09 08:56:37', '2026-06-09 09:44:53', NULL),
 (5, 25, 24, 'cancelled', '0.00', '0.00', 0, 0, '2026-06-09 09:44:59', '2026-06-09 09:45:39', NULL),
 (6, 24, 25, 'completed', '0.00', '0.00', 0, 0, '2026-06-09 09:59:35', '2026-06-09 10:00:42', '2026-06-09 10:00:42'),
-(10, 24, 25, 'pending', '0.00', '0.00', 0, 0, '2026-06-09 12:41:19', '2026-06-09 12:41:19', NULL);
+(10, 24, 25, 'cancelled', '0.00', '0.00', 0, 0, '2026-06-09 12:41:19', '2026-06-18 09:20:19', NULL);
 
 -- --------------------------------------------------------
 
@@ -883,7 +1227,8 @@ INSERT INTO `upgrader_plays` (`id`, `user_id`, `bet_amount`, `target_card_id`, `
 (50, 24, '50.00', 'bw7-150', '52.90', '0.750000', 1, '2026-06-10 11:16:21'),
 (51, 24, '50.00', 'bw5-109', '244.26', '0.184230', 0, '2026-06-10 11:16:31'),
 (52, 24, '225.00', 'ex6-105', '646.30', '0.313322', 1, '2026-06-10 11:16:54'),
-(53, 29, '25.00', 'dp7-SH2', '31.83', '0.706880', 1, '2026-06-15 08:49:17');
+(53, 29, '25.00', 'dp7-SH2', '31.83', '0.706880', 1, '2026-06-15 08:49:17'),
+(54, 24, '500.00', 'bw8-136', '589.25', '0.750000', 1, '2026-06-17 10:10:46');
 
 -- --------------------------------------------------------
 
@@ -906,17 +1251,49 @@ CREATE TABLE `users` (
   `win_count` int NOT NULL DEFAULT '0',
   `upgrader_wins` int NOT NULL DEFAULT '0',
   `battles_won` int NOT NULL DEFAULT '0',
-  `raffle_wager_carry` decimal(10,2) NOT NULL DEFAULT '0.00'
+  `raffle_wager_carry` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `active_title_key` varchar(64) DEFAULT NULL,
+  `last_active_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `user_coins`, `created_at`, `wheel_tickets`, `last_free_wheel_at`, `total_wagered`, `biggest_win`, `user_level`, `win_count`, `upgrader_wins`, `battles_won`, `raffle_wager_carry`) VALUES
-(24, 'kaas', 'a@a.com', '$2y$10$64Bna9Plx3LBMgwMIMEvZe81dbFAHHpyN7EeolFXPkczhN59dwyKO', '2428.67', '2026-05-27 07:26:57', 0, NULL, '2958.25', '7.00', 1, 7, 4, 0, '8.25'),
-(25, 'kutje', 'k.nl', '$2y$10$YGGBlAJqAbKz0V1mGDp7S.88w819evD/2OwkoV3AJtuvF.0PGjoF6', '8289.77', '2026-05-27 07:39:39', 0, '2026-06-03 11:24:49', '4378.00', '68.72', 5, 9, 5, 2, '8.00'),
-(29, 'max', 'm.nl', '$2y$10$.vys39i7KqGxQ.312CHhk.VZ5XuCRLDcD3uc20eRjB6umGcmcKoA6', '298.03', '2026-06-15 08:48:05', 0, NULL, '340.00', '31.83', 1, 4, 1, 1, '0.00');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `user_coins`, `created_at`, `wheel_tickets`, `last_free_wheel_at`, `total_wagered`, `biggest_win`, `user_level`, `win_count`, `upgrader_wins`, `battles_won`, `raffle_wager_carry`, `active_title_key`, `last_active_at`) VALUES
+(24, 'kaas', 'a@a.com', '$2y$10$64Bna9Plx3LBMgwMIMEvZe81dbFAHHpyN7EeolFXPkczhN59dwyKO', '2318.08', '2026-05-27 07:26:57', 5, NULL, '4085.25', '7.00', 4, 17, 5, 1, '5.25', 'high_roller_1000', '2026-06-22 08:27:09'),
+(25, 'kutje', 'k.nl', '$2y$10$YGGBlAJqAbKz0V1mGDp7S.88w819evD/2OwkoV3AJtuvF.0PGjoF6', '8361.77', '2026-05-27 07:39:39', 0, '2026-06-03 11:24:49', '4378.00', '68.72', 5, 9, 5, 2, '8.00', 'high_roller_1000', NULL),
+(29, 'max', 'm.nl', '$2y$10$.vys39i7KqGxQ.312CHhk.VZ5XuCRLDcD3uc20eRjB6umGcmcKoA6', '9999770.07', '2026-06-15 08:48:05', 3, NULL, '3353.50', '60.00', 3, 7, 1, 1, '3.50', 'unique_50', '2026-06-18 08:58:38'),
+(30, 'herman', '1.nl', '$2y$10$W4qJn1b.nyPzk6c1e/QhWuatEP7rUrl1TL5ar0nXYFBhbUmmjaOEy', '99.50', '2026-06-16 08:07:46', 0, NULL, '0.50', '0.00', 1, 0, 0, 0, '0.50', NULL, NULL),
+(31, '2344e', 'qde3fc12', '$2y$10$RhU0YT4hcpUaQADTXpzhleQ/vsuER5WrjEnuhsaO9.bT.2aAIzfaq', '100.00', '2026-06-22 06:27:21', 0, NULL, '0.00', '0.00', 1, 0, 0, 0, '0.00', NULL, NULL),
+(32, '123', '123', '$2y$10$IdFy2S5giEkMLt/DkOA9B.I7IxCZZoUm/b4N3igMyf7rlbbxImute', '98.00', '2026-06-22 06:27:33', 0, NULL, '2.00', '0.00', 1, 0, 0, 0, '2.00', NULL, '2026-06-22 08:30:57'),
+(33, '1234', '1234', '$2y$10$3z4NcnrwJJbUgBiHl.ghl.gRwYAfTlH/GhEGy85moIVX8ZsvWO9n.', '100.00', '2026-06-22 06:28:45', 0, NULL, '0.00', '0.00', 1, 0, 0, 0, '0.00', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_achievements`
+--
+
+CREATE TABLE `user_achievements` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `achievement_key` varchar(64) NOT NULL,
+  `unlocked_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_achievements`
+--
+
+INSERT INTO `user_achievements` (`id`, `user_id`, `achievement_key`, `unlocked_at`) VALUES
+(1, 24, 'collector_100', '2026-06-16 09:37:42'),
+(2, 24, 'unique_50', '2026-06-16 09:37:42'),
+(3, 24, 'high_roller_1000', '2026-06-16 09:37:42'),
+(31, 29, 'unique_50', '2026-06-17 11:25:14'),
+(32, 29, 'collector_100', '2026-06-17 11:45:42'),
+(34, 29, 'high_roller_1000', '2026-06-17 11:45:42'),
+(62, 25, 'high_roller_1000', '2026-06-17 12:04:58');
 
 -- --------------------------------------------------------
 
@@ -996,7 +1373,7 @@ INSERT INTO `user_cards` (`id`, `user_id`, `card_id`, `created_at`, `card_amount
 (449, 25, 'bw3-54', '2026-06-03 09:30:32', 1),
 (450, 25, 'gym2-99', '2026-06-03 09:34:14', 1),
 (451, 25, 'bw11-RC7', '2026-06-03 09:48:24', 1),
-(452, 24, 'gym1-80', '2026-06-03 09:51:51', 4),
+(452, 24, 'gym1-80', '2026-06-03 09:51:51', 5),
 (454, 24, 'gym2-99', '2026-06-03 09:52:09', 2),
 (456, 24, 'bw11-RC7', '2026-06-03 10:02:03', 2),
 (457, 24, 'base2-6', '2026-06-03 11:20:27', 1),
@@ -1032,7 +1409,6 @@ INSERT INTO `user_cards` (`id`, `user_id`, `card_id`, `created_at`, `card_amount
 (492, 24, 'base1-60', '2026-06-10 06:11:35', 1),
 (493, 25, 'g1-24', '2026-06-10 07:25:16', 1),
 (494, 25, 'dp6-142', '2026-06-10 07:25:16', 1),
-(495, 24, 'base1-3', '2026-06-11 06:45:10', 5),
 (496, 24, 'sv03-214', '2026-06-11 08:51:07', 1),
 (497, 24, 'xy9-71', '2026-06-11 08:54:53', 1),
 (498, 24, 'sm115-54', '2026-06-11 08:56:45', 1),
@@ -1059,26 +1435,13 @@ INSERT INTO `user_cards` (`id`, `user_id`, `card_id`, `created_at`, `card_amount
 (521, 29, 'bw1-9', '2026-06-15 09:07:51', 1),
 (522, 29, 'bw1-106', '2026-06-15 09:07:51', 1),
 (523, 29, 'bw1-83', '2026-06-15 09:07:52', 1),
-(524, 29, 'swsh10.5-002', '2026-06-15 09:16:10', 1),
-(525, 29, 'swsh10.5-021', '2026-06-15 09:16:11', 1),
-(526, 29, 'swsh10.5-042', '2026-06-15 09:16:11', 1),
-(527, 29, 'swsh10.5-070', '2026-06-15 09:16:11', 1),
-(528, 29, 'swsh10.5-036', '2026-06-15 09:16:11', 1),
-(529, 29, 'swsh10.5-015', '2026-06-15 09:16:11', 1),
-(530, 29, 'swsh10.5-032', '2026-06-15 09:16:11', 1),
-(531, 29, 'swsh10.5-066', '2026-06-15 09:16:11', 1),
-(532, 29, 'swsh10.5-068', '2026-06-15 09:16:11', 1),
+(524, 29, 'swsh10.5-002', '2026-06-15 09:16:10', 3),
+(526, 29, 'swsh10.5-042', '2026-06-15 09:16:11', 5),
+(528, 29, 'swsh10.5-036', '2026-06-15 09:16:11', 5),
+(531, 29, 'swsh10.5-066', '2026-06-15 09:16:11', 4),
 (533, 29, 'swsh10.5-029', '2026-06-15 09:16:11', 1),
-(534, 29, 'swsh10.5-067', '2026-06-15 09:16:33', 1),
-(535, 29, 'swsh10.5-013', '2026-06-15 09:16:33', 1),
-(536, 29, 'swsh10.5-057', '2026-06-15 09:16:33', 1),
-(537, 29, 'swsh10.5-016', '2026-06-15 09:16:33', 1),
-(538, 29, 'swsh10.5-009', '2026-06-15 09:16:33', 1),
-(539, 29, 'swsh10.5-027', '2026-06-15 09:16:33', 1),
-(540, 29, 'swsh10.5-001', '2026-06-15 09:16:33', 1),
-(541, 29, 'swsh10.5-041', '2026-06-15 09:16:33', 1),
-(542, 29, 'swsh10.5-063', '2026-06-15 09:16:33', 1),
-(543, 29, 'swsh10.5-017', '2026-06-15 09:16:33', 1),
+(536, 29, 'swsh10.5-057', '2026-06-15 09:16:33', 5),
+(543, 29, 'swsh10.5-017', '2026-06-15 09:16:33', 2),
 (544, 29, 'base2-41', '2026-06-15 09:17:04', 1),
 (545, 29, 'base2-37', '2026-06-15 09:17:04', 1),
 (546, 29, 'base2-53', '2026-06-15 09:17:04', 1),
@@ -1098,7 +1461,275 @@ INSERT INTO `user_cards` (`id`, `user_id`, `card_id`, `created_at`, `card_amount
 (560, 29, 'base1-61', '2026-06-15 09:17:40', 1),
 (561, 29, 'base1-94', '2026-06-15 09:17:40', 1),
 (562, 29, 'base1-101', '2026-06-15 09:17:40', 1),
-(563, 29, 'base1-11', '2026-06-15 09:17:41', 1);
+(563, 29, 'base1-11', '2026-06-15 09:17:41', 1),
+(564, 29, 'bw1-51', '2026-06-15 10:00:23', 1),
+(565, 29, 'bw1-88', '2026-06-15 10:00:23', 1),
+(566, 29, 'bw1-94', '2026-06-15 10:00:23', 1),
+(567, 29, 'bw1-36', '2026-06-15 10:00:23', 1),
+(568, 29, 'bw1-99', '2026-06-15 10:00:23', 1),
+(569, 29, 'bw1-45', '2026-06-15 10:00:23', 1),
+(570, 29, 'bw1-8', '2026-06-15 10:00:23', 1),
+(571, 29, 'bw1-59', '2026-06-15 10:00:23', 1),
+(572, 29, 'bw1-110', '2026-06-15 10:00:23', 1),
+(573, 29, 'bw1-10', '2026-06-15 10:00:23', 1),
+(577, 29, 'swsh10.5-044', '2026-06-15 10:03:04', 3),
+(578, 29, 'swsh10.5-026', '2026-06-15 10:03:04', 1),
+(579, 24, 'dp7-101', '2026-06-16 08:09:20', 1),
+(580, 24, 'ex4-7', '2026-06-16 08:09:20', 1),
+(581, 24, 'swsh10.5-002', '2026-06-16 09:03:24', 1),
+(582, 24, 'swsh10.5-041', '2026-06-16 09:03:24', 1),
+(583, 24, 'swsh10.5-066', '2026-06-16 09:03:24', 3),
+(584, 24, 'swsh10.5-059', '2026-06-16 09:03:24', 2),
+(585, 24, 'swsh10.5-014', '2026-06-16 09:03:24', 3),
+(586, 24, 'swsh10.5-036', '2026-06-16 09:03:24', 3),
+(587, 24, 'swsh10.5-034', '2026-06-16 09:03:24', 1),
+(588, 24, 'swsh10.5-051', '2026-06-16 09:03:25', 2),
+(589, 24, 'swsh10.5-007', '2026-06-16 09:03:25', 4),
+(590, 24, 'swsh10.5-046', '2026-06-16 09:03:25', 1),
+(591, 24, 'swsh10.5-045', '2026-06-16 09:03:42', 1),
+(592, 24, 'swsh10.5-067', '2026-06-16 09:03:42', 1),
+(593, 24, 'swsh10.5-056', '2026-06-16 09:03:42', 2),
+(594, 24, 'swsh10.5-038', '2026-06-16 09:03:42', 3),
+(595, 24, 'swsh10.5-020', '2026-06-16 09:03:42', 3),
+(596, 24, 'swsh10.5-027', '2026-06-16 09:03:42', 2),
+(597, 24, 'swsh10.5-009', '2026-06-16 09:03:42', 1),
+(598, 24, 'swsh10.5-032', '2026-06-16 09:03:42', 3),
+(599, 24, 'swsh10.5-018', '2026-06-16 09:03:43', 1),
+(600, 24, 'swsh10.5-068', '2026-06-16 09:19:56', 1),
+(601, 24, 'swsh10.5-037', '2026-06-16 09:19:56', 1),
+(602, 24, 'swsh10.5-042', '2026-06-16 09:19:56', 1),
+(603, 24, 'swsh10.5-015', '2026-06-16 09:19:56', 2),
+(604, 24, 'swsh10.5-001', '2026-06-16 09:19:56', 3),
+(605, 24, 'swsh10.5-070', '2026-06-16 09:19:56', 1),
+(606, 24, 'swsh10.5-006', '2026-06-16 09:19:56', 2),
+(607, 24, 'swsh10.5-029', '2026-06-16 09:19:56', 1),
+(608, 24, 'bw1-44', '2026-06-16 09:20:16', 1),
+(609, 24, 'bw1-9', '2026-06-16 09:20:16', 1),
+(610, 24, 'bw1-23', '2026-06-16 09:20:16', 1),
+(611, 24, 'bw1-74', '2026-06-16 09:20:16', 1),
+(612, 24, 'bw1-33', '2026-06-16 09:20:16', 1),
+(613, 24, 'bw1-66', '2026-06-16 09:20:16', 1),
+(614, 24, 'bw1-56', '2026-06-16 09:20:16', 1),
+(615, 24, 'bw1-59', '2026-06-16 09:20:16', 1),
+(616, 24, 'bw1-110', '2026-06-16 09:20:16', 1),
+(617, 24, 'bw1-67', '2026-06-16 09:20:16', 1),
+(618, 24, 'swsh10.5-060', '2026-06-16 09:20:25', 3),
+(619, 24, 'swsh10.5-021', '2026-06-16 09:20:25', 2),
+(620, 24, 'swsh10.5-064', '2026-06-16 09:20:26', 2),
+(621, 24, 'swsh10.5-055', '2026-06-16 09:20:26', 1),
+(622, 29, 'swsh10.5-061', '2026-06-17 07:08:12', 5),
+(625, 29, 'swsh10.5-045', '2026-06-17 07:08:12', 4),
+(626, 29, 'swsh10.5-033', '2026-06-17 07:08:12', 4),
+(627, 29, 'swsh10.5-035', '2026-06-17 07:08:12', 1),
+(629, 29, 'swsh10.5-054', '2026-06-17 07:08:20', 3),
+(630, 29, 'swsh10.5-038', '2026-06-17 07:08:20', 7),
+(632, 29, 'swsh10.5-008', '2026-06-17 07:08:26', 4),
+(633, 29, 'swsh10.5-020', '2026-06-17 07:08:26', 3),
+(634, 29, 'swsh10.5-046', '2026-06-17 07:08:26', 1),
+(635, 29, 'swsh10.5-019', '2026-06-17 07:08:31', 6),
+(636, 29, 'swsh10.5-064', '2026-06-17 07:08:31', 4),
+(637, 29, 'swsh10.5-055', '2026-06-17 07:08:31', 1),
+(638, 29, 'swsh10.5-001', '2026-06-17 07:16:59', 6),
+(639, 29, 'swsh10.5-006', '2026-06-17 07:16:59', 5),
+(640, 29, 'swsh10.5-007', '2026-06-17 07:16:59', 6),
+(641, 29, 'swsh10.5-009', '2026-06-17 07:16:59', 5),
+(642, 29, 'swsh10.5-013', '2026-06-17 07:16:59', 3),
+(643, 29, 'swsh10.5-015', '2026-06-17 07:16:59', 7),
+(644, 29, 'swsh10.5-016', '2026-06-17 07:16:59', 5),
+(646, 29, 'swsh10.5-025', '2026-06-17 07:16:59', 8),
+(647, 29, 'swsh10.5-027', '2026-06-17 07:16:59', 4),
+(648, 29, 'swsh10.5-032', '2026-06-17 07:16:59', 8),
+(649, 29, 'swsh10.5-039', '2026-06-17 07:16:59', 8),
+(650, 29, 'swsh10.5-041', '2026-06-17 07:16:59', 5),
+(651, 29, 'swsh10.5-059', '2026-06-17 07:16:59', 1),
+(652, 29, 'swsh10.5-063', '2026-06-17 07:16:59', 4),
+(653, 29, 'swsh10.5-065', '2026-06-17 07:16:59', 7),
+(654, 29, 'swsh10.5-067', '2026-06-17 07:16:59', 5),
+(655, 29, 'swsh10.5-068', '2026-06-17 07:16:59', 9),
+(656, 29, 'swsh10.5-070', '2026-06-17 07:16:59', 4),
+(658, 29, 'base1-3', '2026-06-17 07:57:47', 2),
+(659, 29, 'swsh10.5-034', '2026-06-17 09:36:57', 4),
+(660, 29, 'swsh10.5-037', '2026-06-17 09:36:57', 3),
+(661, 29, 'swsh10.5-004', '2026-06-17 09:36:57', 1),
+(662, 29, 'swsh10.5-050', '2026-06-17 09:37:08', 1),
+(663, 29, 'swsh10.5-014', '2026-06-17 09:37:12', 4),
+(664, 29, 'swsh10.5-053', '2026-06-17 09:37:13', 3),
+(665, 29, 'swsh10.5-060', '2026-06-17 09:37:17', 5),
+(666, 29, 'swsh10.5-010', '2026-06-17 09:37:17', 3),
+(667, 29, 'swsh10.5-062', '2026-06-17 09:37:22', 5),
+(668, 29, 'swsh10.5-021', '2026-06-17 09:37:26', 1),
+(669, 29, 'swsh10.5-023', '2026-06-17 09:37:27', 1),
+(670, 29, 'swsh10.5-069', '2026-06-17 09:37:31', 4),
+(671, 29, 'swsh10.5-052', '2026-06-17 09:37:31', 2),
+(672, 29, 'swsh10.5-048', '2026-06-17 09:37:36', 1),
+(673, 29, 'swsh10.5-003', '2026-06-17 09:37:43', 2),
+(674, 29, 'swsh10.5-056', '2026-06-17 09:37:56', 3),
+(675, 29, 'swsh10.5-049', '2026-06-17 09:38:02', 1),
+(676, 29, 'swsh10.5-051', '2026-06-17 09:38:06', 1),
+(677, 29, 'swsh10.5-072', '2026-06-17 09:38:11', 1),
+(706, 29, 'base3-3', '2026-06-17 09:40:25', 1),
+(716, 29, 'base3-29', '2026-06-17 09:41:07', 1),
+(718, 29, 'base3-26', '2026-06-17 09:41:16', 1),
+(719, 29, 'base3-17', '2026-06-17 09:41:21', 1),
+(723, 29, 'base3-5', '2026-06-17 09:42:20', 1),
+(726, 29, 'base3-28', '2026-06-17 09:42:43', 1),
+(727, 29, 'base3-13', '2026-06-17 09:43:03', 1),
+(728, 29, 'base3-16', '2026-06-17 09:43:31', 1),
+(729, 29, 'swsh10.5-078', '2026-06-17 09:46:09', 1),
+(730, 29, 'base3-20', '2026-06-17 09:47:12', 1),
+(731, 29, 'base3-1', '2026-06-17 09:47:16', 1),
+(732, 29, 'base3-14', '2026-06-17 09:47:42', 1),
+(734, 29, 'base3-23', '2026-06-17 09:48:12', 1),
+(735, 24, 'swsh10.5-013', '2026-06-17 10:10:29', 1),
+(736, 24, 'swsh10.5-033', '2026-06-17 10:10:29', 1),
+(737, 24, 'swsh10.5-044', '2026-06-17 10:10:29', 1),
+(738, 24, 'swsh10.5-063', '2026-06-17 10:10:29', 1),
+(739, 24, 'swsh10.5-054', '2026-06-17 10:10:29', 1),
+(740, 24, 'swsh10.5-047', '2026-06-17 10:10:29', 1),
+(741, 24, 'bw8-136', '2026-06-17 10:10:46', 1),
+(742, 29, 'base3-11', '2026-06-18 06:33:49', 1),
+(743, 29, 'base3-12', '2026-06-18 06:33:49', 1),
+(744, 29, 'base3-15', '2026-06-18 06:33:49', 1),
+(745, 29, 'base3-19', '2026-06-18 06:33:49', 1),
+(746, 29, 'base3-2', '2026-06-18 06:33:49', 1),
+(747, 29, 'base3-21', '2026-06-18 06:33:49', 1),
+(748, 29, 'base3-22', '2026-06-18 06:33:49', 1),
+(749, 29, 'base3-24', '2026-06-18 06:33:49', 1),
+(750, 29, 'base3-25', '2026-06-18 06:33:49', 1),
+(751, 29, 'base3-30', '2026-06-18 06:33:49', 1),
+(752, 29, 'base3-31', '2026-06-18 06:33:49', 1),
+(753, 29, 'base3-32', '2026-06-18 06:33:49', 1),
+(754, 29, 'base3-33', '2026-06-18 06:33:49', 1),
+(755, 29, 'base3-34', '2026-06-18 06:33:49', 1),
+(756, 29, 'base3-35', '2026-06-18 06:33:49', 1),
+(757, 29, 'base3-36', '2026-06-18 06:33:49', 1),
+(758, 29, 'base3-37', '2026-06-18 06:33:49', 1),
+(759, 29, 'base3-38', '2026-06-18 06:33:49', 1),
+(760, 29, 'base3-39', '2026-06-18 06:33:49', 1),
+(761, 29, 'base3-40', '2026-06-18 06:33:49', 1),
+(762, 29, 'base3-41', '2026-06-18 06:33:49', 1),
+(763, 29, 'base3-42', '2026-06-18 06:33:49', 1),
+(764, 29, 'base3-43', '2026-06-18 06:33:49', 1),
+(765, 29, 'base3-44', '2026-06-18 06:33:49', 1),
+(766, 29, 'base3-45', '2026-06-18 06:33:49', 1),
+(767, 29, 'base3-46', '2026-06-18 06:33:49', 1),
+(768, 29, 'base3-47', '2026-06-18 06:33:49', 1),
+(769, 29, 'base3-48', '2026-06-18 06:33:49', 1),
+(770, 29, 'base3-49', '2026-06-18 06:33:49', 1),
+(771, 29, 'base3-50', '2026-06-18 06:33:49', 1),
+(772, 29, 'base3-51', '2026-06-18 06:33:49', 1),
+(773, 29, 'base3-52', '2026-06-18 06:33:49', 1),
+(774, 29, 'base3-53', '2026-06-18 06:33:49', 1),
+(775, 29, 'base3-54', '2026-06-18 06:33:49', 1),
+(776, 29, 'base3-55', '2026-06-18 06:33:49', 1),
+(777, 29, 'base3-56', '2026-06-18 06:33:49', 1),
+(778, 29, 'base3-57', '2026-06-18 06:33:49', 1),
+(779, 29, 'base3-58', '2026-06-18 06:33:49', 1),
+(780, 29, 'base3-59', '2026-06-18 06:33:49', 1),
+(781, 29, 'base3-6', '2026-06-18 06:33:49', 1),
+(782, 29, 'base3-60', '2026-06-18 06:33:49', 1),
+(783, 29, 'base3-61', '2026-06-18 06:33:49', 1),
+(784, 29, 'base3-62', '2026-06-18 06:33:49', 1),
+(785, 29, 'base3-8', '2026-06-18 06:33:49', 1),
+(786, 24, 'base1-3', '2026-06-18 09:14:16', 1),
+(787, 24, 'swsh10.5-039', '2026-06-18 09:15:50', 1),
+(788, 24, 'swsh10.5-003', '2026-06-18 09:15:50', 1),
+(789, 24, 'bw3-4', '2026-06-18 09:16:53', 1),
+(790, 24, 'bw3-48', '2026-06-18 09:16:53', 1),
+(791, 24, 'bw3-22', '2026-06-18 09:16:53', 1),
+(792, 24, 'bw3-58', '2026-06-18 09:16:53', 1),
+(793, 24, 'bw3-85', '2026-06-18 09:16:53', 1),
+(794, 24, 'bw3-76', '2026-06-18 09:16:53', 1),
+(795, 24, 'bw3-2', '2026-06-18 09:16:53', 1),
+(796, 24, 'bw3-49', '2026-06-18 09:16:53', 1),
+(797, 24, 'bw3-30', '2026-06-18 09:16:53', 1),
+(798, 24, 'bw3-26', '2026-06-18 09:16:53', 1),
+(799, 24, 'bw2-58', '2026-06-22 06:06:19', 1),
+(800, 24, 'bw2-46', '2026-06-22 06:06:19', 1),
+(801, 24, 'bw2-94', '2026-06-22 06:06:19', 1),
+(802, 24, 'bw2-36', '2026-06-22 06:06:19', 1),
+(803, 24, 'bw2-52', '2026-06-22 06:06:19', 1),
+(804, 24, 'bw2-15', '2026-06-22 06:06:19', 1),
+(805, 24, 'bw2-64', '2026-06-22 06:06:19', 1),
+(806, 24, 'bw2-68', '2026-06-22 06:06:19', 1),
+(807, 24, 'bw2-90', '2026-06-22 06:06:19', 1),
+(808, 24, 'bw2-21', '2026-06-22 06:06:19', 1),
+(809, 24, 'swsh10.5-061', '2026-06-22 06:06:26', 1),
+(810, 24, 'swsh10.5-008', '2026-06-22 06:06:26', 1),
+(811, 24, 'swsh10.5-025', '2026-06-22 06:06:26', 1),
+(812, 24, 'swsh10.5-072', '2026-06-22 06:06:26', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_cosmetics`
+--
+
+CREATE TABLE `user_cosmetics` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `cosmetic_key` varchar(64) NOT NULL,
+  `unlocked_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_cosmetics`
+--
+
+INSERT INTO `user_cosmetics` (`id`, `user_id`, `cosmetic_key`, `unlocked_at`) VALUES
+(1, 29, 'title_rookie_collector', '2026-06-17 11:02:55'),
+(2, 29, 'banner_ocean_blue', '2026-06-17 11:02:55'),
+(3, 29, 'frame_neon_blue', '2026-06-17 11:02:55'),
+(61, 29, 'badge_first_story', '2026-06-17 11:04:00'),
+(195, 29, 'frame_mythic_cosmos', '2026-06-17 11:42:07'),
+(285, 29, 'title_set_historian', '2026-06-17 11:48:58'),
+(410, 24, 'title_rookie_collector', '2026-06-17 12:06:16'),
+(411, 24, 'banner_ocean_blue', '2026-06-17 12:06:16'),
+(412, 24, 'frame_neon_blue', '2026-06-17 12:06:16'),
+(452, 24, 'badge_chapter_mark', '2026-06-17 12:14:35'),
+(462, 24, 'title_chapter_breaker', '2026-06-17 12:14:35'),
+(507, 24, 'frame_mythic_cosmos', '2026-06-22 08:05:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_friends`
+--
+
+CREATE TABLE `user_friends` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `friend_user_id` int NOT NULL,
+  `status` enum('pending','accepted') NOT NULL DEFAULT 'pending',
+  `requested_by` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_milestone_claims`
+--
+
+CREATE TABLE `user_milestone_claims` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `milestone_key` varchar(64) NOT NULL,
+  `reward_coins` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `claimed_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_milestone_claims`
+--
+
+INSERT INTO `user_milestone_claims` (`id`, `user_id`, `milestone_key`, `reward_coins`, `claimed_at`) VALUES
+(1, 29, 'milestone_unique_25', '60.00', '2026-06-17 11:50:28'),
+(2, 29, 'milestone_unique_50', '120.00', '2026-06-17 11:50:29'),
+(3, 29, 'milestone_unique_100', '250.00', '2026-06-17 11:50:29'),
+(4, 29, 'milestone_total_250', '150.00', '2026-06-17 11:50:30'),
+(5, 29, 'milestone_total_500', '320.00', '2026-06-17 11:50:30');
 
 -- --------------------------------------------------------
 
@@ -1161,7 +1792,264 @@ INSERT INTO `user_packs` (`id`, `user_id`, `tcgdex_set_id`, `set_name`, `created
 (280, 25, 'swsh3.5', 'Champion\'s Path', '2026-06-03 11:39:51'),
 (281, 25, 'sv02', 'Paldea Evolved', '2026-06-03 11:47:44'),
 (282, 25, 'sv02', 'Paldea Evolved', '2026-06-03 11:49:11'),
-(297, 25, 'base2', 'Jungle', '2026-06-09 10:14:36');
+(297, 25, 'base2', 'Jungle', '2026-06-09 10:14:36'),
+(361, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:25:40'),
+(362, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:18'),
+(363, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:22'),
+(364, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:22'),
+(365, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:22'),
+(366, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(367, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(368, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(369, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(370, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(371, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(372, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(373, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:23'),
+(374, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:24'),
+(375, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:24'),
+(376, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:24'),
+(377, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:37'),
+(378, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:27:40'),
+(379, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:29:39'),
+(380, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:29:40'),
+(381, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:29:40'),
+(382, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:29:41'),
+(383, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:29:41'),
+(384, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:29:41'),
+(385, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:11'),
+(386, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:27'),
+(388, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:33'),
+(389, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:33'),
+(391, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:33'),
+(392, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:33'),
+(394, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:34'),
+(395, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:34'),
+(396, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:34'),
+(397, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:34'),
+(398, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:34'),
+(399, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:34'),
+(400, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:35'),
+(401, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:35'),
+(402, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:35'),
+(403, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:35'),
+(404, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:43'),
+(405, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:30:50'),
+(406, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:31:22'),
+(407, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:31:32'),
+(408, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:33:13'),
+(409, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:33:23'),
+(410, 24, 'swsh10.5', 'Pokémon GO', '2026-06-16 08:33:28'),
+(414, 24, 'bw1', 'Black & White', '2026-06-16 10:59:28'),
+(415, 24, 'bw1', 'Black & White', '2026-06-16 10:59:28'),
+(416, 24, 'bw1', 'Black & White', '2026-06-16 10:59:28'),
+(417, 24, 'bw1', 'Black & White', '2026-06-16 10:59:28'),
+(418, 24, 'bw1', 'Black & White', '2026-06-16 10:59:29'),
+(419, 24, 'bw1', 'Black & White', '2026-06-16 10:59:29'),
+(420, 24, 'bw1', 'Black & White', '2026-06-16 10:59:29'),
+(421, 24, 'bw1', 'Black & White', '2026-06-16 10:59:29'),
+(422, 24, 'bw1', 'Black & White', '2026-06-16 10:59:29'),
+(428, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 09:14:24'),
+(429, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:27'),
+(430, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:29'),
+(431, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:39'),
+(432, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:45'),
+(433, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:46'),
+(434, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:46'),
+(435, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:46'),
+(436, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:46'),
+(444, 29, 'swsh10.5', 'Pokémon GO', '2026-06-17 11:36:47'),
+(507, 29, 'swsh10.5', 'Pokémon GO', '2026-06-18 08:17:05'),
+(508, 29, 'bw1', 'Black & White', '2026-06-18 08:27:22'),
+(509, 29, 'bw1', 'Black & White', '2026-06-18 08:27:23'),
+(510, 29, 'swsh10.5', 'Pokémon GO', '2026-06-18 08:27:27'),
+(511, 29, 'bw1', 'Black & White', '2026-06-18 08:28:28'),
+(512, 29, 'swsh10.5', 'Pokémon GO', '2026-06-18 08:28:50'),
+(513, 29, 'bw1', 'Black & White', '2026-06-18 08:30:01'),
+(514, 29, 'swsh10.5', 'Pokémon GO', '2026-06-18 08:32:58'),
+(515, 24, 'swsh10.5', 'Pokémon GO', '2026-06-18 11:13:26'),
+(516, 24, 'swsh10.5', 'Pokémon GO', '2026-06-18 11:13:28'),
+(518, 24, 'bw1', 'Black & White', '2026-06-18 11:13:58'),
+(519, 24, 'swsh10.5', 'Pokémon GO', '2026-06-18 11:15:12'),
+(520, 24, 'bw1', 'Black & White', '2026-06-18 11:15:15'),
+(523, 24, 'bw2', 'Emerging Powers', '2026-06-22 08:08:59'),
+(524, 24, 'bw2', 'Emerging Powers', '2026-06-22 08:09:09'),
+(525, 24, 'bw1', 'Black & White', '2026-06-22 08:10:18'),
+(526, 24, 'bw1', 'Black & White', '2026-06-22 08:15:07'),
+(527, 24, 'bw1', 'Black & White', '2026-06-22 08:16:51'),
+(528, 24, 'swsh10.5', 'Pokémon GO', '2026-06-22 08:21:56'),
+(529, 32, 'bw1', 'Black & White', '2026-06-22 08:28:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_period_metrics`
+--
+
+CREATE TABLE `user_period_metrics` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `period_type` enum('daily','weekly') NOT NULL,
+  `period_key` varchar(16) NOT NULL,
+  `baseline_total_cards` int NOT NULL DEFAULT '0',
+  `baseline_unique_cards` int NOT NULL DEFAULT '0',
+  `baseline_battles_won` int NOT NULL DEFAULT '0',
+  `baseline_completed_trades` int NOT NULL DEFAULT '0',
+  `baseline_total_wagered` decimal(14,2) NOT NULL DEFAULT '0.00',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_period_metrics`
+--
+
+INSERT INTO `user_period_metrics` (`id`, `user_id`, `period_type`, `period_key`, `baseline_total_cards`, `baseline_unique_cards`, `baseline_battles_won`, `baseline_completed_trades`, `baseline_total_wagered`, `created_at`) VALUES
+(1, 24, 'daily', '2026-06-16', 105, 67, 0, 4, '3197.75', '2026-06-16 09:37:42'),
+(2, 24, 'weekly', '2026-W25', 105, 67, 0, 4, '3197.75', '2026-06-16 09:38:06'),
+(3, 29, 'daily', '2026-06-17', 87, 86, 1, 0, '589.00', '2026-06-17 11:25:14'),
+(4, 29, 'weekly', '2026-W25', 547, 156, 1, 0, '3178.00', '2026-06-17 11:45:42'),
+(5, 24, 'daily', '2026-06-17', 157, 110, 1, 4, '3278.75', '2026-06-17 12:04:45'),
+(8, 25, 'daily', '2026-06-17', 46, 28, 2, 4, '4378.00', '2026-06-17 12:04:58');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_profile_loadout`
+--
+
+CREATE TABLE `user_profile_loadout` (
+  `user_id` int NOT NULL,
+  `title_key` varchar(64) DEFAULT NULL,
+  `banner_key` varchar(64) DEFAULT NULL,
+  `frame_key` varchar(64) DEFAULT NULL,
+  `cardback_key` varchar(64) DEFAULT NULL,
+  `badge_1_key` varchar(64) DEFAULT NULL,
+  `badge_2_key` varchar(64) DEFAULT NULL,
+  `badge_3_key` varchar(64) DEFAULT NULL,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_profile_loadout`
+--
+
+INSERT INTO `user_profile_loadout` (`user_id`, `title_key`, `banner_key`, `frame_key`, `cardback_key`, `badge_1_key`, `badge_2_key`, `badge_3_key`, `updated_at`) VALUES
+(24, 'title_chapter_breaker', 'banner_ocean_blue', 'frame_neon_blue', NULL, 'badge_chapter_mark', NULL, NULL, '2026-06-17 12:15:07'),
+(29, 'title_set_historian', 'banner_ocean_blue', 'frame_mythic_cosmos', NULL, NULL, 'badge_first_story', 'badge_first_story', '2026-06-17 12:21:33');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_quest_claims`
+--
+
+CREATE TABLE `user_quest_claims` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `period_type` enum('daily','weekly') NOT NULL,
+  `period_key` varchar(16) NOT NULL,
+  `quest_key` varchar(64) NOT NULL,
+  `reward_coins` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `claimed_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_quest_claims`
+--
+
+INSERT INTO `user_quest_claims` (`id`, `user_id`, `period_type`, `period_key`, `quest_key`, `reward_coins`, `claimed_at`) VALUES
+(1, 29, 'daily', '2026-06-17', 'daily_unique_cards_3', '25.00', '2026-06-17 11:50:20'),
+(2, 29, 'daily', '2026-06-17', 'daily_wager_200', '30.00', '2026-06-17 11:50:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_story_ch5_baselines`
+--
+
+CREATE TABLE `user_story_ch5_baselines` (
+  `user_id` int NOT NULL,
+  `set_id` varchar(64) NOT NULL,
+  `baseline_set_guess_correct` int NOT NULL DEFAULT '0',
+  `baseline_higher_lower_correct` int NOT NULL DEFAULT '0',
+  `baseline_pack_opens` int NOT NULL DEFAULT '0',
+  `baseline_case_wins` int NOT NULL DEFAULT '0',
+  `baseline_wheel_spins` int NOT NULL DEFAULT '0',
+  `baseline_upgrader_wins` int NOT NULL DEFAULT '0',
+  `started_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_story_ch5_baselines`
+--
+
+INSERT INTO `user_story_ch5_baselines` (`user_id`, `set_id`, `baseline_set_guess_correct`, `baseline_higher_lower_correct`, `baseline_pack_opens`, `baseline_case_wins`, `baseline_wheel_spins`, `baseline_upgrader_wins`, `started_at`) VALUES
+(29, 'base3', 0, 0, 69, 1, 1, 1, '2026-06-17 11:48:58');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_story_claims`
+--
+
+CREATE TABLE `user_story_claims` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `set_id` varchar(64) NOT NULL,
+  `chapter_no` tinyint NOT NULL,
+  `claimed_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_story_claims`
+--
+
+INSERT INTO `user_story_claims` (`id`, `user_id`, `set_id`, `chapter_no`, `claimed_at`) VALUES
+(1, 29, 'ex14', 1, '2026-06-17 11:04:00'),
+(2, 29, 'ex14', 2, '2026-06-17 11:04:01'),
+(3, 29, 'base4', 1, '2026-06-17 11:06:38'),
+(4, 29, 'base3', 2, '2026-06-17 11:42:13'),
+(5, 29, 'base3', 1, '2026-06-17 11:42:13'),
+(6, 29, 'base3', 3, '2026-06-17 11:48:57'),
+(7, 29, 'base3', 4, '2026-06-17 11:48:58'),
+(8, 24, 'base2', 1, '2026-06-17 12:14:35'),
+(9, 24, 'base2', 2, '2026-06-17 12:14:35'),
+(10, 24, 'ex10', 1, '2026-06-22 08:05:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_story_stats`
+--
+
+CREATE TABLE `user_story_stats` (
+  `user_id` int NOT NULL,
+  `set_guess_correct` int NOT NULL DEFAULT '0',
+  `higher_lower_correct` int NOT NULL DEFAULT '0',
+  `pack_opens` int NOT NULL DEFAULT '0',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_story_stats`
+--
+
+INSERT INTO `user_story_stats` (`user_id`, `set_guess_correct`, `higher_lower_correct`, `pack_opens`, `updated_at`) VALUES
+(24, 1, 1, 5, '2026-06-22 08:06:25'),
+(29, 0, 1, 69, '2026-06-17 12:02:55');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_wishlist`
+--
+
+CREATE TABLE `user_wishlist` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `card_id` varchar(128) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -1242,7 +2130,10 @@ INSERT INTO `wheel_spins` (`id`, `user_id`, `segment_id`, `payment_type`, `rewar
 (56, 25, 4, 'coins', 'tickets', '{\"type\":\"tickets\",\"amount\":1,\"message\":\"+1 ticket(s)\"}', '2026-06-09 08:17:08'),
 (57, 25, 5, 'ticket', 'card', '{\"type\":\"card\",\"card\":{\"id\":\"ex13-35\",\"name\":\"Aerodactyl \\u03b4\",\"image\":\"https:\\/\\/assets.tcgdex.net\\/en\\/ex\\/ex13\\/35\\/high.webp\",\"rarity\":\"Uncommon\",\"price\":1},\"message\":\"You won Aerodactyl \\u03b4 (\\u22481.00 coins value)!\"}', '2026-06-09 08:17:14'),
 (58, 24, 7, 'ticket', 'card', '{\"type\":\"card\",\"card\":{\"id\":\"gym1-80\",\"name\":\"Lt. Surge\'s Magnemite\",\"image\":\"https:\\/\\/assets.tcgdex.net\\/en\\/gym\\/gym1\\/80\\/high.webp\",\"rarity\":\"Common\",\"price\":7},\"message\":\"You won Lt. Surge\'s Magnemite (\\u22487.00 coins value)!\"}', '2026-06-09 12:18:40'),
-(59, 29, 5, 'coins', 'card', '{\"type\":\"card\",\"card\":{\"id\":\"ex13-35\",\"name\":\"Aerodactyl \\u03b4\",\"image\":\"https:\\/\\/assets.tcgdex.net\\/en\\/ex\\/ex13\\/35\\/high.webp\",\"rarity\":\"Uncommon\",\"price\":1},\"message\":\"You won Aerodactyl \\u03b4 (\\u22481.00 coins value)!\"}', '2026-06-15 08:48:59');
+(59, 29, 5, 'coins', 'card', '{\"type\":\"card\",\"card\":{\"id\":\"ex13-35\",\"name\":\"Aerodactyl \\u03b4\",\"image\":\"https:\\/\\/assets.tcgdex.net\\/en\\/ex\\/ex13\\/35\\/high.webp\",\"rarity\":\"Uncommon\",\"price\":1},\"message\":\"You won Aerodactyl \\u03b4 (\\u22481.00 coins value)!\"}', '2026-06-15 08:48:59'),
+(60, 24, 2, 'coins', 'coins', '{\"type\":\"coins\",\"amount\":60,\"message\":\"+60 coins\"}', '2026-06-16 07:40:19'),
+(61, 29, 2, 'coins', 'coins', '{\"type\":\"coins\",\"amount\":60,\"message\":\"+60 coins\"}', '2026-06-17 09:49:16'),
+(62, 24, 7, 'coins', 'card', '{\"type\":\"card\",\"card\":{\"id\":\"gym1-80\",\"name\":\"Lt. Surge\'s Magnemite\",\"image\":\"https:\\/\\/assets.tcgdex.net\\/en\\/gym\\/gym1\\/80\\/high.webp\",\"rarity\":\"Common\",\"price\":7},\"message\":\"You won Lt. Surge\'s Magnemite (\\u22487.00 coins value)!\"}', '2026-06-17 10:11:08');
 
 --
 -- Indexes for dumped tables
@@ -1264,6 +2155,12 @@ ALTER TABLE `battle_crate_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_crate` (`crate_id`),
   ADD KEY `idx_card` (`card_id`);
+
+--
+-- Indexes for table `cosmetics`
+--
+ALTER TABLE `cosmetics`
+  ADD PRIMARY KEY (`cosmetic_key`);
 
 --
 -- Indexes for table `crate_battle_rooms`
@@ -1311,6 +2208,13 @@ ALTER TABLE `raffle_entries`
   ADD KEY `idx_raffle_entries_user` (`user_id`);
 
 --
+-- Indexes for table `set_story_chapters`
+--
+ALTER TABLE `set_story_chapters`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_set_chapter` (`set_id`,`chapter_no`);
+
+--
 -- Indexes for table `trades`
 --
 ALTER TABLE `trades`
@@ -1340,7 +2244,16 @@ ALTER TABLE `upgrader_plays`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `username` (`username`);
+  ADD UNIQUE KEY `username` (`username`),
+  ADD KEY `idx_users_last_active` (`last_active_at`);
+
+--
+-- Indexes for table `user_achievements`
+--
+ALTER TABLE `user_achievements`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_user_achievement` (`user_id`,`achievement_key`),
+  ADD KEY `idx_user_achievement_user` (`user_id`,`unlocked_at`);
 
 --
 -- Indexes for table `user_cards`
@@ -1351,12 +2264,83 @@ ALTER TABLE `user_cards`
   ADD UNIQUE KEY `unique_user_card` (`user_id`,`card_id`);
 
 --
+-- Indexes for table `user_cosmetics`
+--
+ALTER TABLE `user_cosmetics`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_user_cosmetic` (`user_id`,`cosmetic_key`),
+  ADD KEY `fk_user_cosmetic_item` (`cosmetic_key`);
+
+--
+-- Indexes for table `user_friends`
+--
+ALTER TABLE `user_friends`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_user_friend_pair` (`user_id`,`friend_user_id`),
+  ADD KEY `idx_friends_user` (`user_id`,`status`),
+  ADD KEY `idx_friends_friend` (`friend_user_id`,`status`);
+
+--
+-- Indexes for table `user_milestone_claims`
+--
+ALTER TABLE `user_milestone_claims`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_milestone_claim` (`user_id`,`milestone_key`);
+
+--
 -- Indexes for table `user_packs`
 --
 ALTER TABLE `user_packs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_user_packs_user_id` (`user_id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `user_period_metrics`
+--
+ALTER TABLE `user_period_metrics`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_period_metrics` (`user_id`,`period_type`,`period_key`);
+
+--
+-- Indexes for table `user_profile_loadout`
+--
+ALTER TABLE `user_profile_loadout`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `user_quest_claims`
+--
+ALTER TABLE `user_quest_claims`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_quest_claim` (`user_id`,`period_type`,`period_key`,`quest_key`);
+
+--
+-- Indexes for table `user_story_ch5_baselines`
+--
+ALTER TABLE `user_story_ch5_baselines`
+  ADD PRIMARY KEY (`user_id`,`set_id`);
+
+--
+-- Indexes for table `user_story_claims`
+--
+ALTER TABLE `user_story_claims`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_user_story_claim` (`user_id`,`set_id`,`chapter_no`);
+
+--
+-- Indexes for table `user_story_stats`
+--
+ALTER TABLE `user_story_stats`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `user_wishlist`
+--
+ALTER TABLE `user_wishlist`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_user_wishlist` (`user_id`,`card_id`),
+  ADD KEY `idx_wishlist_user` (`user_id`,`created_at`);
 
 --
 -- Indexes for table `wheel_spins`
@@ -1385,31 +2369,37 @@ ALTER TABLE `battle_crate_items`
 -- AUTO_INCREMENT for table `crate_battle_rooms`
 --
 ALTER TABLE `crate_battle_rooms`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `marketplace`
 --
 ALTER TABLE `marketplace`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
 
 --
 -- AUTO_INCREMENT for table `raffles`
 --
 ALTER TABLE `raffles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `raffle_entries`
 --
 ALTER TABLE `raffle_entries`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
+
+--
+-- AUTO_INCREMENT for table `set_story_chapters`
+--
+ALTER TABLE `set_story_chapters`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=221;
 
 --
 -- AUTO_INCREMENT for table `trades`
@@ -1427,31 +2417,79 @@ ALTER TABLE `trade_items`
 -- AUTO_INCREMENT for table `upgrader_plays`
 --
 ALTER TABLE `upgrader_plays`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `user_achievements`
+--
+ALTER TABLE `user_achievements`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
 -- AUTO_INCREMENT for table `user_cards`
 --
 ALTER TABLE `user_cards`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=564;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=813;
+
+--
+-- AUTO_INCREMENT for table `user_cosmetics`
+--
+ALTER TABLE `user_cosmetics`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=529;
+
+--
+-- AUTO_INCREMENT for table `user_friends`
+--
+ALTER TABLE `user_friends`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `user_milestone_claims`
+--
+ALTER TABLE `user_milestone_claims`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user_packs`
 --
 ALTER TABLE `user_packs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=359;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=530;
+
+--
+-- AUTO_INCREMENT for table `user_period_metrics`
+--
+ALTER TABLE `user_period_metrics`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `user_quest_claims`
+--
+ALTER TABLE `user_quest_claims`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `user_story_claims`
+--
+ALTER TABLE `user_story_claims`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `user_wishlist`
+--
+ALTER TABLE `user_wishlist`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `wheel_spins`
 --
 ALTER TABLE `wheel_spins`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- Constraints for dumped tables
@@ -1497,10 +2535,71 @@ ALTER TABLE `trade_items`
   ADD CONSTRAINT `fk_trade_items_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `user_achievements`
+--
+ALTER TABLE `user_achievements`
+  ADD CONSTRAINT `fk_user_achievement_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_cosmetics`
+--
+ALTER TABLE `user_cosmetics`
+  ADD CONSTRAINT `fk_user_cosmetic_item` FOREIGN KEY (`cosmetic_key`) REFERENCES `cosmetics` (`cosmetic_key`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_user_cosmetic_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_milestone_claims`
+--
+ALTER TABLE `user_milestone_claims`
+  ADD CONSTRAINT `fk_milestone_claim_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `user_packs`
 --
 ALTER TABLE `user_packs`
   ADD CONSTRAINT `fk_user_packs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_period_metrics`
+--
+ALTER TABLE `user_period_metrics`
+  ADD CONSTRAINT `fk_period_metrics_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_profile_loadout`
+--
+ALTER TABLE `user_profile_loadout`
+  ADD CONSTRAINT `fk_profile_loadout_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_quest_claims`
+--
+ALTER TABLE `user_quest_claims`
+  ADD CONSTRAINT `fk_quest_claim_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_story_ch5_baselines`
+--
+ALTER TABLE `user_story_ch5_baselines`
+  ADD CONSTRAINT `fk_story_ch5_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_story_claims`
+--
+ALTER TABLE `user_story_claims`
+  ADD CONSTRAINT `fk_user_story_claim_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_story_stats`
+--
+ALTER TABLE `user_story_stats`
+  ADD CONSTRAINT `fk_story_stats_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_wishlist`
+--
+ALTER TABLE `user_wishlist`
+  ADD CONSTRAINT `fk_wishlist_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
