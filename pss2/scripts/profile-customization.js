@@ -1,4 +1,3 @@
-import { notification } from '/scripts/notifications.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const API = typeof getApiBase === 'function' ? getApiBase() : 'http://localhost/pss/api';
@@ -157,12 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
         if (!data.success) {
-            notification({
-                text: 'Failed to equip item: ' + (data.message || 'unknown error'),
-                duration: 5000,
-                type: 'error',
-                closeable: true
-            });
+            console.log('Failed to equip item:', data.message);
             return;
         }
         loadout = data.loadout || {};

@@ -358,8 +358,8 @@ async function applyPackSetImages(stageEl, setCode = '') {
     if (!baseSet) return;
 
     // Folder = baseSet (letters only), filename = full normalized code
-    const topImage = `../images/packs_top/${baseSet}/${normalized}.png`;
-    const bottomImage = `../images/packs_bottom/${baseSet}/${normalized}.png`;
+    const topImage = `../images/packs_top/${normalized}.png`;
+    const bottomImage = `../images/packs_bottom/${normalized}.png`;
 
     stageEl.style.setProperty('--pack-top-image', `url("${topImage}")`);
     stageEl.style.setProperty('--pack-bottom-image', `url("${bottomImage}")`);

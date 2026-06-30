@@ -227,10 +227,6 @@ function buildHeaderHtml(options = {}) {
                             <i class="fas fa-user-group"></i>
                             <span>Friends</span>
                         </a>
-                        <a href="${escapeHtml(appUrl('/pages/quests.html'))}" class="dropdown-item">
-                            <i class="fas fa-scroll"></i>
-                            <span>Quests</span>
-                        </a>
                         <a href="${escapeHtml(appUrl('/pages/roadmap.html'))}" class="dropdown-item">
                             <i class="fas fa-map-signs"></i>
                             <span>Roadmap</span>

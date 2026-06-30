@@ -105,33 +105,23 @@ async function login() {
 // REGISTER
 // -------------------------
 async function register() {
-
-  const username =
-    document.getElementById("regUser").value;
-
-  const email =
-    document.getElementById("regEmail").value;
-
-  const password =
-    document.getElementById("regPassword").value;
+  const username = document.getElementById("regUser").value;
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPassword").value;
 
   const res = await fetch(`${API}/register.php`, {
-
     method: "POST",
-
     credentials: "include",
-
     headers: {
       "Content-Type": "application/json",
     },
-
     body: JSON.stringify({
       username,
       email,
       password
     }),
   });
-
+  
   const data = await res.json();
 
   if (data.success) {
