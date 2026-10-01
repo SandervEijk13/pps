@@ -4,6 +4,12 @@ A small Pokémon pack-opening simulator where players can **buy and open Pokémo
 
 The project also includes a **market database** and a collection system designed to support **all 20,000+ Pokémon cards**.
 
+## Made By
+Max 
+Kevin
+Bjarne
+Sander
+
 ## Features
 
 * 🎴 Open Pokémon card packs
